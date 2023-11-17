@@ -1,0 +1,16 @@
+body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+}
+
+//SWIPER
+.hero-banner-swiper {
+    --swiper-theme-color: #fff;
+
+    .swiper-pagination-bullet.swiper-pagination-bullet-active {
+        background-color: #146C94;
+        opacity: 1;
+    }
+}
