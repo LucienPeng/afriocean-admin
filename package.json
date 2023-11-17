@@ -1,5 +1,7 @@
 {
   "name": "afriocean-admin",
+  "homepage": "https://admin.afriocean.com",
+  "author": "Lucien Peng",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

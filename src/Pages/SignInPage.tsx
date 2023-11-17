@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Alert, Avatar, Button, Collapse, Grid, Link, Paper, Stack, TextField, Typography } from '@mui/material';
 import { AuthError, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Controller, useForm } from 'react-hook-form';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { useNavigate } from 'react-router-dom';
 
 interface SignInFormModel {
   readonly email: string;
@@ -14,12 +15,16 @@ const DEFAULT_FORM_VALUES = {
   password: '',
 };
 
-export default function SignInPage() {
+export default function SignInPage(props: { setIsLoggedIn: (isLoggedIn: boolean) => void }) {
   const [errorMessage, setErrorMessage] = useState('');
-  const { control, getValues, handleSubmit } = useForm<SignInFormModel>({
+
+  const { setIsLoggedIn } = props;
+  const { control, reset, getValues, handleSubmit } = useForm<SignInFormModel>({
     mode: 'onSubmit',
     defaultValues: DEFAULT_FORM_VALUES,
   });
+
+  const navigate = useNavigate();
 
   const submitSignInForm = () => {
     const { email, password } = getValues();
@@ -27,7 +32,10 @@ export default function SignInPage() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        reset(DEFAULT_FORM_VALUES);
         setErrorMessage('');
+        setIsLoggedIn(true);
+        navigate('/');
         return user;
       })
       .catch((error: AuthError) => {
@@ -60,7 +68,7 @@ export default function SignInPage() {
             <Typography variant="h5">Sign in</Typography>
           </Stack>
 
-          <Stack spacing={2} width="100%">
+          <Stack component="form" spacing={2} width="100%">
             <Controller
               name="email"
               control={control}
@@ -96,7 +104,6 @@ export default function SignInPage() {
                 />
               )}
             />
-
             {/* <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" /> */}
             <Button
               type="submit"
