@@ -2,7 +2,7 @@ import { Badge, IconButton, Stack, Toolbar, Typography, styled } from '@mui/mate
 import MuiAppBar, { AppBarProps } from '@mui/material/AppBar';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useAuthActions } from '../../store/auth/auth-actions';
+import { useAuthActions } from '../../Store/Auth/auth-actions';
 
 const AppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,

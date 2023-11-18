@@ -1,15 +1,15 @@
 import { Box, CssBaseline, Divider, Drawer, List, Toolbar, styled } from '@mui/material';
-import { mainListItems, secondaryListItems } from './listItems';
+import { mainListItems, secondaryListItems } from '../Dashboard/listItems';
 import { Navbar } from './Navbar';
 import { ReactNode } from 'react';
 
-const drawerWidth = 240;
+const DRAWER_WIDTH = 240;
 
 const StyledDrawer = styled(Drawer)({
   '& .MuiDrawer-paper': {
+    width: DRAWER_WIDTH,
     position: 'static',
     whiteSpace: 'nowrap',
-    width: drawerWidth,
     boxSizing: 'border-box',
   },
 });

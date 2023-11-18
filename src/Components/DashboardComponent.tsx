@@ -1,7 +1,7 @@
 import { Container, Grid, Paper } from '@mui/material';
 import { Copyright } from '@mui/icons-material';
-import Deposits from './Common/Deposits';
-import Orders from './Common/Orders';
+import Deposits from './Dashboard/Deposits';
+import Orders from './Dashboard/Orders';
 
 export const DashboardComponent = () => {
   return (

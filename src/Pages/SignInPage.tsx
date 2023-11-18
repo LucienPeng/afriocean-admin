@@ -2,7 +2,7 @@ import { Alert, Avatar, Button, Collapse, Grid, Link, Paper, Stack, TextField, T
 import { AuthError, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { Controller, useForm } from 'react-hook-form';
 import { Copyright } from '@mui/icons-material';
-import { authActions } from '../store/auth/auth-slice';
+import { authActions } from '../Store/Auth/auth-slice';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRedux } from '../useUserRedux';

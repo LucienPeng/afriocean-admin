@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useUserRedux } from './useUserRedux';
 import { getAuth } from 'firebase/auth';
-import { getExpDate, parseJwt } from './utils/jwt';
-import { defaultTheme } from './styles/themeOptions';
-import { authActions } from './store/auth/auth-slice';
+import { getExpDate, parseJwt } from './Utils/jwt';
+import { defaultTheme } from './Styles/themeOptions';
+import { authActions } from './Store/Auth/auth-slice';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import ProtectedRoute from './ProtectedRoute';

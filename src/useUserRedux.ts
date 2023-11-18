@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
-import { AuthState } from './store/auth/auth.model';
+import { AuthState } from './Store/Auth/auth.model';
 
 export const useUserRedux = () => {
   const dispatch = useDispatch<ThunkDispatch<AuthState, unknown, AnyAction>>();
