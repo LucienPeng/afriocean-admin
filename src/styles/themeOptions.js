@@ -36,21 +36,18 @@ export const defaultTheme = createTheme({
   },
   typography: {
     fontFamily: "'Kanit', 'Oxygen', 'Roboto'",
-    button: {
-      fontFamily: "'Copperplate','Vollkorn SC', 'normal'",
-    },
     h1: {
-      fontFamily: "'Copperplate','Vollkorn SC', 'normal'",
+      fontFamily: "'Vollkorn SC', 'normal'",
       fontSize: '120px',
       fontWeight: 500,
     },
     h2: {
-      fontFamily: "'Copperplate','Vollkorn SC', 'normal'",
+      fontFamily: "'Vollkorn SC', 'normal'",
       fontSize: '26px',
       letterSpacing: 3,
     },
     h3: {
-      fontFamily: "'Copperplate','Vollkorn SC', 'normal'",
+      fontFamily: "'Vollkorn SC', 'normal'",
       fontSize: '24px',
     },
     h4: {

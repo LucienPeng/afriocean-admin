@@ -3,20 +3,24 @@ import { AuthState } from './auth.model';
 
 const initialState: AuthState = {
   isLoggedIn: false,
+  user: null
 };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    loginSucceed(state) {
+    loginSucceed (state, actions) {
       state.isLoggedIn = true;
+      state.user = actions.payload.user
     },
-    loginFaild(state) {
+    loginFaild (state) {
       state.isLoggedIn = false;
+      state.user = null
     },
-    logOut(state) {
+    logOut (state) {
       state.isLoggedIn = false;
+      state.user = null
     },
   },
 });

@@ -1,5 +1,5 @@
 import { Divider, Drawer, List, styled } from '@mui/material';
-import { secondaryListItems, useGetNavItems } from './listItems';
+import { useGetNavItems } from './useGetNavItems';
 
 const DRAWER_WIDTH = 240;
 
@@ -17,14 +17,14 @@ export const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 export const SideBar = () => {
-  const { mainListItems } = useGetNavItems();
+  const { userListItems, adminListItems } = useGetNavItems();
   return (
     <StyledDrawer variant="permanent">
       <DrawerHeader />
       <List component="nav">
-        {mainListItems}
+        {userListItems}
         <Divider sx={{ my: 1 }} />
-        {secondaryListItems}
+        {adminListItems}
       </List>
     </StyledDrawer>
   );

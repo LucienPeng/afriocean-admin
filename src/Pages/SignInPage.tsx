@@ -1,11 +1,25 @@
-import { Alert, Avatar, Button, Collapse, Grid, Link, Paper, Stack, TextField, Typography } from '@mui/material';
-import { AuthError, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  Alert,
+  Avatar,
+  Button,
+  CircularProgress,
+  Collapse,
+  Grid,
+  Link,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { Controller, useForm } from 'react-hook-form';
-import { Copyright } from '@mui/icons-material';
 import { authActions } from '../Store/Auth/auth-slice';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRedux } from '../useUserRedux';
+import { useFirebase } from '../useFirebase';
+import { doc, getDoc } from '@firebase/firestore';
+import { Copyright } from '../Components/Common/CopyRight';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 interface SignInFormModel {
@@ -20,7 +34,11 @@ const DEFAULT_FORM_VALUES = {
 
 export default function SignInPage() {
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const { dispatch } = useUserRedux();
+  const { db, collection } = useFirebase();
+
   const { control, reset, getValues, handleSubmit } = useForm<SignInFormModel>({
     mode: 'onSubmit',
     defaultValues: DEFAULT_FORM_VALUES,
@@ -28,21 +46,38 @@ export default function SignInPage() {
 
   const navigate = useNavigate();
 
-  const submitSignInForm = () => {
+  const submitSignInForm = async () => {
+    setIsLoading(true);
     const { email, password } = getValues();
     const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const docUserRef = doc(collection(db, 'User'), userCredential.user.uid);
+      const docUserSnap = await getDoc(docUserRef);
+      if (docUserSnap.exists()) {
+        const userData = docUserSnap.data();
         reset(DEFAULT_FORM_VALUES);
         setErrorMessage('');
         navigate('/');
-        dispatch(authActions.loginSucceed());
-        return user;
-      })
-      .catch((error: AuthError) => {
-        setErrorMessage(error.message);
-      });
+        setIsLoading(false);
+        dispatch(
+          authActions.loginSucceed({
+            isLoggedIn: true,
+            user: userData,
+          }),
+        );
+      } else {
+        setIsLoading(false);
+        setErrorMessage('Sorry, please check again your email account or password');
+      }
+
+      return userCredential;
+    } catch (err) {
+      setIsLoading(false);
+
+      setErrorMessage('Sorry, please check again your email account or password');
+    }
   };
 
   return (
@@ -62,14 +97,13 @@ export default function SignInPage() {
         }}
       />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-        <Stack direction="column" justifyContent="space-around" alignItems="center" height="100%" sx={{ mx: 4 }}>
+        <Stack direction="column" justifyContent="center" alignItems="center" height="100%" spacing={5} sx={{ mx: 4 }}>
           <Stack direction="column" justifyContent="center" alignItems="center">
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
             <Typography variant="h5">Sign in</Typography>
           </Stack>
-
           <Stack component="form" spacing={2} width="100%">
             <Controller
               name="email"
@@ -106,7 +140,6 @@ export default function SignInPage() {
                 />
               )}
             />
-            {/* <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" /> */}
             <Button
               type="submit"
               fullWidth
@@ -120,11 +153,13 @@ export default function SignInPage() {
             <Collapse in={!!errorMessage}>
               <Alert severity="error">{errorMessage}</Alert>
             </Collapse>
-
             <Link href="#" variant="body2">
               Forgot password?
             </Link>
           </Stack>
+          <Collapse in={isLoading}>
+            <CircularProgress />
+          </Collapse>
           <Copyright />
         </Stack>
       </Grid>

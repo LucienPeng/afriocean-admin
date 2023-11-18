@@ -1,18 +1,77 @@
 import {
   AppBar,
   Button,
-  Checkbox,
   Container,
-  FormControlLabel,
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   TextField,
   Toolbar,
   Typography,
 } from '@mui/material';
+import { Controller, useForm } from 'react-hook-form';
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { useFirebase } from '../useFirebase';
+import { Profile } from '../model/model';
+
+interface CreateUserFormModel extends Profile {
+  readonly defaultPassword: string;
+  readonly role: string;
+  readonly department: string;
+}
+
+const DEFAULT_FORM_VALUES = {
+  email: '',
+  defaultPassword: '',
+  firstName: '',
+  lastName: '',
+  role: '',
+  department: '',
+};
+
+const roles = ['User', 'Administrator'];
+const departments = [
+  'General Management',
+  'Services Généraux',
+  'Administration',
+  'Comptabilité',
+  'Commercial',
+  'Maintenance',
+  'Production',
+];
 
 export const CreateUserComponent = () => {
+  const { db } = useFirebase();
+
+  const { control, reset, getValues, handleSubmit } = useForm<CreateUserFormModel>({
+    mode: 'onSubmit',
+    defaultValues: DEFAULT_FORM_VALUES,
+  });
+
+  const handleCancel = () => {
+    reset(DEFAULT_FORM_VALUES);
+  };
+
+  const createUserHandler = async () => {
+    const auth = getAuth();
+    const { email, defaultPassword, firstName, lastName, role, department } = getValues();
+    await createUserWithEmailAndPassword(auth, email, defaultPassword)
+      .then(async (userCredential) => {
+        const newUserInfo = { firstName, lastName, email, department, role, uid: userCredential.user.uid };
+        await setDoc(doc(db, 'User', userCredential.user.uid), newUserInfo);
+        reset(DEFAULT_FORM_VALUES);
+        return userCredential;
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
   return (
     <Stack>
       <AppBar
@@ -30,7 +89,7 @@ export const CreateUserComponent = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="sm" sx={{ mb: 4 }}>
+      <Container maxWidth="sm">
         <Paper
           elevation={0}
           sx={{
@@ -40,99 +99,151 @@ export const CreateUserComponent = () => {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            gap: 2,
+            gap: 5,
           }}
         >
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                id="firstName"
+              <Controller
                 name="firstName"
-                label="First name"
-                fullWidth
-                autoComplete="given-name"
-                variant="standard"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    onChange={onChange}
+                    variant="standard"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="firstName"
+                    label="First name"
+                    autoComplete="given-name"
+                    value={value}
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                id="lastName"
+              <Controller
                 name="lastName"
-                label="Last name"
-                fullWidth
-                autoComplete="family-name"
-                variant="standard"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    onChange={onChange}
+                    variant="standard"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="lastName"
+                    label="Last name"
+                    autoComplete="family-name"
+                    value={value}
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                required
-                id="address1"
-                name="address1"
-                label="Address line 1"
-                fullWidth
-                autoComplete="shipping address-line1"
-                variant="standard"
+              <Controller
+                name="email"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    onChange={onChange}
+                    variant="standard"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email"
+                    autoComplete="email"
+                    value={value}
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                id="address2"
-                name="address2"
-                label="Address line 2"
-                fullWidth
-                autoComplete="shipping address-line2"
-                variant="standard"
+              <Controller
+                name="defaultPassword"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    value={value}
+                    onChange={onChange}
+                    variant="standard"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="defaultPassword"
+                    label="Default Password"
+                    autoComplete="password"
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                id="city"
-                name="city"
-                label="City"
-                fullWidth
-                autoComplete="shipping address-level2"
-                variant="standard"
+              <Controller
+                name="role"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <FormControl fullWidth margin="normal">
+                    <InputLabel id="role-label">Role</InputLabel>
+                    <Select variant="outlined" fullWidth labelId="role" id="role" onChange={onChange} value={value}>
+                      <MenuItem value="" disabled>
+                        Select your role
+                      </MenuItem>
+                      {roles.map((role) => (
+                        <MenuItem key={role} value={role}>
+                          {role}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField id="state" name="state" label="State/Province/Region" fullWidth variant="standard" />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                id="zip"
-                name="zip"
-                label="Zip / Postal code"
-                fullWidth
-                autoComplete="shipping postal-code"
-                variant="standard"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                id="country"
-                name="country"
-                label="Country"
-                fullWidth
-                autoComplete="shipping country"
-                variant="standard"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox color="secondary" name="saveAddress" value="yes" />}
-                label="Use this address for payment details"
+              <Controller
+                name="role"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <FormControl fullWidth margin="normal">
+                    <InputLabel id="role-label">Department</InputLabel>
+                    <Select
+                      variant="outlined"
+                      fullWidth
+                      labelId="role-label"
+                      id="role"
+                      onChange={onChange}
+                      value={value}
+                      label="Department"
+                    >
+                      <MenuItem value="" disabled>
+                        Select Department
+                      </MenuItem>
+                      {departments.map((department) => (
+                        <MenuItem key={department} value={department}>
+                          {department}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
               />
             </Grid>
           </Grid>
+
           <Stack direction="row" spacing={1}>
-            <Button variant="contained">cancel</Button>
-            <Button variant="contained">save</Button>
+            <Button variant="contained" onClick={handleCancel}>
+              cancel
+            </Button>
+            <Button variant="contained" onClick={handleSubmit(createUserHandler)}>
+              save
+            </Button>
           </Stack>
         </Paper>
       </Container>

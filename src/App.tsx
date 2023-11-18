@@ -3,7 +3,6 @@ import { useUserRedux } from './useUserRedux';
 import { getAuth } from 'firebase/auth';
 import { getExpDate, parseJwt } from './Utils/jwt';
 import { defaultTheme } from './Styles/themeOptions';
-import { authActions } from './Store/Auth/auth-slice';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import ProtectedRoute from './ProtectedRoute';
@@ -12,6 +11,8 @@ import AdminPage from './Pages/AdminPage';
 import SignInPage from './Pages/SignInPage';
 import moment from 'moment';
 import { CreateUserComponent } from './Components/CreateUserComponent';
+import DemandePage from './Pages/DemandePage';
+import { useAuthActions } from './Store/Auth/auth-actions';
 
 const getToken = async () => {
   const currentUser = getAuth().currentUser;
@@ -27,13 +28,15 @@ const getToken = async () => {
 
 const App = () => {
   const { dispatch } = useUserRedux();
+  const { signOutHandler } = useAuthActions();
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkTokenValidity = async () => {
       const isTokenExpired = await getToken();
       if (isTokenExpired) {
-        dispatch(authActions.loginFaild());
+        signOutHandler();
+
         if (location.pathname !== '/login') {
           navigate('/login');
         }
@@ -41,7 +44,7 @@ const App = () => {
     };
 
     checkTokenValidity();
-  }, [dispatch, navigate]);
+  }, [dispatch, navigate, signOutHandler]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -50,6 +53,12 @@ const App = () => {
 
         <Route path="/admin" element={<ProtectedRoute component={AdminPage} />}>
           <Route path="/admin/createUser" element={<CreateUserComponent />} />
+        </Route>
+
+        <Route path="/demande" element={<ProtectedRoute component={DemandePage} />}>
+          <Route path="/demande/deplacement" element={<h1>deplacement</h1>} />
+          <Route path="/demande/absence-conge" element={<h1>absence-conge</h1>} />
+          <Route path="/demande/heures-supplémentaires" element={<h1>heures-supplémentaires</h1>} />
         </Route>
 
         <Route path="/login" element={<SignInPage />} />

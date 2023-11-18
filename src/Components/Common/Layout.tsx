@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Box, CssBaseline } from '@mui/material';
 import { Navbar } from './Navbar';
-import { DrawerHeader, SideBar } from './SideBar';
+import { DrawerHeader, SideBar } from './SideBar/SideBar';
 
 export const Layout = (props: { children: ReactNode }) => {
   return (

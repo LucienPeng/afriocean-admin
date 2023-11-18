@@ -2,11 +2,11 @@ import './Styles/all.scss';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { persistor, store } from './Store/store';
-import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { initializeApp } from 'firebase/app';
+import App from './App';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCJ60NHH41ezonKasX_lTaF2Otfj1NTons',
@@ -18,8 +18,7 @@ const firebaseConfig = {
   measurementId: 'G-8EQFST1F45',
 };
 
-// Initialize Firebase
-initializeApp(firebaseConfig);
+export const firebase = initializeApp(firebaseConfig);
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
