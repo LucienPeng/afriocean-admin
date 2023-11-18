@@ -1,5 +1,4 @@
 import { Container, Grid, Paper } from '@mui/material';
-import { Copyright } from '@mui/icons-material';
 import Deposits from './Dashboard/Deposits';
 import Orders from './Dashboard/Orders';
 
@@ -38,7 +37,6 @@ export const DashboardComponent = () => {
           </Paper>
         </Grid>
       </Grid>
-      <Copyright sx={{ pt: 4 }} />
     </Container>
   );
 };

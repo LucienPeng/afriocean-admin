@@ -8,8 +8,10 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import ProtectedRoute from './ProtectedRoute';
 import DashboardPage from './Pages/DashboardPage';
+import AdminPage from './Pages/AdminPage';
 import SignInPage from './Pages/SignInPage';
 import moment from 'moment';
+import { CreateUserComponent } from './Components/CreateUserComponent';
 
 const getToken = async () => {
   const currentUser = getAuth().currentUser;
@@ -45,6 +47,11 @@ const App = () => {
     <ThemeProvider theme={defaultTheme}>
       <Routes>
         <Route path="/*" element={<ProtectedRoute component={DashboardPage} />} />
+
+        <Route path="/admin" element={<ProtectedRoute component={AdminPage} />}>
+          <Route path="/admin/createUser" element={<CreateUserComponent />} />
+        </Route>
+
         <Route path="/login" element={<SignInPage />} />
       </Routes>
     </ThemeProvider>
