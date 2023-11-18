@@ -1,49 +1,54 @@
-import './App.css';
-import SignInPage from './Pages/SignInPage';
-import { ThemeProvider } from '@mui/material/styles';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { defaultTheme } from './styles/themeOptions';
+import { useEffect } from 'react';
+import { useUserRedux } from './useUserRedux';
 import { getAuth } from 'firebase/auth';
-import { useEffect, useState } from 'react';
-import { ProtectedRoute } from './ProtectedRoute';
+import { getExpDate, parseJwt } from './utils/jwt';
+import { defaultTheme } from './styles/themeOptions';
+import { authActions } from './store/auth/auth-slice';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import ProtectedRoute from './ProtectedRoute';
 import DashboardPage from './Pages/DashboardPage';
+import SignInPage from './Pages/SignInPage';
+import moment from 'moment';
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const location = useLocation();
+const getToken = async () => {
+  const currentUser = getAuth().currentUser;
+  if (currentUser) {
+    const idToken = await currentUser.getIdToken();
+    const accessJwtObj = parseJwt(idToken);
+    const expDate = moment(getExpDate(accessJwtObj.exp));
+    const now = moment();
+    return expDate < now;
+  }
+  return false;
+};
 
+const App = () => {
+  const { dispatch } = useUserRedux();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = getAuth().onAuthStateChanged((currentUser) => {
-      if (currentUser) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
+    const checkTokenValidity = async () => {
+      const isTokenExpired = await getToken();
+      if (isTokenExpired) {
+        dispatch(authActions.loginFaild());
         if (location.pathname !== '/login') {
           navigate('/login');
         }
       }
-    });
-    return () => unsubscribe();
-  }, [navigate, location.pathname]);
+    };
+
+    checkTokenValidity();
+  }, [dispatch, navigate]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
       <Routes>
-        ProtectedRoute
-        <Route
-          path="/*"
-          element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/login" element={<SignInPage setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path="/*" element={<ProtectedRoute component={DashboardPage} />} />
+        <Route path="/login" element={<SignInPage />} />
       </Routes>
     </ThemeProvider>
   );
-}
+};
 
 export default App;

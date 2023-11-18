@@ -1,9 +1,12 @@
-import { useState } from 'react';
 import { Alert, Avatar, Button, Collapse, Grid, Link, Paper, Stack, TextField, Typography } from '@mui/material';
 import { AuthError, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { Controller, useForm } from 'react-hook-form';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Copyright } from '@mui/icons-material';
+import { authActions } from '../store/auth/auth-slice';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUserRedux } from '../useUserRedux';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 interface SignInFormModel {
   readonly email: string;
@@ -15,10 +18,9 @@ const DEFAULT_FORM_VALUES = {
   password: '',
 };
 
-export default function SignInPage(props: { setIsLoggedIn: (isLoggedIn: boolean) => void }) {
+export default function SignInPage() {
   const [errorMessage, setErrorMessage] = useState('');
-
-  const { setIsLoggedIn } = props;
+  const { dispatch } = useUserRedux();
   const { control, reset, getValues, handleSubmit } = useForm<SignInFormModel>({
     mode: 'onSubmit',
     defaultValues: DEFAULT_FORM_VALUES,
@@ -34,8 +36,8 @@ export default function SignInPage(props: { setIsLoggedIn: (isLoggedIn: boolean)
         const user = userCredential.user;
         reset(DEFAULT_FORM_VALUES);
         setErrorMessage('');
-        setIsLoggedIn(true);
         navigate('/');
+        dispatch(authActions.loginSucceed());
         return user;
       })
       .catch((error: AuthError) => {
@@ -129,11 +131,3 @@ export default function SignInPage(props: { setIsLoggedIn: (isLoggedIn: boolean)
     </Grid>
   );
 }
-
-const Copyright = () => {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" mt={5}>
-      {`Copyright © AFRIOCEAN ${new Date().getFullYear()}`}
-    </Typography>
-  );
-};

@@ -1,10 +1,6 @@
 dist
-build
 node_modules
-public
 .vscode
-package.json
-package-lock.json
 README.md
 .gitattributes
 .gitignore

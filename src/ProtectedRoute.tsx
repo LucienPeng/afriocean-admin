@@ -1,12 +1,17 @@
-import { Navigate } from 'react-router-dom';
-// import { useAuth } from '../hooks/useAuth';
-import { ReactNode } from 'react';
+import { useUserRedux } from './useUserRedux'; // 請替換為你的 useUserRedux hook
+import { Navigate, RouteProps } from 'react-router-dom';
 
-export const ProtectedRoute = ({ children, isLoggedIn }: { children: ReactNode; isLoggedIn: boolean }) => {
-  //const { user } = useAuth();
-  if (!isLoggedIn) {
-    // user is not authenticated
-    return <Navigate to="/" />;
-  }
-  return children;
+type ProtectedRouteProps = {
+  component: React.ComponentType<RouteProps>;
 };
+
+const ProtectedRoute = ({ component: Component }: ProtectedRouteProps) => {
+  const Wrapper = (props: RouteProps) => {
+    const { isLoggedIn } = useUserRedux();
+    return isLoggedIn ? <Component {...props} /> : <Navigate to="/login" />;
+  };
+
+  return <Wrapper />;
+};
+
+export default ProtectedRoute;
