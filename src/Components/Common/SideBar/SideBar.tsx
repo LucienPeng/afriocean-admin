@@ -3,7 +3,7 @@ import { useGetNavItems } from './useGetNavItems';
 import { useUserRedux } from '../../../useUserRedux';
 import { Roles } from '../../../model/model';
 
-const DRAWER_WIDTH = 240;
+const DRAWER_WIDTH = 250;
 
 const StyledDrawer = styled(Drawer)({
   '& .MuiDrawer-paper': {
@@ -31,5 +31,22 @@ export const SideBar = () => {
         {role === Roles.ADMIN && adminListItems}
       </List>
     </StyledDrawer>
+  );
+};
+
+export const MobileSideBar = (props: { open: boolean; setIsOpen: (isOpen: boolean) => void }) => {
+  const { open, setIsOpen } = props;
+  const { userListItems, adminListItems } = useGetNavItems();
+  const { role } = useUserRedux();
+
+  return (
+    <Drawer anchor="left" open={open} onClose={() => setIsOpen(false)}>
+      <DrawerHeader />
+      <List component="nav">
+        {userListItems}
+        <Divider sx={{ my: 1 }} />
+        {role === Roles.ADMIN && adminListItems}
+      </List>
+    </Drawer>
   );
 };

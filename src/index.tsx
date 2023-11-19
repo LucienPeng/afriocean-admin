@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { initializeApp } from 'firebase/app';
 import App from './App';
+import { DeviceMetadataProvider } from './Components/Common/DeviceMetadataProvider';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCJ60NHH41ezonKasX_lTaF2Otfj1NTons',
@@ -26,7 +27,9 @@ root.render(
     <BrowserRouter>
       <Provider store={store}>
         <PersistGate persistor={persistor}>
-          <App />
+          <DeviceMetadataProvider>
+            <App />
+          </DeviceMetadataProvider>
         </PersistGate>
       </Provider>
     </BrowserRouter>

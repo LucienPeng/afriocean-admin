@@ -1,14 +1,17 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { Box, CssBaseline } from '@mui/material';
 import { Navbar } from './Navbar';
-import { DrawerHeader, SideBar } from './SideBar/SideBar';
+import { DrawerHeader, MobileSideBar, SideBar } from './SideBar/SideBar';
+import { useDeviceMetadata } from './DeviceMetadataProvider';
 
 export const Layout = (props: { children: ReactNode }) => {
+  const { isMobileView } = useDeviceMetadata();
+  const [open, setIsOpen] = useState(false);
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <Navbar />
-      <SideBar />
+      <Navbar setIsOpen={setIsOpen} />
+      {isMobileView ? <MobileSideBar open={open} setIsOpen={setIsOpen} /> : <SideBar />}
       <Box
         component="main"
         sx={{

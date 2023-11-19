@@ -10,6 +10,7 @@ import { Copyright } from '../Components/Common/CopyRight';
 import { useHandleActionResultAlert } from '../Utils/useHandleActionResultAlert';
 import { useHandleLoading } from '../Utils/useHandleLoading';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { useDeviceMetadata } from '../Components/Common/DeviceMetadataProvider';
 
 interface SignInFormModel {
   readonly email: string;
@@ -21,12 +22,15 @@ const DEFAULT_FORM_VALUES = {
   password: '',
 };
 
+const BACKGROUND_IMAGE =
+  'url(https://images.pexels.com/photos/18189731/pexels-photo-18189731.jpeg?auto=compress&cs=tinysrgb&w=1600)';
+
 export default function SignInPage() {
   const { setErrorMessage, ErrorMessageAlert } = useHandleActionResultAlert();
   const { setIsLoading, LoadingSpinner } = useHandleLoading();
-
   const { dispatch } = useUserRedux();
   const { db, collection } = useFirebase();
+  const { isMobileView } = useDeviceMetadata();
 
   const { control, reset, getValues, handleSubmit } = useForm<SignInFormModel>({
     mode: 'onSubmit',
@@ -77,15 +81,31 @@ export default function SignInPage() {
         sm={4}
         md={7}
         sx={{
-          backgroundImage:
-            'url(https://images.pexels.com/photos/18189731/pexels-photo-18189731.jpeg?auto=compress&cs=tinysrgb&w=1600)',
+          backgroundImage: BACKGROUND_IMAGE,
           backgroundRepeat: 'no-repeat',
-          backgroundColor: (t) => (t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900]),
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+      <Grid
+        item
+        xs={12}
+        sm={8}
+        md={5}
+        component={Paper}
+        elevation={6}
+        square
+        sx={{
+          ...(isMobileView && {
+            backgroundImage: BACKGROUND_IMAGE,
+            backgroundRepeat: 'no-repeat',
+            backgroundBlendMode: 'multiply',
+            backgroundColor: 'secondary.light',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }),
+        }}
+      >
         <Stack direction="column" justifyContent="center" alignItems="center" height="100%" spacing={5} sx={{ mx: 4 }}>
           <Stack direction="column" justifyContent="center" alignItems="center">
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -139,12 +159,17 @@ export default function SignInPage() {
               Sign In
             </Button>
             <ErrorMessageAlert />
-            <Link href="#" variant="body2">
+            <Link
+              href="#"
+              variant={isMobileView ? 'body1' : 'body2'}
+              color={isMobileView ? 'common.white' : 'inherit'}
+              alignSelf={isMobileView ? 'end' : 'start'}
+            >
               Forgot password?
             </Link>
           </Stack>
           <LoadingSpinner />
-          <Copyright />
+          <Copyright fontColor={isMobileView ? 'common.white' : ''} />
         </Stack>
       </Grid>
     </Grid>
