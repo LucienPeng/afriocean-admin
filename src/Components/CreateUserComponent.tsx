@@ -14,10 +14,12 @@ import {
   Typography,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
+import { Department, Profile, Roles } from '../model/model';
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useFirebase } from '../useFirebase';
-import { Profile } from '../model/model';
+import { useHandleActionResultAlert } from '../Utils/useHandleActionResultAlert';
+import { useHandleLoading } from '../Utils/useHandleLoading';
 
 interface CreateUserFormModel extends Profile {
   readonly defaultPassword: string;
@@ -34,7 +36,7 @@ const DEFAULT_FORM_VALUES = {
   department: '',
 };
 
-const roles = ['User', 'Administrator'];
+const roles = ['User', 'Administrator'] as Roles[];
 const departments = [
   'General Management',
   'Services Généraux',
@@ -43,21 +45,22 @@ const departments = [
   'Commercial',
   'Maintenance',
   'Production',
-];
+] as Department[];
 
 export const CreateUserComponent = () => {
   const { db } = useFirebase();
-
+  const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
+    useHandleActionResultAlert();
+  const { isLoading, setIsLoading, LoadingSpinner } = useHandleLoading();
   const { control, reset, getValues, handleSubmit } = useForm<CreateUserFormModel>({
     mode: 'onSubmit',
     defaultValues: DEFAULT_FORM_VALUES,
   });
 
-  const handleCancel = () => {
-    reset(DEFAULT_FORM_VALUES);
-  };
-
+  const handleCancel = () => reset(DEFAULT_FORM_VALUES);
   const createUserHandler = async () => {
+    setIsLoading(true);
+    setErrorMessage('');
     const auth = getAuth();
     const { email, defaultPassword, firstName, lastName, role, department } = getValues();
     await createUserWithEmailAndPassword(auth, email, defaultPassword)
@@ -65,10 +68,15 @@ export const CreateUserComponent = () => {
         const newUserInfo = { firstName, lastName, email, department, role, uid: userCredential.user.uid };
         await setDoc(doc(db, 'User', userCredential.user.uid), newUserInfo);
         reset(DEFAULT_FORM_VALUES);
+        setIsLoading(false);
+        setErrorMessage('');
+        setSuccessMessage('User has been created');
         return userCredential;
       })
       .catch((error) => {
-        console.log(error.message);
+        setIsLoading(false);
+        setSuccessMessage('');
+        setErrorMessage(error.message);
       });
   };
 
@@ -207,7 +215,7 @@ export const CreateUserComponent = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Controller
-                name="role"
+                name="department"
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { onChange, value } }) => (
@@ -236,9 +244,15 @@ export const CreateUserComponent = () => {
               />
             </Grid>
           </Grid>
-
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : successMessage.length !== 0 ? (
+            <ActionSuccessAlert />
+          ) : errorMessage.length !== 0 ? (
+            <ErrorMessageAlert />
+          ) : null}
           <Stack direction="row" spacing={1}>
-            <Button variant="contained" onClick={handleCancel}>
+            <Button variant="contained" onClick={handleCancel} color="error">
               cancel
             </Button>
             <Button variant="contained" onClick={handleSubmit(createUserHandler)}>

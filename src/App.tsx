@@ -13,6 +13,7 @@ import moment from 'moment';
 import { CreateUserComponent } from './Components/CreateUserComponent';
 import DemandePage from './Pages/DemandePage';
 import { useAuthActions } from './Store/Auth/auth-actions';
+import { Roles } from './model/model';
 
 const getToken = async () => {
   const currentUser = getAuth().currentUser;
@@ -49,13 +50,19 @@ const App = () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <Routes>
-        <Route path="/*" element={<ProtectedRoute component={DashboardPage} />} />
+        <Route
+          path="/*"
+          element={<ProtectedRoute component={DashboardPage} permission={[Roles.ADMIN, Roles.USER]} />}
+        />
 
-        <Route path="/admin" element={<ProtectedRoute component={AdminPage} />}>
+        <Route path="/admin" element={<ProtectedRoute component={AdminPage} permission={[Roles.ADMIN]} />}>
           <Route path="/admin/createUser" element={<CreateUserComponent />} />
         </Route>
 
-        <Route path="/demande" element={<ProtectedRoute component={DemandePage} />}>
+        <Route
+          path="/demande"
+          element={<ProtectedRoute component={DemandePage} permission={[Roles.ADMIN, Roles.USER]} />}
+        >
           <Route path="/demande/deplacement" element={<h1>deplacement</h1>} />
           <Route path="/demande/absence-conge" element={<h1>absence-conge</h1>} />
           <Route path="/demande/heures-supplémentaires" element={<h1>heures-supplémentaires</h1>} />

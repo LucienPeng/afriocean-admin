@@ -13,7 +13,7 @@ const AppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
 
 export const Navbar = () => {
   const { signOutHandler } = useAuthActions();
-  const { userProfile } = useUserRedux();
+  const { displayName } = useUserRedux();
   const navigate = useNavigate();
 
   return (
@@ -29,7 +29,7 @@ export const Navbar = () => {
         />
         <Stack direction="row" spacing={1.5} justifyContent="space-between" alignItems="center">
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            Hi {userProfile?.firstName}
+            Hi {displayName}
           </Typography>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">

@@ -1,25 +1,14 @@
-import {
-  Alert,
-  Avatar,
-  Button,
-  CircularProgress,
-  Collapse,
-  Grid,
-  Link,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Avatar, Button, Grid, Link, Paper, Stack, TextField, Typography } from '@mui/material';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { Controller, useForm } from 'react-hook-form';
 import { authActions } from '../Store/Auth/auth-slice';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRedux } from '../useUserRedux';
 import { useFirebase } from '../useFirebase';
 import { doc, getDoc } from '@firebase/firestore';
 import { Copyright } from '../Components/Common/CopyRight';
+import { useHandleActionResultAlert } from '../Utils/useHandleActionResultAlert';
+import { useHandleLoading } from '../Utils/useHandleLoading';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 interface SignInFormModel {
@@ -33,8 +22,8 @@ const DEFAULT_FORM_VALUES = {
 };
 
 export default function SignInPage() {
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { setErrorMessage, ErrorMessageAlert } = useHandleActionResultAlert();
+  const { setIsLoading, LoadingSpinner } = useHandleLoading();
 
   const { dispatch } = useUserRedux();
   const { db, collection } = useFirebase();
@@ -52,7 +41,10 @@ export default function SignInPage() {
     const auth = getAuth();
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password).catch((error) => {
+        setErrorMessage(error.message);
+        return error;
+      });
       const docUserRef = doc(collection(db, 'User'), userCredential.user.uid);
       const docUserSnap = await getDoc(docUserRef);
       if (docUserSnap.exists()) {
@@ -69,13 +61,10 @@ export default function SignInPage() {
         );
       } else {
         setIsLoading(false);
-        setErrorMessage('Sorry, please check again your email account or password');
+        setErrorMessage('Sorry, something went wrong');
       }
-
-      return userCredential;
     } catch (err) {
       setIsLoading(false);
-
       setErrorMessage('Sorry, please check again your email account or password');
     }
   };
@@ -149,17 +138,12 @@ export default function SignInPage() {
             >
               Sign In
             </Button>
-
-            <Collapse in={!!errorMessage}>
-              <Alert severity="error">{errorMessage}</Alert>
-            </Collapse>
+            <ErrorMessageAlert />
             <Link href="#" variant="body2">
               Forgot password?
             </Link>
           </Stack>
-          <Collapse in={isLoading}>
-            <CircularProgress />
-          </Collapse>
+          <LoadingSpinner />
           <Copyright />
         </Stack>
       </Grid>

@@ -6,7 +6,9 @@ import { Profile } from './model/model';
 export const useUserRedux = () => {
   const dispatch = useDispatch<ThunkDispatch<AuthState, unknown, AnyAction>>();
   const isLoggedIn = useSelector<AuthState, boolean>((state) => state.isLoggedIn);
-  const userProfile = useSelector<AuthState, Profile | null>((state) => state.user);
+  const profile = useSelector<AuthState, Profile | null>((state) => state.user);
+  const role = profile?.role
+  const displayName = profile?.firstName
 
-  return { dispatch, isLoggedIn, userProfile };
+  return { dispatch, isLoggedIn, profile, role, displayName };
 };
