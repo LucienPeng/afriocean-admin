@@ -1,4 +1,4 @@
-import { DashboardComponent } from '../Components/DashboardComponent';
+import { DashboardComponent } from '../Components/AdminWorkSpace/DashboardComponent';
 import { Layout as DashboardLayout } from '../Components/Common/Layout';
 import { Copyright } from '../Components/Common/CopyRight';
 

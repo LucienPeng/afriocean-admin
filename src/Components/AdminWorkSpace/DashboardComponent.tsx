@@ -1,6 +1,4 @@
 import { Container, Grid, Paper } from '@mui/material';
-import Deposits from './Dashboard/Deposits';
-import { DemandesClipBoard } from './DemandesClipBoard';
 
 export const DashboardComponent = () => {
   return (
@@ -28,9 +26,7 @@ export const DashboardComponent = () => {
               flexDirection: 'column',
               height: 240,
             }}
-          >
-            <Deposits />
-          </Paper>
+          ></Paper>
         </Grid>
       </Grid>
     </Container>

@@ -23,6 +23,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import moment, { Moment } from 'moment';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
+import { DATE_TIME_FORMAT } from '../../model/model';
 
 export interface DeplacementFormModel {
   readonly requestDate: Moment | string;
@@ -43,7 +44,7 @@ const DEFAULT_FORM_VALUES: DeplacementFormModel = {
   destination: '',
 };
 
-export const DemandeDeplacement = () => {
+export const DeplacementForm = () => {
   const { db } = useFirebase();
   const { profile } = useUserRedux();
   const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
@@ -62,6 +63,8 @@ export const DemandeDeplacement = () => {
     setErrorMessage('');
     const { requestDate, absenceEndTime, absenceStartTime, motif, destination } = getValues();
     await addDoc(collection(db, 'Admin/Demande/Deplacement'), {
+      isProcessed: false,
+      isApproved: null,
       firstName: profile?.firstName,
       email: profile?.email,
       department: profile?.department,
@@ -128,7 +131,7 @@ export const DemandeDeplacement = () => {
                       label="Date de demande"
                       value={value}
                       onChange={onChange}
-                      format={'DD.MM.YYYY'}
+                      format={DATE_TIME_FORMAT}
                     />
                   </LocalizationProvider>
                 )}
@@ -146,7 +149,7 @@ export const DemandeDeplacement = () => {
                       label="ABSENSE A PARTIR DU"
                       value={value}
                       onChange={onChange}
-                      format={'DD.MM.YYYY HH:mm'}
+                      format={DATE_TIME_FORMAT}
                     />
                   </LocalizationProvider>
                 )}
@@ -164,7 +167,7 @@ export const DemandeDeplacement = () => {
                       label="ABSENSE TERMINE AU (PRÉVUE)"
                       value={value}
                       onChange={onChange}
-                      format={'DD.MM.YYYY HH:mm'}
+                      format={DATE_TIME_FORMAT}
                     />
                   </LocalizationProvider>
                 )}

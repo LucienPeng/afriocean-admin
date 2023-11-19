@@ -14,10 +14,10 @@ import { CreateUserComponent } from './Components/CreateUserComponent';
 import DemandePage from './Pages/DemandePage';
 import { useAuthActions } from './Store/Auth/auth-actions';
 import { Roles } from './model/model';
-import { DemandeDeplacement } from './Components/Demandes/Deplacement';
+import { DeplacementForm } from './Components/Demandes/DeplacementForm';
 import { Absence } from './Components/Demandes/Absence';
 import { HeuresSupplementaires } from './Components/Demandes/HeuresSupplementaires';
-import { DemandesClipBoard } from './Components/DemandesClipBoard';
+import { DeplacementList } from './Components/DeplacementList';
 
 const getToken = async () => {
   const currentUser = getAuth().currentUser;
@@ -61,14 +61,14 @@ const App = () => {
 
         <Route path="/admin" element={<ProtectedRoute component={AdminPage} permission={[Roles.ADMIN]} />}>
           <Route path="/admin/create-User" element={<CreateUserComponent />} />
-          <Route path="/admin/demande-Control" element={<DemandesClipBoard />} />
+          <Route path="/admin/demande-Control" element={<DeplacementList />} />
         </Route>
 
         <Route
           path="/demande"
           element={<ProtectedRoute component={DemandePage} permission={[Roles.ADMIN, Roles.USER]} />}
         >
-          <Route path="/demande/deplacement" element={<DemandeDeplacement />} />
+          <Route path="/demande/deplacement" element={<DeplacementForm />} />
           <Route path="/demande/absence-conge" element={<Absence />} />
           <Route path="/demande/heures-supplémentaires" element={<HeuresSupplementaires />} />
         </Route>
