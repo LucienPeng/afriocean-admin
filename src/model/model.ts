@@ -14,7 +14,7 @@ export enum Department {
 }
 
 export interface Profile {
-  readonly uid: string
+  readonly uid: string;
   readonly email: string;
   readonly firstName: string;
   readonly lastName: string;
