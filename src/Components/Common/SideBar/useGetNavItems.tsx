@@ -1,12 +1,13 @@
 import { ReactNode } from 'react';
+import { SingleListItem } from './SingleListItem';
+import { NestedLisItem } from './NestedLisItem';
+import { List } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
 import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
-import { SingleItem } from './SingleList';
-import { NestedLisItem } from './NestedList';
 
 export interface SingleNavItem {
   readonly navTitle: string;
@@ -24,19 +25,18 @@ const DEMANDES_SUB_NAV_ITEMS: SingleNavItem[] = [
   { navTitle: 'Heures supplémentaires', path: '/demande/heures-supplémentaires', icon: <AccessTimeFilledIcon /> },
 ];
 
-const dem = { navTitle: 'Demandes', path: '#', icon: <TextSnippetIcon />, subNavItem: DEMANDES_SUB_NAV_ITEMS };
-
-const tab = { navTitle: 'Tableau de bord', path: '/', icon: <DashboardIcon /> };
-const cre = { navTitle: 'Create user', path: '/admin/createUser', icon: <PersonAddIcon /> };
+const DEMANDES = { navTitle: 'Demandes', path: '#', icon: <TextSnippetIcon />, subNavItem: DEMANDES_SUB_NAV_ITEMS };
+const DASHBOARD = { navTitle: 'Tableau de bord', path: '/', icon: <DashboardIcon /> };
+const CREATE_USER = { navTitle: 'Create user', path: '/admin/createUser', icon: <PersonAddIcon /> };
 
 export const useGetNavItems = () => {
   const userListItems = (
-    <>
-      <SingleItem navItem={tab} />
-      <NestedLisItem navItem={dem} />
-    </>
+    <List>
+      <SingleListItem navItem={DASHBOARD} />
+      <NestedLisItem navItem={DEMANDES} />
+    </List>
   );
-  const adminListItems = <SingleItem navItem={cre} />;
+  const adminListItems = <SingleListItem navItem={CREATE_USER} />;
 
   return { userListItems, adminListItems };
 };

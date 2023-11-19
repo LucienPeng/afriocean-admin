@@ -2,7 +2,7 @@ import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { SingleNavItem } from './useGetNavItems';
 import { useNavigate } from 'react-router';
 
-export const SingleItem = (props: { navItem: SingleNavItem }) => {
+export const SingleListItem = (props: { navItem: SingleNavItem }) => {
   const { navItem } = props;
   const navigate = useNavigate();
   return (
