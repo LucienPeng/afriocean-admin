@@ -7,5 +7,5 @@ export const useFirebase = () => {
   const db = getFirestore();
   const storage = getStorage();
 
-  return { auth, db, storage, collection }
-}
+  return { auth, db, storage, collection };
+};

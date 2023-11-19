@@ -7,7 +7,7 @@ export const useHandleLoading = () => {
   const LoadingSpinner = () => {
     return (
       <Collapse in={isLoading}>
-        <CircularProgress color='secondary' />
+        <CircularProgress color="secondary" />
       </Collapse>
     );
   };

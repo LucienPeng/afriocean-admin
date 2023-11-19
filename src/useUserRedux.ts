@@ -7,8 +7,8 @@ export const useUserRedux = () => {
   const dispatch = useDispatch<ThunkDispatch<AuthState, unknown, AnyAction>>();
   const isLoggedIn = useSelector<AuthState, boolean>((state) => state.isLoggedIn);
   const profile = useSelector<AuthState, Profile | null>((state) => state.user);
-  const role = profile?.role
-  const displayName = profile?.firstName
+  const role = profile?.role;
+  const displayName = profile?.firstName;
 
   return { dispatch, isLoggedIn, profile, role, displayName };
 };

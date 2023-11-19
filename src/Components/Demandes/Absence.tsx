@@ -14,13 +14,12 @@ import {
   Typography,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
-import { Department, Profile, Roles } from '../model/model';
+import { Department, Profile, Roles } from '../../model/model';
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { useFirebase } from '../useFirebase';
-import { useHandleActionResultAlert } from '../Utils/useHandleActionResultAlert';
-import { useHandleLoading } from '../Utils/useHandleLoading';
-import { StyledTextField } from './Common/StyledUI/StyledTextField';
+import { useFirebase } from '../../useFirebase';
+import { useHandleActionResultAlert } from '../../Utils/useHandleActionResultAlert';
+import { useHandleLoading } from '../../Utils/useHandleLoading';
 
 interface CreateUserFormModel extends Profile {
   readonly defaultPassword: string;
@@ -48,7 +47,7 @@ const departments = [
   'Production',
 ] as Department[];
 
-export const CreateUserComponent = () => {
+export const Absence = () => {
   const { db } = useFirebase();
   const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
     useHandleActionResultAlert();
@@ -94,12 +93,12 @@ export const CreateUserComponent = () => {
       >
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap>
-            Create User
+            {"Demande d'absence/ congé"}
           </Typography>
         </Toolbar>
       </AppBar>
       <Container maxWidth="sm">
-        <Paper
+        {/* <Paper
           elevation={0}
           sx={{
             my: { xs: 3, md: 6 },
@@ -118,7 +117,7 @@ export const CreateUserComponent = () => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { onChange, value } }) => (
-                  <StyledTextField
+                  <TextField
                     onChange={onChange}
                     variant="standard"
                     margin="normal"
@@ -138,7 +137,7 @@ export const CreateUserComponent = () => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { onChange, value } }) => (
-                  <StyledTextField
+                  <TextField
                     onChange={onChange}
                     variant="standard"
                     margin="normal"
@@ -158,7 +157,7 @@ export const CreateUserComponent = () => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { onChange, value } }) => (
-                  <StyledTextField
+                  <TextField
                     onChange={onChange}
                     variant="standard"
                     margin="normal"
@@ -178,7 +177,7 @@ export const CreateUserComponent = () => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { onChange, value } }) => (
-                  <StyledTextField
+                  <TextField
                     value={value}
                     onChange={onChange}
                     variant="standard"
@@ -201,6 +200,9 @@ export const CreateUserComponent = () => {
                   <FormControl fullWidth margin="normal">
                     <InputLabel id="role-label">Role</InputLabel>
                     <Select variant="outlined" fullWidth labelId="role" id="role" onChange={onChange} value={value}>
+                      <MenuItem value="" disabled>
+                        Select your role
+                      </MenuItem>
                       {roles.map((role) => (
                         <MenuItem key={role} value={role}>
                           {role}
@@ -228,6 +230,9 @@ export const CreateUserComponent = () => {
                       value={value}
                       label="Department"
                     >
+                      <MenuItem value="" disabled>
+                        Select Department
+                      </MenuItem>
                       {departments.map((department) => (
                         <MenuItem key={department} value={department}>
                           {department}
@@ -254,7 +259,7 @@ export const CreateUserComponent = () => {
               save
             </Button>
           </Stack>
-        </Paper>
+        </Paper> */}
       </Container>
     </Stack>
   );

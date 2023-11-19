@@ -10,10 +10,11 @@ export enum Department {
   COMPTABITITE = 'Comptabilité',
   COMMERCIAL = 'Commercial',
   MAINTENANCE = 'Maintenance',
-  PRODUCTION = 'Production'
+  PRODUCTION = 'Production',
 }
 
 export interface Profile {
+  readonly uid: string
   readonly email: string;
   readonly firstName: string;
   readonly lastName: string;
