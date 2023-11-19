@@ -49,8 +49,9 @@ export default function SignInPage() {
         setErrorMessage(error.message);
         return error;
       });
-      const docUserRef = doc(collection(db, 'User'), userCredential.user.uid);
+      const docUserRef = doc(collection(db, 'User'), `${userCredential.user.displayName}-${userCredential.user.uid}`);
       const docUserSnap = await getDoc(docUserRef);
+
       if (docUserSnap.exists()) {
         const userData = docUserSnap.data();
         reset(DEFAULT_FORM_VALUES);

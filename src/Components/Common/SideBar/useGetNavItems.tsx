@@ -8,7 +8,7 @@ import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
 import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
-
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 export interface SingleNavItem {
   readonly navTitle: string;
   readonly path: string;
@@ -27,7 +27,8 @@ const DEMANDES_SUB_NAV_ITEMS: SingleNavItem[] = [
 
 const DEMANDES = { navTitle: 'Demandes', path: '#', icon: <TextSnippetIcon />, subNavItem: DEMANDES_SUB_NAV_ITEMS };
 const DASHBOARD = { navTitle: 'Tableau de bord', path: '/', icon: <DashboardIcon /> };
-const CREATE_USER = { navTitle: 'Create user', path: '/admin/createUser', icon: <PersonAddIcon /> };
+const CREATE_USER = { navTitle: 'Create user', path: '/admin/create-User', icon: <PersonAddIcon /> };
+const temp = { navTitle: 'Demande Contrôl', path: '/admin/demande-Control', icon: <RemoveRedEyeIcon /> };
 
 export const useGetNavItems = () => {
   const userListItems = (
@@ -36,7 +37,12 @@ export const useGetNavItems = () => {
       <NestedLisItem navItem={DEMANDES} />
     </List>
   );
-  const adminListItems = <SingleListItem navItem={CREATE_USER} />;
+  const adminListItems = (
+    <List>
+      <SingleListItem navItem={CREATE_USER} />
+      <SingleListItem navItem={temp} />
+    </List>
+  );
 
   return { userListItems, adminListItems };
 };

@@ -1,13 +1,13 @@
-import { CircularProgress, Collapse } from '@mui/material';
+import { CircularProgress, Collapse, SxProps } from '@mui/material';
 import { useState } from 'react';
 
 export const useHandleLoading = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const LoadingSpinner = () => {
+  const LoadingSpinner = (props: { variant?: SxProps }) => {
     return (
       <Collapse in={isLoading}>
-        <CircularProgress color="secondary" />
+        <CircularProgress color="secondary" sx={props.variant} />
       </Collapse>
     );
   };

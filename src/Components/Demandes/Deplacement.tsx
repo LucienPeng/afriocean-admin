@@ -13,7 +13,6 @@ import {
   Typography,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
 import { Controller, useForm } from 'react-hook-form';
 import { addDoc, collection } from 'firebase/firestore';
 import { useFirebase } from '../../useFirebase';
@@ -25,10 +24,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import moment, { Moment } from 'moment';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 
-interface DeplacementFormModel {
-  readonly requestDate: Moment;
-  readonly absenceStartTime: Moment;
-  readonly absenceEndTime: Moment;
+export interface DeplacementFormModel {
+  readonly requestDate: Moment | string;
+  readonly absenceStartTime: Moment | string;
+  readonly absenceEndTime: Moment | string;
   readonly motif: motif;
   readonly destination?: string;
 }
@@ -63,7 +62,9 @@ export const DemandeDeplacement = () => {
     setErrorMessage('');
     const { requestDate, absenceEndTime, absenceStartTime, motif, destination } = getValues();
     await addDoc(collection(db, 'Admin/Demande/Deplacement'), {
-      uid: profile?.uid,
+      firstName: profile?.firstName,
+      email: profile?.email,
+      department: profile?.department,
       requestDate: String(requestDate),
       absenceEndTime: String(absenceEndTime),
       absenceStartTime: String(absenceStartTime),

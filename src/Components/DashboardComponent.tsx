@@ -1,11 +1,14 @@
 import { Container, Grid, Paper } from '@mui/material';
 import Deposits from './Dashboard/Deposits';
-import Orders from './Dashboard/Orders';
+import { DemandesClipBoard } from './DemandesClipBoard';
 
 export const DashboardComponent = () => {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height: 240 }}></Paper>
+        </Grid>
         <Grid item xs={12} md={8} lg={9}>
           <Paper
             sx={{
@@ -16,6 +19,7 @@ export const DashboardComponent = () => {
             }}
           ></Paper>
         </Grid>
+
         <Grid item xs={12} md={4} lg={3}>
           <Paper
             sx={{
@@ -26,11 +30,6 @@ export const DashboardComponent = () => {
             }}
           >
             <Deposits />
-          </Paper>
-        </Grid>
-        <Grid item xs={12}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-            <Orders />
           </Paper>
         </Grid>
       </Grid>

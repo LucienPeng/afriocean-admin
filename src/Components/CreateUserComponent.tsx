@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { Department, Profile, Roles } from '../model/model';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useFirebase } from '../useFirebase';
 import { useHandleActionResultAlert } from '../Utils/useHandleActionResultAlert';
@@ -66,7 +66,10 @@ export const CreateUserComponent = () => {
     await createUserWithEmailAndPassword(auth, email, defaultPassword)
       .then(async (userCredential) => {
         const newUserInfo = { firstName, lastName, email, department, role, uid: userCredential.user.uid };
-        await setDoc(doc(db, 'User', userCredential.user.uid), newUserInfo);
+        await updateProfile(userCredential.user, {
+          displayName: firstName,
+        });
+        await setDoc(doc(db, 'User', `${firstName}-${userCredential.user.uid}`), newUserInfo);
         reset(DEFAULT_FORM_VALUES);
         setIsLoading(false);
         setErrorMessage('');

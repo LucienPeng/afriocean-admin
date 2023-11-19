@@ -17,6 +17,7 @@ import { Roles } from './model/model';
 import { DemandeDeplacement } from './Components/Demandes/Deplacement';
 import { Absence } from './Components/Demandes/Absence';
 import { HeuresSupplementaires } from './Components/Demandes/HeuresSupplementaires';
+import { DemandesClipBoard } from './Components/DemandesClipBoard';
 
 const getToken = async () => {
   const currentUser = getAuth().currentUser;
@@ -59,7 +60,8 @@ const App = () => {
         />
 
         <Route path="/admin" element={<ProtectedRoute component={AdminPage} permission={[Roles.ADMIN]} />}>
-          <Route path="/admin/createUser" element={<CreateUserComponent />} />
+          <Route path="/admin/create-User" element={<CreateUserComponent />} />
+          <Route path="/admin/demande-Control" element={<DemandesClipBoard />} />
         </Route>
 
         <Route
