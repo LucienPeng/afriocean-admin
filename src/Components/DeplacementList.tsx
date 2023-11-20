@@ -1,8 +1,9 @@
 import { DATE_TIME_FORMAT } from '../model/model';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import {
   AppBar,
   Button,
+  CircularProgress,
   Container,
   IconButton,
   Paper,
@@ -15,9 +16,8 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { collection, getDocs } from 'firebase/firestore';
+import { useQuery } from 'react-query';
 import { useFirebase } from '../useFirebase';
-import { useHandleLoading } from '../Utils/useHandleLoading';
 import { StyledTextField } from './Common/StyledUI/StyledTextField';
 import { DeplacementFormModel } from './Demandes/DeplacementForm';
 import styled from '@emotion/styled';
@@ -50,8 +50,13 @@ interface DemandeDeplacement extends DeplacementFormModel {
 
 export const DeplacementList = () => {
   const [deplacementApplication, setDeplacementApplication] = useState<DemandeDeplacement[]>([]);
-  const { isLoading, setIsLoading, LoadingSpinner } = useHandleLoading();
-  const { db } = useFirebase();
+  const { getFirebaseCollectionData } = useFirebase();
+
+  const { isLoading } = useQuery({
+    queryKey: 'deplacementList',
+    queryFn: () => getFirebaseCollectionData('Application'),
+    onSuccess: (fetchedData) => setDeplacementApplication(fetchedData as DemandeDeplacement[]),
+  });
 
   const getDuration = (endDateTime: Moment, startDateTime: Moment) => moment.duration(endDateTime.diff(startDateTime));
 
@@ -78,31 +83,6 @@ export const DeplacementList = () => {
       });
     });
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const deplacementRef = collection(db, 'Admin', 'Demande', 'Deplacement');
-        const querySnapshot = await getDocs(deplacementRef);
-        const fetchedDemandes: DemandeDeplacement[] = [];
-        querySnapshot.forEach((doc) => {
-          const fetchedData = {
-            id: doc.id,
-            ...doc.data(),
-          };
-          fetchedDemandes.push(fetchedData as DemandeDeplacement);
-        });
-        setDeplacementApplication(fetchedDemandes);
-        setIsLoading(false);
-      } catch (error) {
-        setIsLoading(false);
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, [db, setIsLoading]);
 
   return (
     <Stack>
@@ -136,7 +116,7 @@ export const DeplacementList = () => {
         >
           <Stack justifyContent="center" alignItems="center">
             {isLoading ? (
-              <LoadingSpinner variant={{ my: 5 }} />
+              <CircularProgress color="secondary" sx={{ my: 5 }} />
             ) : (
               <Table size="small">
                 <TableHead>

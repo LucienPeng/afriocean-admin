@@ -1,11 +1,15 @@
-import { DashboardComponent } from '../Components/AdminWorkSpace/DashboardComponent';
+import { AdminDashboardComponent } from '../Components/AdminWorkSpace/AdminDashboardComponent';
 import { Layout as DashboardLayout } from '../Components/Common/Layout';
 import { Copyright } from '../Components/Common/CopyRight';
+import { useUserRedux } from '../useUserRedux';
+import { Roles } from '../model/model';
+import { UserDashboardComponent } from '../Components/ClientWorkSpace/UserDashboardComponent';
 
 const DashboardPage = () => {
+  const { role } = useUserRedux();
   return (
     <DashboardLayout>
-      <DashboardComponent />
+      {role === Roles.ADMIN ? <AdminDashboardComponent /> : <UserDashboardComponent />}
       <Copyright />
     </DashboardLayout>
   );

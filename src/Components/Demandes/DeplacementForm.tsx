@@ -1,6 +1,7 @@
 import {
   AppBar,
   Button,
+  CircularProgress,
   Container,
   FormControl,
   Grid,
@@ -23,10 +24,9 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import moment, { Moment } from 'moment';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
-import { DATE_TIME_FORMAT } from '../../model/model';
-
-export interface DeplacementFormModel {
-  readonly requestDate: Moment | string;
+import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/model';
+import { useMutation } from 'react-query';
+export interface DeplacementFormModel extends ApplicationModel {
   readonly absenceStartTime: Moment | string;
   readonly absenceEndTime: Moment | string;
   readonly motif: motif;
@@ -37,6 +37,7 @@ type motif = 'En mission' | 'Cours prives';
 const motifs: motif[] = ['En mission', 'Cours prives'];
 
 const DEFAULT_FORM_VALUES: DeplacementFormModel = {
+  applicationType: Applications.Deplacement,
   requestDate: moment(),
   absenceStartTime: moment(),
   absenceEndTime: moment(),
@@ -45,7 +46,7 @@ const DEFAULT_FORM_VALUES: DeplacementFormModel = {
 };
 
 export const DeplacementForm = () => {
-  const { db } = useFirebase();
+  const { setFirebaseData } = useFirebase();
   const { profile } = useUserRedux();
   const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
     useHandleActionResultAlert();
@@ -56,38 +57,43 @@ export const DeplacementForm = () => {
   });
 
   const isEnMission = watch('motif') === 'En mission';
+  const createNewUser = (newData: unknown) => setFirebaseData('Application', newData);
+  const addNewUserMutation = useMutation(createNewUser);
 
   const handleCancel = () => reset(DEFAULT_FORM_VALUES);
   const createUserHandler = async () => {
     setIsLoading(true);
-    setErrorMessage('');
-    const { requestDate, absenceEndTime, absenceStartTime, motif, destination } = getValues();
-    await addDoc(collection(db, 'Admin/Demande/Deplacement'), {
-      isProcessed: false,
-      isApproved: null,
-      firstName: profile?.firstName,
-      email: profile?.email,
-      department: profile?.department,
-      requestDate: String(requestDate),
-      absenceEndTime: String(absenceEndTime),
-      absenceStartTime: String(absenceStartTime),
-      destination,
-      motif,
-    })
-      .then((res) => {
-        reset(DEFAULT_FORM_VALUES);
-        setIsLoading(false);
-        setErrorMessage('');
-        setSuccessMessage('Demande envoyée');
-        return res;
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        setSuccessMessage('');
-        setErrorMessage(error.message);
+    const { requestDate, absenceEndTime, absenceStartTime, motif, destination, applicationType } = getValues();
+    try {
+      await addNewUserMutation.mutateAsync({
+        isProcessed: false,
+        isApproved: null,
+        applicationType,
+        firstName: profile?.firstName,
+        email: profile?.email,
+        department: profile?.department,
+        requestDate: String(requestDate),
+        absenceEndTime: String(absenceEndTime),
+        absenceStartTime: String(absenceStartTime),
+        destination,
+        motif,
       });
+      reset(DEFAULT_FORM_VALUES);
+      setIsLoading(false);
+      setErrorMessage('');
+      setSuccessMessage('Demande envoyée');
+    } catch (error) {
+      setIsLoading(false);
+      setSuccessMessage('');
+      setErrorMessage("Demande n'est pas envoyée à cause des certains raisons");
+    }
   };
 
+  const getDurationInHours = (endDateTime: Moment, startDateTime: Moment) => {
+    const duration = moment.duration(endDateTime.diff(startDateTime));
+    const hours = duration.asHours();
+    return hours;
+  };
   return (
     <Stack>
       <AppBar
@@ -213,6 +219,14 @@ export const DeplacementForm = () => {
                   )}
                 />
               )}
+            </Grid>
+            <Grid item xs={12}>
+              <Typography color="text.primary" textAlign="center">
+                {`Absence temps en total : ${getDurationInHours(
+                  watch('absenceEndTime') as Moment,
+                  watch('absenceStartTime') as Moment,
+                )} hr`}
+              </Typography>
             </Grid>
           </Grid>
           {isLoading ? (
