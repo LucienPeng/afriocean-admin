@@ -2,7 +2,7 @@ import { AdminDashboardComponent } from '../Components/AdminWorkSpace/AdminDashb
 import { Layout as DashboardLayout } from '../Components/Common/Layout';
 import { Copyright } from '../Components/Common/CopyRight';
 import { useUserRedux } from '../useUserRedux';
-import { Roles } from '../model/compan.model';
+import { Roles } from '../model/company.model';
 import { UserDashboardComponent } from '../Components/ClientWorkSpace/UserDashboardComponent';
 
 const DashboardPage = () => {

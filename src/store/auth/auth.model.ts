@@ -1,4 +1,4 @@
-import { Profile } from '../../model/compan.model';
+import { Profile } from '../../model/company.model';
 
 export interface AuthState {
   readonly isLoggedIn: boolean;

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { AuthState } from './Store/Auth/auth.model';
-import { Profile } from './model/compan.model';
+import { Profile } from './model/company.model';
 
 export const useUserRedux = () => {
   const dispatch = useDispatch<ThunkDispatch<AuthState, unknown, AnyAction>>();

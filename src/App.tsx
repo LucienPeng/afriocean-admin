@@ -13,7 +13,7 @@ import moment from 'moment';
 import { CreateUserComponent } from './Components/CreateUserComponent';
 import DemandePage from './Pages/DemandePage';
 import { useAuthActions } from './Store/Auth/auth-actions';
-import { Roles } from './model/compan.model';
+import { Roles } from './model/company.model';
 import { DeplacementForm } from './Components/Application/DeplacementForm';
 import { Absence } from './Components/Application/Absence';
 import { HeuresSupplementaires } from './Components/Application/HeuresSupplementaires';

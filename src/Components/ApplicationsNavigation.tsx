@@ -3,6 +3,8 @@ import { StyledPaper } from './Common/StyledUI/StyledPaper';
 import { StyledTitle } from './Common/StyledUI/StyledTitle';
 import { StyledAppBar } from './Common/StyledUI/StyledAppBar';
 
+
+
 export const ApplicationsNavigation = () => {
   return (
     <Stack>
