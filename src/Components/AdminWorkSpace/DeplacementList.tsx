@@ -1,4 +1,4 @@
-import { DATE_TIME_FORMAT } from '../model/application.model';
+import { DATE_TIME_FORMAT } from '../../model/application.model';
 import { ReactNode, useState } from 'react';
 import {
   Button,
@@ -15,9 +15,9 @@ import {
   Typography,
 } from '@mui/material';
 import { useQuery } from 'react-query';
-import { useFirebase } from '../useFirebase';
-import { StyledTextField } from './Common/StyledUI/StyledTextField';
-import { DeplacementFormModel } from './Application/DeplacementForm';
+import { useFirebase } from '../../useFirebase';
+import { StyledTextField } from '../Common/StyledUI/StyledTextField';
+import { DeplacementFormModel } from '../Application/DeplacementForm';
 import styled from '@emotion/styled';
 import moment, { Moment } from 'moment';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -25,8 +25,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import { StyledPaper } from './Common/StyledUI/StyledPaper';
-import { StyledAppBar } from './Common/StyledUI/StyledAppBar';
+import { StyledPaper } from '../Common/StyledUI/StyledPaper';
+import { StyledAppBar } from '../Common/StyledUI/StyledAppBar';
 
 const StyledTableRow = styled(TableRow)`
   && {

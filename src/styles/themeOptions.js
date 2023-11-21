@@ -33,6 +33,9 @@ export const defaultTheme = createTheme({
       paper: '#fff',
       default: '#E5E5E5',
     },
+    custom: {
+      iconAvatar: '#2D9596',
+    },
   },
   typography: {
     fontFamily: "'Kanit', 'Oxygen', 'Roboto'",

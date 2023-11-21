@@ -1,15 +1,15 @@
 import { Button, Container, FormControl, Grid, InputLabel, MenuItem, Select, Stack, Toolbar } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
-import { Department, Profile, Roles } from '../model/company.model';
+import { Department, Profile, Roles } from '../../model/company.model';
 import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { useFirebase } from '../useFirebase';
-import { useHandleActionResultAlert } from '../Utils/useHandleActionResultAlert';
-import { useHandleLoading } from '../Utils/useHandleLoading';
-import { StyledTextField } from './Common/StyledUI/StyledTextField';
-import { StyledPaper } from './Common/StyledUI/StyledPaper';
-import { StyledTitle } from './Common/StyledUI/StyledTitle';
-import { StyledAppBar } from './Common/StyledUI/StyledAppBar';
+import { useFirebase } from '../../useFirebase';
+import { useHandleActionResultAlert } from '../../Utils/useHandleActionResultAlert';
+import { useHandleLoading } from '../../Utils/useHandleLoading';
+import { StyledTextField } from '../Common/StyledUI/StyledTextField';
+import { StyledPaper } from '../Common/StyledUI/StyledPaper';
+import { StyledTitle } from '../Common/StyledUI/StyledTitle';
+import { StyledAppBar } from '../Common/StyledUI/StyledAppBar';
 
 interface CreateUserFormModel extends Profile {
   readonly defaultPassword: string;

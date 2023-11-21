@@ -28,7 +28,7 @@ const DEMANDES_SUB_NAV_ITEMS: SingleNavItem[] = [
 const DEMANDES = { navTitle: 'Demandes', path: '#', icon: <TextSnippetIcon />, subNavItem: DEMANDES_SUB_NAV_ITEMS };
 const DASHBOARD = { navTitle: 'Tableau de bord', path: '/', icon: <DashboardIcon /> };
 const CREATE_USER = { navTitle: 'Create user', path: '/admin/create-user', icon: <PersonAddIcon /> };
-const temp = { navTitle: 'Demande Contrôl', path: '/admin/application-list', icon: <RemoveRedEyeIcon /> };
+const temp = { navTitle: 'Demande Contrôl', path: '/admin/application', icon: <RemoveRedEyeIcon /> };
 
 export const useGetNavItems = () => {
   const userListItems = (
