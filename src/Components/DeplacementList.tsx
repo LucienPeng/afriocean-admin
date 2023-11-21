@@ -1,12 +1,10 @@
 import { DATE_TIME_FORMAT } from '../model/model';
 import { ReactNode, useState } from 'react';
 import {
-  AppBar,
   Button,
   CircularProgress,
   Container,
   IconButton,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -19,7 +17,7 @@ import {
 import { useQuery } from 'react-query';
 import { useFirebase } from '../useFirebase';
 import { StyledTextField } from './Common/StyledUI/StyledTextField';
-import { DeplacementFormModel } from './Demandes/DeplacementForm';
+import { DeplacementFormModel } from './Application/DeplacementForm';
 import styled from '@emotion/styled';
 import moment, { Moment } from 'moment';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -27,6 +25,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import { StyledPaper } from './Common/StyledUI/StyledPaper';
+import { StyledAppBar } from './Common/StyledUI/StyledAppBar';
 
 const StyledTableRow = styled(TableRow)`
   && {
@@ -86,24 +86,15 @@ export const DeplacementList = () => {
 
   return (
     <Stack>
-      <AppBar
-        position="absolute"
-        color="default"
-        elevation={0}
-        sx={{
-          position: 'relative',
-          borderBottom: (t) => `1px solid ${t.palette.divider}`,
-        }}
-      >
+      <StyledAppBar>
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap>
             Demandes de deplacement
           </Typography>
         </Toolbar>
-      </AppBar>
+      </StyledAppBar>
       <Container maxWidth="lg">
-        <Paper
-          elevation={0}
+        <StyledPaper
           sx={{
             my: { xs: 3, md: 6 },
             p: { xs: 2, md: 3 },
@@ -168,7 +159,7 @@ export const DeplacementList = () => {
               </Table>
             )}
           </Stack>
-        </Paper>
+        </StyledPaper>
       </Container>
     </Stack>
   );

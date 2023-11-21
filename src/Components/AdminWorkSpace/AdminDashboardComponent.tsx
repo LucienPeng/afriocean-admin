@@ -17,6 +17,7 @@ import { useQuery } from 'react-query';
 import { ApplicationModel, DATE_TIME_FORMAT } from '../../model/model';
 import moment from 'moment';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import { StyledPaper } from '../Common/StyledUI/StyledPaper';
 
 export const AdminDashboardComponent = () => {
   const { getFirebaseConditionQueryData } = useFirebase();
@@ -29,7 +30,8 @@ export const AdminDashboardComponent = () => {
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Paper
+          <StyledPaper
+            //elevation={0}
             sx={{
               p: 2,
               display: 'flex',
@@ -76,7 +78,7 @@ export const AdminDashboardComponent = () => {
                 )}
               </Stack>
             </Stack>
-          </Paper>
+          </StyledPaper>
         </Grid>
         <Grid item xs={12} md={8} lg={9}>
           <Paper

@@ -1,16 +1,13 @@
 import {
-  AppBar,
   Button,
   Container,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Stack,
   Toolbar,
-  Typography,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { Department, Profile, Roles } from '../model/model';
@@ -20,6 +17,9 @@ import { useFirebase } from '../useFirebase';
 import { useHandleActionResultAlert } from '../Utils/useHandleActionResultAlert';
 import { useHandleLoading } from '../Utils/useHandleLoading';
 import { StyledTextField } from './Common/StyledUI/StyledTextField';
+import { StyledPaper } from './Common/StyledUI/StyledPaper';
+import { StyledTitle } from './Common/StyledUI/StyledTitle';
+import { StyledAppBar } from './Common/StyledUI/StyledAppBar';
 
 interface CreateUserFormModel extends Profile {
   readonly defaultPassword: string;
@@ -85,24 +85,13 @@ export const CreateUserComponent = () => {
 
   return (
     <Stack>
-      <AppBar
-        position="absolute"
-        color="default"
-        elevation={0}
-        sx={{
-          position: 'relative',
-          borderBottom: (t) => `1px solid ${t.palette.divider}`,
-        }}
-      >
+      <StyledAppBar>
         <Toolbar>
-          <Typography variant="h6" color="inherit" noWrap>
-            Create User
-          </Typography>
+          <StyledTitle>Create User</StyledTitle>
         </Toolbar>
-      </AppBar>
+      </StyledAppBar>
       <Container maxWidth="sm">
-        <Paper
-          elevation={0}
+        <StyledPaper
           sx={{
             my: { xs: 3, md: 6 },
             p: { xs: 2, md: 3 },
@@ -256,7 +245,7 @@ export const CreateUserComponent = () => {
               save
             </Button>
           </Stack>
-        </Paper>
+        </StyledPaper>
       </Container>
     </Stack>
   );

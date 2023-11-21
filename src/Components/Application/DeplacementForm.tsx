@@ -1,13 +1,10 @@
 import {
-  AppBar,
   Button,
-  CircularProgress,
   Container,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Stack,
   Toolbar,
@@ -15,7 +12,6 @@ import {
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Controller, useForm } from 'react-hook-form';
-import { addDoc, collection } from 'firebase/firestore';
 import { useFirebase } from '../../useFirebase';
 import { useHandleActionResultAlert } from '../../Utils/useHandleActionResultAlert';
 import { useHandleLoading } from '../../Utils/useHandleLoading';
@@ -26,6 +22,9 @@ import moment, { Moment } from 'moment';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/model';
 import { useMutation } from 'react-query';
+import { StyledPaper } from '../Common/StyledUI/StyledPaper';
+import { StyledTitle } from '../Common/StyledUI/StyledTitle';
+import { StyledAppBar } from '../Common/StyledUI/StyledAppBar';
 export interface DeplacementFormModel extends ApplicationModel {
   readonly absenceStartTime: Moment | string;
   readonly absenceEndTime: Moment | string;
@@ -96,24 +95,13 @@ export const DeplacementForm = () => {
   };
   return (
     <Stack>
-      <AppBar
-        position="absolute"
-        color="default"
-        elevation={0}
-        sx={{
-          position: 'relative',
-          borderBottom: (t) => `1px solid ${t.palette.divider}`,
-        }}
-      >
+      <StyledAppBar>
         <Toolbar>
-          <Typography variant="h6" color="inherit" noWrap>
-            Demande de déplacement
-          </Typography>
+          <StyledTitle>Demande de déplacement</StyledTitle>
         </Toolbar>
-      </AppBar>
+      </StyledAppBar>
       <Container maxWidth="sm">
-        <Paper
-          elevation={0}
+        <StyledPaper
           sx={{
             my: { xs: 3, md: 6 },
             p: { xs: 2, md: 3 },
@@ -244,7 +232,7 @@ export const DeplacementForm = () => {
               save
             </Button>
           </Stack>
-        </Paper>
+        </StyledPaper>
       </Container>
     </Stack>
   );
