@@ -69,7 +69,7 @@ const App = () => {
 
         <Route path="/user" element={<ProtectedRoute component={UserPage} permission={[Roles.USER]} />}>
           <Route path="/user/application" element={<ApplicationsPortal />} />
-          <Route path="/user/deplacement" element={<DeplacementForm />} />
+          <Route path="/user/application/deplacement" element={<DeplacementList />} />
         </Route>
 
         <Route

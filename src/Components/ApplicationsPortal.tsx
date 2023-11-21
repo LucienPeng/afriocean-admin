@@ -17,7 +17,7 @@ const ADMIN_APPLICATION_LINKS = [
 ];
 
 const USER_APPLICATION_LINKS = [
-  { title: 'Déplacement', icon: <DriveEtaIcon />, url: '/admin/application/deplacement' },
+  { title: 'Déplacement', icon: <DriveEtaIcon />, url: '/user/application/deplacement' },
   { title: 'Absence', icon: <EmojiFoodBeverageIcon />, url: '#' },
   { title: 'Heures Supplementaires', icon: <MoreTimeIcon />, url: '#' },
 ];

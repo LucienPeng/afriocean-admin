@@ -62,7 +62,7 @@ export const UserDashboardComponent = () => {
                   <AssignmentIcon />
                 </Avatar>
                 <StyledTitle fontWeight={700} fontSize="30px" lineHeight={1.5}>
-                  Mes demandes en attente
+                  Mes demandes recentes
                 </StyledTitle>
               </Stack>
 
