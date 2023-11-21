@@ -1,21 +1,33 @@
 import { Avatar, CardActionArea, Container, Grid, Stack, Toolbar, Typography } from '@mui/material';
-import { StyledPaper } from '../Common/StyledUI/StyledPaper';
-import { StyledTitle } from '../Common/StyledUI/StyledTitle';
-import { StyledAppBar } from '../Common/StyledUI/StyledAppBar';
+import { StyledPaper } from './Common/StyledUI/StyledPaper';
+import { StyledTitle } from './Common/StyledUI/StyledTitle';
+import { StyledAppBar } from './Common/StyledUI/StyledAppBar';
+import { useNavigate } from 'react-router-dom';
+import { useUserRedux } from '../useUserRedux';
+import { Roles } from '../model/company.model';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import EmojiFoodBeverageIcon from '@mui/icons-material/EmojiFoodBeverage';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
-import { useNavigate } from 'react-router-dom';
 
-const APPLICATION_LINKS = [
+const ADMIN_APPLICATION_LINKS = [
+  { title: 'Déplacement', icon: <DriveEtaIcon />, url: '/admin/application/deplacement' },
+  { title: 'Absence', icon: <EmojiFoodBeverageIcon />, url: '#' },
+  { title: 'Heures Supplementaires', icon: <MoreTimeIcon />, url: '#' },
+];
+
+const USER_APPLICATION_LINKS = [
   { title: 'Déplacement', icon: <DriveEtaIcon />, url: '/admin/application/deplacement' },
   { title: 'Absence', icon: <EmojiFoodBeverageIcon />, url: '#' },
   { title: 'Heures Supplementaires', icon: <MoreTimeIcon />, url: '#' },
 ];
 
 export const ApplicationsPortal = () => {
+  const { role } = useUserRedux();
+  const portalLinks = role === Roles.ADMIN ? ADMIN_APPLICATION_LINKS : USER_APPLICATION_LINKS;
+  const portalTitle = role === Roles.ADMIN ? 'Demandes' : 'Mes Demandes';
   const navigate = useNavigate();
+
   return (
     <Stack>
       <StyledAppBar>
@@ -24,7 +36,7 @@ export const ApplicationsPortal = () => {
             <Avatar sx={{ bgcolor: 'primary.main', color: 'common.white' }} variant="rounded">
               <AssignmentIcon />
             </Avatar>
-            <StyledTitle>Demandes</StyledTitle>
+            <StyledTitle>{portalTitle}</StyledTitle>
           </Stack>
         </Toolbar>
       </StyledAppBar>
@@ -41,7 +53,7 @@ export const ApplicationsPortal = () => {
           }}
         >
           <Grid container spacing={3}>
-            {APPLICATION_LINKS.map((link) => (
+            {portalLinks.map((link) => (
               <Grid item key={link.title} xs={12} sm={6}>
                 <CardActionArea sx={{ borderRadius: '16px' }} onClick={() => navigate(link.url)}>
                   <StyledPaper

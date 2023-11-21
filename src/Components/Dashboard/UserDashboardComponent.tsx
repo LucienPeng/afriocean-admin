@@ -1,4 +1,5 @@
 import {
+  Avatar,
   CircularProgress,
   Container,
   Grid,
@@ -10,13 +11,29 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
 } from '@mui/material';
 import { useFirebase } from '../../useFirebase';
 import { useQuery } from 'react-query';
-import { ApplicationModel, DATE_TIME_FORMAT } from '../../model/application.model';
+import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/application.model';
+import { StyledPaper } from '../Common/StyledUI/StyledPaper';
+import { StyledTitle } from '../Common/StyledUI/StyledTitle';
+import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+
+const mapApplicationLink = (applicationType: Applications) => {
+  switch (applicationType) {
+    case Applications.Deplacement:
+      return '/admin/application/deplacement';
+    case Applications.Absence:
+      return '/admin/application/deplacement';
+    case Applications.HeuresSupplementaires:
+      return '/admin/application/deplacement';
+    default:
+      return '/';
+  }
+};
 
 export const UserDashboardComponent = () => {
   const { getFirebaseConditionQueryData } = useFirebase();
@@ -25,11 +42,13 @@ export const UserDashboardComponent = () => {
     queryFn: () => getFirebaseConditionQueryData('Application', 'isProcessed', '==', false),
   });
 
+  const navigate = useNavigate();
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Paper
+          <StyledPaper
             sx={{
               p: 2,
               display: 'flex',
@@ -38,11 +57,17 @@ export const UserDashboardComponent = () => {
             }}
           >
             <Stack spacing={2} justifyContent="center">
-              <Typography color="text.primary" fontWeight="bold" fontSize="30px" lineHeight={1.5}>
-                Demandes en attentes
-              </Typography>
+              <Stack direction="row" spacing={3} alignItems="center">
+                <Avatar sx={{ bgcolor: 'primary.main', color: 'common.white' }} variant="rounded">
+                  <AssignmentIcon />
+                </Avatar>
+                <StyledTitle fontWeight={700} fontSize="30px" lineHeight={1.5}>
+                  Mes demandes en attente
+                </StyledTitle>
+              </Stack>
+
               <Stack width={1} justifyContent="center" alignItems="center">
-                {/* {isLoading ? (
+                {isLoading ? (
                   <CircularProgress color="secondary" sx={{ mt: 10 }} />
                 ) : (
                   <Table size="small">
@@ -65,7 +90,10 @@ export const UserDashboardComponent = () => {
                           <TableCell align="center">{application.department}</TableCell>
                           <TableCell align="center">{application.applicationType}</TableCell>
                           <TableCell align="left">
-                            <IconButton aria-label="">
+                            <IconButton
+                              aria-label="application-navigation"
+                              onClick={() => navigate(mapApplicationLink(application.applicationType as Applications))}
+                            >
                               <KeyboardDoubleArrowRightIcon />
                             </IconButton>
                           </TableCell>
@@ -73,10 +101,10 @@ export const UserDashboardComponent = () => {
                       ))}
                     </TableBody>
                   </Table>
-                )} */}
+                )}
               </Stack>
             </Stack>
-          </Paper>
+          </StyledPaper>
         </Grid>
         <Grid item xs={12} md={8} lg={9}>
           <Paper

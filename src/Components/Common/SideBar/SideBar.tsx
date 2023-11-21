@@ -1,4 +1,4 @@
-import { Divider, Drawer, List, styled } from '@mui/material';
+import { Drawer, styled } from '@mui/material';
 import { useGetNavItems } from './useGetNavItems';
 import { useUserRedux } from '../../../useUserRedux';
 import { Roles } from '../../../model/company.model';
@@ -25,11 +25,7 @@ export const SideBar = () => {
   return (
     <StyledDrawer variant="permanent">
       <DrawerHeader />
-      <List component="nav">
-        {userListItems}
-        <Divider sx={{ my: 1 }} />
-        {role === Roles.ADMIN && adminListItems}
-      </List>
+      {role === Roles.ADMIN ? adminListItems : userListItems}
     </StyledDrawer>
   );
 };
@@ -42,11 +38,7 @@ export const MobileSideBar = (props: { open: boolean; setIsOpen: (isOpen: boolea
   return (
     <Drawer anchor="left" open={open} onClose={() => setIsOpen(false)}>
       <DrawerHeader />
-      <List component="nav">
-        {userListItems}
-        <Divider sx={{ my: 1 }} />
-        {role === Roles.ADMIN && adminListItems}
-      </List>
+      {role === Roles.ADMIN ? adminListItems : userListItems}
     </Drawer>
   );
 };

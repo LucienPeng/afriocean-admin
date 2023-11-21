@@ -18,7 +18,8 @@ import { DeplacementForm } from './Components/Application/DeplacementForm';
 import { Absence } from './Components/Application/Absence';
 import { HeuresSupplementaires } from './Components/Application/HeuresSupplementaires';
 import { DeplacementList } from './Components/AdminWorkSpace/DeplacementList';
-import { ApplicationsPortal } from './Components/AdminWorkSpace/ApplicationsPortal';
+import { ApplicationsPortal } from './Components/ApplicationsPortal';
+import UserPage from './Pages/UserPage';
 
 const getToken = async () => {
   const currentUser = getAuth().currentUser;
@@ -66,10 +67,16 @@ const App = () => {
           <Route path="/admin/application/deplacement" element={<DeplacementList />} />
         </Route>
 
+        <Route path="/user" element={<ProtectedRoute component={UserPage} permission={[Roles.USER]} />}>
+          <Route path="/user/application" element={<ApplicationsPortal />} />
+          <Route path="/user/deplacement" element={<DeplacementForm />} />
+        </Route>
+
         <Route
           path="/demande"
           element={<ProtectedRoute component={DemandePage} permission={[Roles.ADMIN, Roles.USER]} />}
         >
+          <Route path="/demande" element={<ApplicationsPortal />} />
           <Route path="/demande/deplacement" element={<DeplacementForm />} />
           <Route path="/demande/absence-conge" element={<Absence />} />
           <Route path="/demande/heures-supplémentaires" element={<HeuresSupplementaires />} />
