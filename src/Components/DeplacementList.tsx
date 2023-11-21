@@ -1,4 +1,4 @@
-import { DATE_TIME_FORMAT } from '../model/model';
+import { DATE_TIME_FORMAT } from '../model/application.model';
 import { ReactNode, useState } from 'react';
 import {
   Button,

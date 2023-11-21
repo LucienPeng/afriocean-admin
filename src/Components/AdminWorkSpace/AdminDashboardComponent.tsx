@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { useFirebase } from '../../useFirebase';
 import { useQuery } from 'react-query';
-import { ApplicationModel, DATE_TIME_FORMAT } from '../../model/model';
+import { ApplicationModel, DATE_TIME_FORMAT } from '../../model/application.model';
 import moment from 'moment';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import { StyledPaper } from '../Common/StyledUI/StyledPaper';

@@ -1,16 +1,6 @@
-import {
-  Button,
-  Container,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Toolbar,
-} from '@mui/material';
+import { Button, Container, FormControl, Grid, InputLabel, MenuItem, Select, Stack, Toolbar } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
-import { Department, Profile, Roles } from '../model/model';
+import { Department, Profile, Roles } from '../model/compan.model';
 import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useFirebase } from '../useFirebase';

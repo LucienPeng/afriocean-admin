@@ -1,7 +1,7 @@
 import { Divider, Drawer, List, styled } from '@mui/material';
 import { useGetNavItems } from './useGetNavItems';
 import { useUserRedux } from '../../../useUserRedux';
-import { Roles } from '../../../model/model';
+import { Roles } from '../../../model/compan.model';
 
 const DRAWER_WIDTH = 250;
 

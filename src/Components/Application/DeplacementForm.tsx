@@ -20,7 +20,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import moment, { Moment } from 'moment';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
-import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/model';
+import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/application.model';
 import { useMutation } from 'react-query';
 import { StyledPaper } from '../Common/StyledUI/StyledPaper';
 import { StyledTitle } from '../Common/StyledUI/StyledTitle';
