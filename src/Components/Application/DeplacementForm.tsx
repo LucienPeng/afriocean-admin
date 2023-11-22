@@ -66,6 +66,7 @@ export const DeplacementForm = () => {
     const { requestDate, absenceEndTime, absenceStartTime, motif, destination, applicationType } = getValues();
     try {
       await addNewUserMutation.mutateAsync({
+        uid: profile?.uid,
         isProcessed: false,
         isApproved: null,
         applicationType,
@@ -77,6 +78,7 @@ export const DeplacementForm = () => {
         absenceStartTime: String(absenceStartTime),
         destination,
         motif,
+        comment: '',
       });
       reset(DEFAULT_FORM_VALUES);
       setIsLoading(false);

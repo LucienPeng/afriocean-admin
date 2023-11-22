@@ -1,5 +1,5 @@
 import { DATE_TIME_FORMAT } from '../../model/application.model';
-import { ReactNode, useState } from 'react';
+import { ChangeEvent, ReactNode, useState } from 'react';
 import {
   Button,
   CircularProgress,
@@ -14,8 +14,8 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { useQuery } from 'react-query';
-import { useFirebase } from '../../useFirebase';
+import { useMutation, useQuery } from 'react-query';
+import { Collections, useFirebase } from '../../useFirebase';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 import { DeplacementFormModel } from '../Application/DeplacementForm';
 import styled from '@emotion/styled';
@@ -27,14 +27,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import { StyledPaper } from '../Common/StyledUI/StyledPaper';
 import { StyledAppBar } from '../Common/StyledUI/StyledAppBar';
-
-const StyledTableRow = styled(TableRow)`
-  && {
-    td {
-      border: none; /* Remove borders for all other rows */
-    }
-  }
-`;
+import { StyledTableRow } from '../Common/StyledUI/StyledTable';
 
 interface DemandeDeplacement extends DeplacementFormModel {
   readonly id: string;
@@ -48,11 +41,34 @@ interface DemandeDeplacement extends DeplacementFormModel {
   readonly absenceEndTime: string;
 }
 
-export const DeplacementList = () => {
+export const AdminDeplacementList = () => {
   const [deplacementApplication, setDeplacementApplication] = useState<DemandeDeplacement[]>([]);
-  const { getFirebaseCollectionData } = useFirebase();
+  const [comment, setComment] = useState('');
+  const { getFirebaseCollectionData, updateFirebaseData } = useFirebase();
 
-  const { isLoading } = useQuery({
+  const { mutate, isLoading: isUpdating } = useMutation<
+    void,
+    unknown,
+    { collection: string; id: string; newData: unknown }
+  >(
+    async ({ collection, id, newData }) => {
+      await updateFirebaseData(collection, id, newData);
+    },
+    {
+      onSuccess: (data) => {
+        console.log(data);
+        // 在此處處理成功後的操作
+      },
+      onError: (error) => {
+        console.error('Error updating data:', error);
+        // 在此處處理錯誤
+      },
+    },
+  );
+
+  console.log('isUpdating', isUpdating);
+
+  const { isLoading, refetch } = useQuery({
     queryKey: 'deplacementList',
     queryFn: () => getFirebaseCollectionData('Application'),
     onSuccess: (fetchedData) => setDeplacementApplication(fetchedData as DemandeDeplacement[]),
@@ -60,28 +76,40 @@ export const DeplacementList = () => {
 
   const getDuration = (endDateTime: Moment, startDateTime: Moment) => moment.duration(endDateTime.diff(startDateTime));
 
-  const approveHander = (application: DemandeDeplacement) => {
-    setDeplacementApplication((preApplication) => {
-      return preApplication.map((row) => {
-        if (application.id === row.id) {
-          return { ...row, isApproved: true, isProcessed: true };
-        } else {
-          return row;
-        }
-      });
+  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    setComment(event.target.value);
+  };
+
+  const approveHander = async (application: DemandeDeplacement) => {
+    mutate({
+      collection: Collections.Application,
+      id: application.id,
+      newData: {
+        ...application,
+        isApproved: true,
+        isProcessed: true,
+        comment,
+      },
     });
+
+    refetch();
+    setComment('');
   };
 
   const rejectHandler = (application: DemandeDeplacement) => {
-    setDeplacementApplication((preApplication) => {
-      return preApplication.map((row) => {
-        if (application.id === row.id) {
-          return { ...row, isApproved: false, isProcessed: true };
-        } else {
-          return row;
-        }
-      });
+    mutate({
+      collection: Collections.Application,
+      id: application.id,
+      newData: {
+        ...application,
+        isApproved: false,
+        isProcessed: true,
+        comment,
+      },
     });
+
+    refetch();
+    setComment('');
   };
 
   return (
@@ -129,8 +157,10 @@ export const DeplacementList = () => {
                     <ExpandableTableRow
                       key={index}
                       row={row}
+                      isUpdating={isUpdating}
                       approveHander={approveHander}
                       rejectHandler={rejectHandler}
+                      onChangeHandler={onChangeHandler}
                     >
                       <TableCell>
                         {row.isProcessed ? (
@@ -168,11 +198,20 @@ export const DeplacementList = () => {
 interface ExpandableTableRowtProps {
   readonly children: ReactNode;
   readonly row: DemandeDeplacement;
+  readonly isUpdating: boolean;
   readonly rejectHandler: (row: DemandeDeplacement) => void;
   readonly approveHander: (row: DemandeDeplacement) => void;
+  readonly onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ExpandableTableRow = ({ children, row, rejectHandler, approveHander }: ExpandableTableRowtProps) => {
+const ExpandableTableRow = ({
+  children,
+  row,
+  isUpdating,
+  rejectHandler,
+  approveHander,
+  onChangeHandler,
+}: ExpandableTableRowtProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -192,9 +231,9 @@ const ExpandableTableRow = ({ children, row, rejectHandler, approveHander }: Exp
           <TableCell />
           <TableCell />
           <TableCell />
-          <TableCell />
+          <TableCell align="right">{isUpdating && <CircularProgress color="secondary" size="20px" />}</TableCell>
           <TableCell colSpan={3}>
-            <StyledTextField size="small" placeholder="comment" fullWidth />
+            <StyledTextField size="small" placeholder="comment" fullWidth onChange={onChangeHandler} />
           </TableCell>
           <TableCell>
             <Stack direction="row" spacing={1}>

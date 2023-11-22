@@ -12,7 +12,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useFirebase } from '../../useFirebase';
+import { Collections, useFirebase } from '../../useFirebase';
 import { useQuery } from 'react-query';
 import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/application.model';
 import { StyledPaper } from '../Common/StyledUI/StyledPaper';
@@ -21,25 +21,36 @@ import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import { useUserRedux } from '../../useUserRedux';
 
 const mapApplicationLink = (applicationType: Applications) => {
   switch (applicationType) {
     case Applications.Deplacement:
-      return '/admin/application/deplacement';
+      return '/user/application/deplacement';
     case Applications.Absence:
-      return '/admin/application/deplacement';
+      return '/user/application/deplacement';
     case Applications.HeuresSupplementaires:
-      return '/admin/application/deplacement';
+      return '/user/application/deplacement';
     default:
       return '/';
   }
 };
 
 export const UserDashboardComponent = () => {
-  const { getFirebaseConditionQueryData } = useFirebase();
+  const { profile } = useUserRedux();
+  const { getFirebaseMultiConditionQueryData2 } = useFirebase();
   const { data: pendingApplications, isLoading } = useQuery({
     queryKey: 'pendingApplications',
-    queryFn: () => getFirebaseConditionQueryData('Application', 'isProcessed', '==', false),
+    queryFn: () =>
+      getFirebaseMultiConditionQueryData2(
+        Collections.Application,
+        'isProcessed',
+        '==',
+        false,
+        'uid',
+        '==',
+        profile?.uid,
+      ),
   });
 
   const navigate = useNavigate();
@@ -73,10 +84,11 @@ export const UserDashboardComponent = () => {
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell align="center">Date</TableCell>
-                        <TableCell align="center">Nom</TableCell>
-                        <TableCell align="center">Service</TableCell>
-                        <TableCell align="center">Demandes en attente</TableCell>
+                        <TableCell align="center">Date de demande</TableCell>
+                        <TableCell align="center">Genre</TableCell>
+                        <TableCell align="center">Etat</TableCell>
+                        <TableCell align="center">Résultat</TableCell>
+
                         <TableCell padding="checkbox" />
                       </TableRow>
                     </TableHead>
@@ -86,9 +98,9 @@ export const UserDashboardComponent = () => {
                           <TableCell align="center">
                             {moment(application.requestDate).format(DATE_TIME_FORMAT)}
                           </TableCell>
-                          <TableCell align="center">{application.firstName}</TableCell>
-                          <TableCell align="center">{application.department}</TableCell>
                           <TableCell align="center">{application.applicationType}</TableCell>
+                          <TableCell align="center">{!application.isProcessed ? 'En cours' : 'Finit'}</TableCell>
+                          <TableCell align="center">{!application.isApproved ? 'Apprové' : 'Rejecté'}</TableCell>
                           <TableCell align="left">
                             <IconButton
                               aria-label="application-navigation"

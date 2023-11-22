@@ -17,7 +17,8 @@ import { Roles } from './model/company.model';
 import { DeplacementForm } from './Components/Application/DeplacementForm';
 import { Absence } from './Components/Application/Absence';
 import { HeuresSupplementaires } from './Components/Application/HeuresSupplementaires';
-import { DeplacementList } from './Components/AdminWorkSpace/DeplacementList';
+import { AdminDeplacementList } from './Components/AdminWorkSpace/AdminDeplacementList';
+import { UserDeplacementList } from './Components/UserWorkSpace/UserDeplacementList';
 import { ApplicationsPortal } from './Components/ApplicationsPortal';
 import UserPage from './Pages/UserPage';
 
@@ -64,12 +65,12 @@ const App = () => {
         <Route path="/admin" element={<ProtectedRoute component={AdminPage} permission={[Roles.ADMIN]} />}>
           <Route path="/admin/create-user" element={<CreateUserComponent />} />
           <Route path="/admin/application" element={<ApplicationsPortal />} />
-          <Route path="/admin/application/deplacement" element={<DeplacementList />} />
+          <Route path="/admin/application/deplacement" element={<AdminDeplacementList />} />
         </Route>
 
         <Route path="/user" element={<ProtectedRoute component={UserPage} permission={[Roles.USER]} />}>
           <Route path="/user/application" element={<ApplicationsPortal />} />
-          <Route path="/user/application/deplacement" element={<DeplacementList />} />
+          <Route path="/user/application/deplacement" element={<UserDeplacementList />} />
         </Route>
 
         <Route

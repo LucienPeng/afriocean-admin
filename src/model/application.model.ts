@@ -8,6 +8,7 @@ export enum Applications {
 }
 
 export interface ApplicationModel {
+  readonly uid?: string;
   readonly id?: string;
   readonly isProcessed?: boolean;
   readonly isApproved?: boolean | null;
@@ -16,4 +17,5 @@ export interface ApplicationModel {
   readonly department?: string;
   readonly requestDate?: Moment | string;
   readonly applicationType?: Applications;
+  readonly comment?: string;
 }
