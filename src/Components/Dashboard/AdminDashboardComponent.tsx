@@ -4,7 +4,6 @@ import {
   Container,
   Grid,
   IconButton,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -12,7 +11,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useFirebase } from '../../useFirebase';
+import { useFirebaseDB } from '../../useFirebaseDB';
 import { useQuery } from 'react-query';
 import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/application.model';
 import { StyledPaper } from '../Common/StyledUI/StyledPaper';
@@ -36,7 +35,7 @@ const mapApplicationLink = (applicationType: Applications) => {
 };
 
 export const AdminDashboardComponent = () => {
-  const { getFirebaseConditionQueryData } = useFirebase();
+  const { getFirebaseConditionQueryData } = useFirebaseDB();
   const { data: pendingApplications, isLoading } = useQuery({
     queryKey: 'pendingApplications',
     queryFn: () => getFirebaseConditionQueryData('Application', 'isProcessed', '==', false),
@@ -107,25 +106,25 @@ export const AdminDashboardComponent = () => {
           </StyledPaper>
         </Grid>
         <Grid item xs={12} md={8} lg={9}>
-          <Paper
+          <StyledPaper
             sx={{
               p: 2,
               display: 'flex',
               flexDirection: 'column',
               height: 240,
             }}
-          ></Paper>
+          ></StyledPaper>
         </Grid>
 
         <Grid item xs={12} md={4} lg={3}>
-          <Paper
+          <StyledPaper
             sx={{
               p: 2,
               display: 'flex',
               flexDirection: 'column',
               height: 240,
             }}
-          ></Paper>
+          ></StyledPaper>
         </Grid>
       </Grid>
     </Container>

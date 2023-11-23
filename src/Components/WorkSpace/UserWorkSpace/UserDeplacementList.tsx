@@ -1,5 +1,5 @@
-import { Applications, DATE_TIME_FORMAT } from '../../model/application.model';
-import { ReactNode, useState } from 'react';
+import { Applications, DATE_TIME_FORMAT } from '../../../model/application.model';
+import { useState } from 'react';
 import {
   CircularProgress,
   Container,
@@ -13,12 +13,12 @@ import {
   Typography,
 } from '@mui/material';
 import { useQuery } from 'react-query';
-import { Collections, useFirebase } from '../../useFirebase';
-import { DeplacementFormModel } from '../Application/DeplacementForm';
-import { StyledPaper } from '../Common/StyledUI/StyledPaper';
-import { StyledAppBar } from '../Common/StyledUI/StyledAppBar';
-import { useUserRedux } from '../../useUserRedux';
-import { StyledTableRow } from '../Common/StyledUI/StyledTable';
+import { Collections, useFirebaseDB } from '../../../useFirebaseDB';
+import { DeplacementFormModel } from '../../Application/DeplacementForm';
+import { StyledPaper } from '../../Common/StyledUI/StyledPaper';
+import { StyledAppBar } from '../../Common/StyledUI/StyledAppBar';
+import { useUserRedux } from '../../../useUserRedux';
+import { StyledTableRow } from '../../Common/StyledUI/StyledTable';
 import moment, { Moment } from 'moment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -39,19 +39,15 @@ interface DemandeDeplacement extends DeplacementFormModel {
 export const UserDeplacementList = () => {
   const [deplacementRecord, setDeplacementRecord] = useState<DemandeDeplacement[]>([]);
   const { profile } = useUserRedux();
-  const { getFirebaseMultiConditionQueryData2 } = useFirebase();
+  const { getFirebaseMultiConditionQueryData } = useFirebaseDB();
 
   const { isLoading } = useQuery({
     queryKey: 'userDeplacementList',
     queryFn: () =>
-      getFirebaseMultiConditionQueryData2(
+      getFirebaseMultiConditionQueryData(
         Collections.Application,
-        'uid',
-        '==',
-        profile?.uid,
-        'applicationType',
-        '==',
-        Applications.Deplacement,
+        { firstKey: 'uid', firstOperator: '==', firstValue: profile?.uid },
+        { secondKey: 'applicationType', secondOperator: '==', secondValue: Applications.Deplacement },
       ),
     onSuccess: (res) => setDeplacementRecord(res as DemandeDeplacement[]),
   });

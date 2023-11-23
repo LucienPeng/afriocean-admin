@@ -4,13 +4,13 @@ import { Controller, useForm } from 'react-hook-form';
 import { authActions } from '../Store/Auth/auth-slice';
 import { useNavigate } from 'react-router-dom';
 import { useUserRedux } from '../useUserRedux';
-import { useFirebase } from '../useFirebase';
+import { useFirebaseDB } from '../useFirebaseDB';
 import { doc, getDoc } from '@firebase/firestore';
 import { Copyright } from '../Components/Common/CopyRight';
 import { useHandleActionResultAlert } from '../Utils/useHandleActionResultAlert';
 import { useHandleLoading } from '../Utils/useHandleLoading';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useDeviceMetadata } from '../Components/Common/DeviceMetadataProvider';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 interface SignInFormModel {
   readonly email: string;
@@ -29,7 +29,7 @@ export default function SignInPage() {
   const { setErrorMessage, ErrorMessageAlert } = useHandleActionResultAlert();
   const { setIsLoading, LoadingSpinner } = useHandleLoading();
   const { dispatch } = useUserRedux();
-  const { db, collection } = useFirebase();
+  const { db, collection } = useFirebaseDB();
   const { isMobileView } = useDeviceMetadata();
 
   const { control, reset, getValues, handleSubmit } = useForm<SignInFormModel>({

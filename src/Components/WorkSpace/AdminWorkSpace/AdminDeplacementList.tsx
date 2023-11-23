@@ -1,4 +1,4 @@
-import { DATE_TIME_FORMAT } from '../../model/application.model';
+import { DATE_TIME_FORMAT } from '../../../model/application.model';
 import { ChangeEvent, ReactNode, useState } from 'react';
 import {
   Button,
@@ -15,19 +15,18 @@ import {
   Typography,
 } from '@mui/material';
 import { useMutation, useQuery } from 'react-query';
-import { Collections, useFirebase } from '../../useFirebase';
-import { StyledTextField } from '../Common/StyledUI/StyledTextField';
-import { DeplacementFormModel } from '../Application/DeplacementForm';
-import styled from '@emotion/styled';
+import { Collections, MutationFunction, useFirebaseDB } from '../../../useFirebaseDB';
+import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
+import { DeplacementFormModel } from '../../Application/DeplacementForm';
+import { StyledPaper } from '../../Common/StyledUI/StyledPaper';
+import { StyledAppBar } from '../../Common/StyledUI/StyledAppBar';
+import { StyledTableRow } from '../../Common/StyledUI/StyledTable';
 import moment, { Moment } from 'moment';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import { StyledPaper } from '../Common/StyledUI/StyledPaper';
-import { StyledAppBar } from '../Common/StyledUI/StyledAppBar';
-import { StyledTableRow } from '../Common/StyledUI/StyledTable';
 
 interface DemandeDeplacement extends DeplacementFormModel {
   readonly id: string;
@@ -42,43 +41,25 @@ interface DemandeDeplacement extends DeplacementFormModel {
 }
 
 export const AdminDeplacementList = () => {
-  const [deplacementApplication, setDeplacementApplication] = useState<DemandeDeplacement[]>([]);
+  const [deplacementApplications, setDeplacementApplications] = useState<DemandeDeplacement[]>([]);
   const [comment, setComment] = useState('');
-  const { getFirebaseCollectionData, updateFirebaseData } = useFirebase();
+  const { getFirebaseCollectionData, updateFirebaseData } = useFirebaseDB();
 
-  const { mutate, isLoading: isUpdating } = useMutation<
-    void,
-    unknown,
-    { collection: string; id: string; newData: unknown }
-  >(
-    async ({ collection, id, newData }) => {
-      await updateFirebaseData(collection, id, newData);
-    },
-    {
-      onSuccess: (data) => {
-        console.log(data);
-        // 在此處處理成功後的操作
-      },
-      onError: (error) => {
-        console.error('Error updating data:', error);
-        // 在此處處理錯誤
-      },
-    },
-  );
+  const setApplicationResult: MutationFunction = async ({ collection, id, newData }) => {
+    await updateFirebaseData(collection, id, newData);
+  };
 
-  console.log('isUpdating', isUpdating);
+  const { mutate, isLoading: isUpdating } = useMutation(setApplicationResult);
 
-  const { isLoading, refetch } = useQuery({
+  const { refetch, isLoading } = useQuery({
     queryKey: 'deplacementList',
     queryFn: () => getFirebaseCollectionData('Application'),
-    onSuccess: (fetchedData) => setDeplacementApplication(fetchedData as DemandeDeplacement[]),
+    onSuccess: (fetchedData) => setDeplacementApplications(fetchedData as DemandeDeplacement[]),
   });
 
   const getDuration = (endDateTime: Moment, startDateTime: Moment) => moment.duration(endDateTime.diff(startDateTime));
 
-  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    setComment(event.target.value);
-  };
+  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => setComment(event.target.value);
 
   const approveHander = async (application: DemandeDeplacement) => {
     mutate({
@@ -91,7 +72,6 @@ export const AdminDeplacementList = () => {
         comment,
       },
     });
-
     refetch();
     setComment('');
   };
@@ -107,7 +87,6 @@ export const AdminDeplacementList = () => {
         comment,
       },
     });
-
     refetch();
     setComment('');
   };
@@ -153,7 +132,7 @@ export const AdminDeplacementList = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {deplacementApplication.map((row, index) => (
+                  {deplacementApplications.map((row, index) => (
                     <ExpandableTableRow
                       key={index}
                       row={row}

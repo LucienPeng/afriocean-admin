@@ -4,7 +4,6 @@ import {
   Container,
   Grid,
   IconButton,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -12,16 +11,16 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { Collections, useFirebase } from '../../useFirebase';
-import { useQuery } from 'react-query';
+import { Collections, useFirebaseDB } from '../../useFirebaseDB';
 import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/application.model';
 import { StyledPaper } from '../Common/StyledUI/StyledPaper';
 import { StyledTitle } from '../Common/StyledUI/StyledTitle';
 import { useNavigate } from 'react-router-dom';
+import { useUserRedux } from '../../useUserRedux';
+import { useQuery } from 'react-query';
 import moment from 'moment';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { useUserRedux } from '../../useUserRedux';
 
 const mapApplicationLink = (applicationType: Applications) => {
   switch (applicationType) {
@@ -38,27 +37,23 @@ const mapApplicationLink = (applicationType: Applications) => {
 
 export const UserDashboardComponent = () => {
   const { profile } = useUserRedux();
-  const { getFirebaseMultiConditionQueryData2 } = useFirebase();
+  const { getFirebaseMultiConditionQueryData } = useFirebaseDB();
   const { data: pendingApplications, isLoading } = useQuery({
     queryKey: 'pendingApplications',
     queryFn: () =>
-      getFirebaseMultiConditionQueryData2(
+      getFirebaseMultiConditionQueryData(
         Collections.Application,
-        'isProcessed',
-        '==',
-        false,
-        'uid',
-        '==',
-        profile?.uid,
+        { firstKey: 'isProcessed', firstOperator: '==', firstValue: false },
+        { secondKey: 'uid', secondOperator: '==', secondValue: profile?.uid },
       ),
   });
-
+  const recentApplications = pendingApplications as ApplicationModel[];
   const navigate = useNavigate();
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <StyledPaper
             sx={{
               p: 2,
@@ -88,12 +83,11 @@ export const UserDashboardComponent = () => {
                         <TableCell align="center">Genre</TableCell>
                         <TableCell align="center">Etat</TableCell>
                         <TableCell align="center">Résultat</TableCell>
-
-                        <TableCell padding="checkbox" />
+                        <TableCell align="center" padding="checkbox" />
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {(pendingApplications as ApplicationModel[])?.map((application) => (
+                      {recentApplications?.map((application) => (
                         <TableRow key={application.id}>
                           <TableCell align="center">
                             {moment(application.requestDate).format(DATE_TIME_FORMAT)}
@@ -118,26 +112,36 @@ export const UserDashboardComponent = () => {
             </Stack>
           </StyledPaper>
         </Grid>
+        <Grid item xs={6}>
+          <StyledPaper
+            sx={{
+              p: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 350,
+            }}
+          ></StyledPaper>
+        </Grid>
         <Grid item xs={12} md={8} lg={9}>
-          <Paper
+          <StyledPaper
             sx={{
               p: 2,
               display: 'flex',
               flexDirection: 'column',
               height: 240,
             }}
-          ></Paper>
+          ></StyledPaper>
         </Grid>
 
         <Grid item xs={12} md={4} lg={3}>
-          <Paper
+          <StyledPaper
             sx={{
               p: 2,
               display: 'flex',
               flexDirection: 'column',
               height: 240,
             }}
-          ></Paper>
+          ></StyledPaper>
         </Grid>
       </Grid>
     </Container>

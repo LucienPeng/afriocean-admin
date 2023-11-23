@@ -10,15 +10,15 @@ import DashboardPage from './Pages/DashboardPage';
 import AdminPage from './Pages/AdminPage';
 import SignInPage from './Pages/SignInPage';
 import moment from 'moment';
-import { CreateUserComponent } from './Components/AdminWorkSpace/CreateUserComponent';
+import { CreateUserComponent } from './Components/WorkSpace/AdminWorkSpace/CreateUserComponent';
 import DemandePage from './Pages/DemandePage';
 import { useAuthActions } from './Store/Auth/auth-actions';
 import { Roles } from './model/company.model';
 import { DeplacementForm } from './Components/Application/DeplacementForm';
 import { Absence } from './Components/Application/Absence';
 import { HeuresSupplementaires } from './Components/Application/HeuresSupplementaires';
-import { AdminDeplacementList } from './Components/AdminWorkSpace/AdminDeplacementList';
-import { UserDeplacementList } from './Components/UserWorkSpace/UserDeplacementList';
+import { AdminDeplacementList } from './Components/WorkSpace/AdminWorkSpace/AdminDeplacementList';
+import { UserDeplacementList } from './Components/WorkSpace/UserWorkSpace/UserDeplacementList';
 import { ApplicationsPortal } from './Components/ApplicationsPortal';
 import UserPage from './Pages/UserPage';
 

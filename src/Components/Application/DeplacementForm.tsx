@@ -1,5 +1,6 @@
 import {
   Button,
+  CircularProgress,
   Container,
   FormControl,
   Grid,
@@ -12,9 +13,8 @@ import {
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Controller, useForm } from 'react-hook-form';
-import { useFirebase } from '../../useFirebase';
+import { useFirebaseDB } from '../../useFirebaseDB';
 import { useHandleActionResultAlert } from '../../Utils/useHandleActionResultAlert';
-import { useHandleLoading } from '../../Utils/useHandleLoading';
 import { useUserRedux } from '../../useUserRedux';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -25,6 +25,7 @@ import { StyledPaper } from '../Common/StyledUI/StyledPaper';
 import { StyledTitle } from '../Common/StyledUI/StyledTitle';
 import { StyledAppBar } from '../Common/StyledUI/StyledAppBar';
 import moment, { Moment } from 'moment';
+import { EmailTemplate, useEmailNotification } from '../../Utils/useEmailNotification';
 
 export interface DeplacementFormModel extends ApplicationModel {
   readonly absenceStartTime: Moment | string;
@@ -46,26 +47,32 @@ const DEFAULT_FORM_VALUES: DeplacementFormModel = {
 };
 
 export const DeplacementForm = () => {
-  const { setFirebaseData } = useFirebase();
+  const { setFirebaseData } = useFirebaseDB();
+  const { sendEmailNotification } = useEmailNotification();
+
   const { profile } = useUserRedux();
   const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
     useHandleActionResultAlert();
-  const { isLoading, setIsLoading, LoadingSpinner } = useHandleLoading();
+
   const { control, watch, reset, getValues, handleSubmit } = useForm<DeplacementFormModel>({
     mode: 'onSubmit',
     defaultValues: DEFAULT_FORM_VALUES,
   });
 
-  const isEnMission = watch('motif') === 'En mission';
-  const createNewUser = (newData: unknown) => setFirebaseData('Application', newData);
-  const addNewUserMutation = useMutation(createNewUser);
+  const sendEmail: (data: EmailTemplate) => Promise<void> = async (params: EmailTemplate) =>
+    sendEmailNotification(params);
 
-  const handleCancel = () => reset(DEFAULT_FORM_VALUES);
+  const createNewUser = (newData: unknown) => setFirebaseData('Application', newData);
+
+  const { mutate, isLoading: isSending } = useMutation(sendEmail);
+  const { mutateAsync, isLoading } = useMutation(createNewUser);
+
+  const cancelHandler = () => reset(DEFAULT_FORM_VALUES);
+
   const createUserHandler = async () => {
-    setIsLoading(true);
     const { requestDate, absenceEndTime, absenceStartTime, motif, destination, applicationType } = getValues();
     try {
-      await addNewUserMutation.mutateAsync({
+      await mutateAsync({
         uid: profile?.uid,
         isProcessed: false,
         isApproved: null,
@@ -80,12 +87,16 @@ export const DeplacementForm = () => {
         motif,
         comment: '',
       });
+      mutate({
+        firstName: profile?.firstName,
+        lastName: profile?.lastName,
+        applicationType: Applications.Deplacement,
+        submitTime: moment().format(DATE_TIME_FORMAT),
+      });
       reset(DEFAULT_FORM_VALUES);
-      setIsLoading(false);
       setErrorMessage('');
       setSuccessMessage('Demande envoyée');
     } catch (error) {
-      setIsLoading(false);
       setSuccessMessage('');
       setErrorMessage("Demande n'est pas envoyée à cause des certains raisons");
     }
@@ -96,6 +107,9 @@ export const DeplacementForm = () => {
     const hours = duration.asHours();
     return hours;
   };
+
+  const isEnMission = watch('motif') === 'En mission';
+
   return (
     <Stack>
       <StyledAppBar>
@@ -220,15 +234,15 @@ export const DeplacementForm = () => {
               </Typography>
             </Grid>
           </Grid>
-          {isLoading ? (
-            <LoadingSpinner />
+          {isLoading || isSending ? (
+            <CircularProgress color="secondary" />
           ) : successMessage.length !== 0 ? (
             <ActionSuccessAlert />
           ) : errorMessage.length !== 0 ? (
             <ErrorMessageAlert />
           ) : null}
           <Stack direction="row" spacing={1}>
-            <Button variant="contained" onClick={handleCancel} color="error">
+            <Button variant="contained" onClick={cancelHandler} color="error">
               cancel
             </Button>
             <Button variant="contained" onClick={handleSubmit(createUserHandler)}>
