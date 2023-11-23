@@ -230,7 +230,7 @@ export const DeplacementForm = () => {
                 {`Absence temps en total : ${getDurationInHours(
                   watch('absenceEndTime') as Moment,
                   watch('absenceStartTime') as Moment,
-                )} hr`}
+                ).toFixed(1)} hr`}
               </Typography>
             </Grid>
           </Grid>

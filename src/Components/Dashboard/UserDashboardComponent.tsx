@@ -94,7 +94,9 @@ export const UserDashboardComponent = () => {
                           </TableCell>
                           <TableCell align="center">{application.applicationType}</TableCell>
                           <TableCell align="center">{!application.isProcessed ? 'En cours' : 'Finit'}</TableCell>
-                          <TableCell align="center">{!application.isApproved ? 'Apprové' : 'Rejecté'}</TableCell>
+                          <TableCell align="center">
+                            {application.isProcessed && application.isApproved ? 'Apprové' : 'Rejecté'}
+                          </TableCell>
                           <TableCell align="left">
                             <IconButton
                               aria-label="application-navigation"

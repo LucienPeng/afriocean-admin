@@ -136,6 +136,7 @@ export const AdminDeplacementList = () => {
                     <ExpandableTableRow
                       key={index}
                       row={row}
+                      comment={comment}
                       isUpdating={isUpdating}
                       approveHander={approveHander}
                       rejectHandler={rejectHandler}
@@ -178,6 +179,7 @@ interface ExpandableTableRowtProps {
   readonly children: ReactNode;
   readonly row: DemandeDeplacement;
   readonly isUpdating: boolean;
+  readonly comment: string;
   readonly rejectHandler: (row: DemandeDeplacement) => void;
   readonly approveHander: (row: DemandeDeplacement) => void;
   readonly onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -187,12 +189,12 @@ const ExpandableTableRow = ({
   children,
   row,
   isUpdating,
+  comment,
   rejectHandler,
   approveHander,
   onChangeHandler,
 }: ExpandableTableRowtProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
   return (
     <>
       <StyledTableRow>
@@ -212,7 +214,13 @@ const ExpandableTableRow = ({
           <TableCell />
           <TableCell align="right">{isUpdating && <CircularProgress color="secondary" size="20px" />}</TableCell>
           <TableCell colSpan={3}>
-            <StyledTextField size="small" placeholder="comment" fullWidth onChange={onChangeHandler} />
+            <StyledTextField
+              value={comment || row.comment}
+              size="small"
+              placeholder="comment"
+              fullWidth
+              onChange={onChangeHandler}
+            />
           </TableCell>
           <TableCell>
             <Stack direction="row" spacing={1}>
