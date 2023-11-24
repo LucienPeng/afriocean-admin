@@ -34,8 +34,8 @@ export const PageWrapper = (props: PageWrapperProps) => {
             flexDirection: 'column',
             justifyContent: 'flex-start',
             alignItems: 'center',
-            height:'100%',
-            //minHeight: 350,
+            height: '100%',
+            //minHeight: 750,
           }}
         >
           {children}

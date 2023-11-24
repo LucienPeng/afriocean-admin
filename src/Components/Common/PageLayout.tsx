@@ -8,22 +8,25 @@ export const PageLayout = (props: { children: ReactNode }) => {
   const { isMobileView } = useDeviceMetadata();
   const [open, setIsOpen] = useState(false);
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
+    <Box>
       <Navbar setIsOpen={setIsOpen} />
-      {isMobileView ? <MobileSideBar open={open} setIsOpen={setIsOpen} /> : <SideBar />}
-      <Box
-        component="main"
-        sx={{
-          backgroundColor: (theme) =>
-            theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[900],
-          overflow: 'auto',
-          flexGrow: 1,
-          minHeight: '100vh',
-        }}
-      >
-        <DrawerHeader />
-        {props.children}
+      <Box display="flex">
+        <CssBaseline />
+
+        {isMobileView ? <MobileSideBar open={open} setIsOpen={setIsOpen} /> : <SideBar />}
+        <Box
+          component="main"
+          sx={{
+            backgroundColor: (theme) =>
+              theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[900],
+            overflow: 'auto',
+            flexGrow: 1,
+            minHeight: '100vh',
+          }}
+        >
+          <DrawerHeader />
+          {props.children}
+        </Box>
       </Box>
     </Box>
   );

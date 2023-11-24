@@ -17,7 +17,7 @@ import {
 import { useMutation, useQuery } from 'react-query';
 import { Collections, MutationFunction, useFirebaseDB } from '../../../useFirebaseDB';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
-import { DeplacementFormModel } from '../../Application/DeplacementForm';
+import { DeplacementFormModel } from '../../Application/Form/DeplacementForm';
 import { StyledPaper } from '../../Common/StyledUI/StyledPaper';
 import { StyledAppBar } from '../../Common/StyledUI/StyledAppBar';
 import { StyledTableRow } from '../../Common/StyledUI/StyledTable';

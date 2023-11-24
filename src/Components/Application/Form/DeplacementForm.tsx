@@ -12,16 +12,16 @@ import {
 import moment, { Moment } from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Controller, useForm } from 'react-hook-form';
-import { useFirebaseDB } from '../../useFirebaseDB';
-import { useHandleActionResultAlert } from '../../Utils/useHandleActionResultAlert';
-import { useUserRedux } from '../../useUserRedux';
+import { useFirebaseDB } from '../../../useFirebaseDB';
+import { useHandleActionResultAlert } from '../../../Utils/useHandleActionResultAlert';
+import { useUserRedux } from '../../../useUserRedux';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { StyledTextField } from '../Common/StyledUI/StyledTextField';
-import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/application.model';
+import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
+import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../../model/application.model';
 import { useMutation } from 'react-query';
-import { EmailTemplate, useEmailNotification } from '../../Utils/useEmailNotification';
-import { PageWrapper } from '../Common/PageWrapper';
+import { EmailTemplate, useEmailNotification } from '../../../Utils/useEmailNotification';
+import { PageWrapper } from '../../Common/PageWrapper';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 
 export interface DeplacementFormModel extends ApplicationModel {
@@ -135,7 +135,7 @@ export const DeplacementForm = () => {
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DatePicker
                   sx={{ width: '100%' }}
-                  label="ABSENSE A PARTIR DU"
+                  label="Absense à partir du"
                   value={value}
                   onChange={onChange}
                   format={DATE_TIME_FORMAT}
@@ -153,7 +153,7 @@ export const DeplacementForm = () => {
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DatePicker
                   sx={{ width: '100%' }}
-                  label="ABSENSE TERMINE AU (PRÉVUE)"
+                  label="Absence Termine au (prévu)"
                   value={value}
                   onChange={onChange}
                   format={DATE_TIME_FORMAT}
@@ -196,7 +196,7 @@ export const DeplacementForm = () => {
                   margin="normal"
                   required
                   id="destination"
-                  label="destination"
+                  label="Destination"
                   value={value}
                 />
               )}
