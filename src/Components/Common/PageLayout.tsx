@@ -4,7 +4,7 @@ import { Navbar } from './Navbar';
 import { DrawerHeader, MobileSideBar, SideBar } from './SideBar/SideBar';
 import { useDeviceMetadata } from './DeviceMetadataProvider';
 
-export const Layout = (props: { children: ReactNode }) => {
+export const PageLayout = (props: { children: ReactNode }) => {
   const { isMobileView } = useDeviceMetadata();
   const [open, setIsOpen] = useState(false);
   return (

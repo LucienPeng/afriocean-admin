@@ -1,5 +1,5 @@
 import { AdminDashboardComponent } from '../Components/Dashboard/AdminDashboardComponent';
-import { Layout as DashboardLayout } from '../Components/Common/Layout';
+import { PageLayout as DashboardLayout } from '../Components/Common/PageLayout';
 import { Copyright } from '../Components/Common/CopyRight';
 import { useUserRedux } from '../useUserRedux';
 import { Roles } from '../model/company.model';

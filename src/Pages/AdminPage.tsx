@@ -1,5 +1,5 @@
 import { Copyright } from '../Components/Common/CopyRight';
-import { Layout as AdminLayout } from '../Components/Common/Layout';
+import { PageLayout as AdminLayout } from '../Components/Common/PageLayout';
 import { Outlet } from 'react-router-dom';
 
 const AdminPage = () => {

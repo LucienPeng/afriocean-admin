@@ -7,8 +7,11 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
 import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
-import TextSnippetIcon from '@mui/icons-material/TextSnippet';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import InventoryIcon from '@mui/icons-material/Inventory';
+
 export interface SingleNavItem {
   readonly navTitle: string;
   readonly path: string;
@@ -25,14 +28,19 @@ const DEMANDES_SUB_NAV_ITEMS: SingleNavItem[] = [
   { navTitle: 'Heures supplémentaires', path: '/demande/heures-supplémentaires', icon: <AccessTimeFilledIcon /> },
 ];
 
-const DEMANDES = { navTitle: 'Demandes', path: '#', icon: <TextSnippetIcon />, subNavItem: DEMANDES_SUB_NAV_ITEMS };
+const DEMANDES = { navTitle: 'Demandes', path: '#', icon: <AssignmentIcon />, subNavItem: DEMANDES_SUB_NAV_ITEMS };
 const DASHBOARD = { navTitle: 'Tableau de bord', path: '/', icon: <DashboardIcon /> };
+const CAISSE = { navTitle: 'Caisse', path: '#', icon: <LocalAtmIcon /> };
+const MATERIAUX = { navTitle: 'Matériaux', path: '/material', icon: <InventoryIcon /> };
+
 const CREATE_USER = { navTitle: 'Create user', path: '/admin/create-user', icon: <PersonAddIcon /> };
+
 const ADMIN_APPLICATION_PORTAL = {
   navTitle: 'Demande Contrôl',
   path: '/admin/application',
   icon: <RemoveRedEyeIcon />,
 };
+
 const USER_APPLICATION_PORTAL = { navTitle: 'Mes Demandes', path: '/demande', icon: <RemoveRedEyeIcon /> };
 
 export const useGetNavItems = () => {
@@ -40,6 +48,8 @@ export const useGetNavItems = () => {
     <List component="nav">
       <SingleListItem navItem={DASHBOARD} />
       <NestedLisItem navItem={DEMANDES} />
+      <SingleListItem navItem={CAISSE} />
+      <SingleListItem navItem={MATERIAUX} />
       <Divider sx={{ my: 1 }} />
       <SingleListItem navItem={CREATE_USER} />
       <SingleListItem navItem={ADMIN_APPLICATION_PORTAL} />
@@ -50,6 +60,8 @@ export const useGetNavItems = () => {
     <List component="nav">
       <SingleListItem navItem={DASHBOARD} />
       <NestedLisItem navItem={DEMANDES} />
+      <SingleListItem navItem={CAISSE} />
+      <SingleListItem navItem={MATERIAUX} />
       <Divider sx={{ my: 1 }} />
       <SingleListItem navItem={USER_APPLICATION_PORTAL} />
     </List>

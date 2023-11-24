@@ -1,16 +1,15 @@
 import {
   Button,
   CircularProgress,
-  Container,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
   Stack,
-  Toolbar,
   Typography,
 } from '@mui/material';
+import moment, { Moment } from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Controller, useForm } from 'react-hook-form';
 import { useFirebaseDB } from '../../useFirebaseDB';
@@ -21,11 +20,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/application.model';
 import { useMutation } from 'react-query';
-import { StyledPaper } from '../Common/StyledUI/StyledPaper';
-import { StyledTitle } from '../Common/StyledUI/StyledTitle';
-import { StyledAppBar } from '../Common/StyledUI/StyledAppBar';
-import moment, { Moment } from 'moment';
 import { EmailTemplate, useEmailNotification } from '../../Utils/useEmailNotification';
+import { PageWrapper } from '../Common/PageWrapper';
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
 
 export interface DeplacementFormModel extends ApplicationModel {
   readonly absenceStartTime: Moment | string;
@@ -47,17 +44,15 @@ const DEFAULT_FORM_VALUES: DeplacementFormModel = {
 };
 
 export const DeplacementForm = () => {
-  const { setFirebaseData } = useFirebaseDB();
-  const { sendEmailNotification } = useEmailNotification();
-
   const { profile } = useUserRedux();
-  const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
-    useHandleActionResultAlert();
-
   const { control, watch, reset, getValues, handleSubmit } = useForm<DeplacementFormModel>({
     mode: 'onSubmit',
     defaultValues: DEFAULT_FORM_VALUES,
   });
+  const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
+    useHandleActionResultAlert();
+  const { setFirebaseData } = useFirebaseDB();
+  const { sendEmailNotification } = useEmailNotification();
 
   const sendEmail: (data: EmailTemplate) => Promise<void> = async (params: EmailTemplate) =>
     sendEmailNotification(params);
@@ -111,146 +106,127 @@ export const DeplacementForm = () => {
   const isEnMission = watch('motif') === 'En mission';
 
   return (
-    <Stack>
-      <StyledAppBar>
-        <Toolbar>
-          <StyledTitle>Demande de déplacement</StyledTitle>
-        </Toolbar>
-      </StyledAppBar>
-      <Container maxWidth="sm">
-        <StyledPaper
-          sx={{
-            my: { xs: 3, md: 6 },
-            p: { xs: 2, md: 3 },
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: 5,
-          }}
-        >
-          <Grid container rowSpacing={3} columnSpacing={1}>
-            <Grid item xs={12}>
-              <Controller
-                name="requestDate"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <LocalizationProvider dateAdapter={AdapterMoment}>
-                    <DatePicker
-                      sx={{ width: '100%' }}
-                      label="Date de demande"
-                      value={value}
-                      onChange={onChange}
-                      format={DATE_TIME_FORMAT}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="absenceStartTime"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <LocalizationProvider dateAdapter={AdapterMoment}>
-                    <DatePicker
-                      sx={{ width: '100%' }}
-                      label="ABSENSE A PARTIR DU"
-                      value={value}
-                      onChange={onChange}
-                      format={DATE_TIME_FORMAT}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="absenceEndTime"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <LocalizationProvider dateAdapter={AdapterMoment}>
-                    <DatePicker
-                      sx={{ width: '100%' }}
-                      label="ABSENSE TERMINE AU (PRÉVUE)"
-                      value={value}
-                      onChange={onChange}
-                      format={DATE_TIME_FORMAT}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-            </Grid>
+    <PageWrapper icon={<DriveEtaIcon />} componentName="Demande de Déplacement" containerMaxWidth="sm">
+      <Grid container rowSpacing={3} columnSpacing={1}>
+        <Grid item xs={12}>
+          <Controller
+            name="requestDate"
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { onChange, value } }) => (
+              <LocalizationProvider dateAdapter={AdapterMoment}>
+                <DatePicker
+                  sx={{ width: '100%' }}
+                  label="Date de demande"
+                  value={value}
+                  onChange={onChange}
+                  format={DATE_TIME_FORMAT}
+                />
+              </LocalizationProvider>
+            )}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="absenceStartTime"
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { onChange, value } }) => (
+              <LocalizationProvider dateAdapter={AdapterMoment}>
+                <DatePicker
+                  sx={{ width: '100%' }}
+                  label="ABSENSE A PARTIR DU"
+                  value={value}
+                  onChange={onChange}
+                  format={DATE_TIME_FORMAT}
+                />
+              </LocalizationProvider>
+            )}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="absenceEndTime"
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { onChange, value } }) => (
+              <LocalizationProvider dateAdapter={AdapterMoment}>
+                <DatePicker
+                  sx={{ width: '100%' }}
+                  label="ABSENSE TERMINE AU (PRÉVUE)"
+                  value={value}
+                  onChange={onChange}
+                  format={DATE_TIME_FORMAT}
+                />
+              </LocalizationProvider>
+            )}
+          />
+        </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="motif"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <FormControl fullWidth margin="none">
-                    <InputLabel id="role-label">Motif</InputLabel>
-                    <Select variant="outlined" fullWidth labelId="role" id="role" onChange={onChange} value={value}>
-                      {motifs.map((motif) => (
-                        <MenuItem key={motif} value={motif}>
-                          {motif}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              {isEnMission && (
-                <Controller
-                  name="destination"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { onChange, value } }) => (
-                    <StyledTextField
-                      fullWidth
-                      onChange={onChange}
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      id="destination"
-                      label="destination"
-                      value={value}
-                    />
-                  )}
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="motif"
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { onChange, value } }) => (
+              <FormControl fullWidth margin="none">
+                <InputLabel id="role-label">Motif</InputLabel>
+                <Select variant="outlined" fullWidth labelId="role" id="role" onChange={onChange} value={value}>
+                  {motifs.map((motif) => (
+                    <MenuItem key={motif} value={motif}>
+                      {motif}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          {isEnMission && (
+            <Controller
+              name="destination"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <StyledTextField
+                  fullWidth
+                  onChange={onChange}
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  id="destination"
+                  label="destination"
+                  value={value}
                 />
               )}
-            </Grid>
-            <Grid item xs={12}>
-              <Typography color="text.primary" textAlign="center">
-                {`Absence temps en total : ${getDurationInHours(
-                  watch('absenceEndTime') as Moment,
-                  watch('absenceStartTime') as Moment,
-                ).toFixed(1)} hr`}
-              </Typography>
-            </Grid>
-          </Grid>
-          {isLoading || isSending ? (
-            <CircularProgress color="secondary" />
-          ) : successMessage.length !== 0 ? (
-            <ActionSuccessAlert />
-          ) : errorMessage.length !== 0 ? (
-            <ErrorMessageAlert />
-          ) : null}
-          <Stack direction="row" spacing={1}>
-            <Button variant="contained" onClick={cancelHandler} color="error">
-              cancel
-            </Button>
-            <Button variant="contained" onClick={handleSubmit(createUserHandler)}>
-              save
-            </Button>
-          </Stack>
-        </StyledPaper>
-      </Container>
-    </Stack>
+            />
+          )}
+        </Grid>
+        <Grid item xs={12}>
+          <Typography fontWeight={700} color="text.primary" textAlign="center">
+            {`Absence temps en total : ${getDurationInHours(
+              watch('absenceEndTime') as Moment,
+              watch('absenceStartTime') as Moment,
+            ).toFixed(1)} hr`}
+          </Typography>
+        </Grid>
+      </Grid>
+      {isLoading || isSending ? (
+        <CircularProgress color="secondary" />
+      ) : successMessage.length !== 0 ? (
+        <ActionSuccessAlert />
+      ) : errorMessage.length !== 0 ? (
+        <ErrorMessageAlert />
+      ) : null}
+      <Stack direction="row" spacing={1} mt={2}>
+        <Button variant="contained" onClick={cancelHandler} color="error">
+          cancel
+        </Button>
+        <Button variant="contained" onClick={handleSubmit(createUserHandler)}>
+          save
+        </Button>
+      </Stack>
+    </PageWrapper>
   );
 };

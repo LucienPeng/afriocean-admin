@@ -6,7 +6,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import { NestedNavItem } from './useGetNavItems';
 
 export const NestedLisItem = (props: { navItem: NestedNavItem }) => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const { navItem } = props;
   const navigate = useNavigate();
   const redirectHandler = (path: string) => navigate(path);

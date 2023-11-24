@@ -1,5 +1,5 @@
 import { Copyright } from '../Components/Common/CopyRight';
-import { Layout as UserLayout } from '../Components/Common/Layout';
+import { PageLayout as UserLayout } from '../Components/Common/PageLayout';
 import { Outlet } from 'react-router-dom';
 
 const UserPage = () => {
