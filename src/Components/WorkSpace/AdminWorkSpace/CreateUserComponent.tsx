@@ -201,22 +201,25 @@ export const CreateUserComponent = () => {
             )}
           />
         </Grid>
+
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : successMessage.length !== 0 ? (
+          <ActionSuccessAlert />
+        ) : errorMessage.length !== 0 ? (
+          <ErrorMessageAlert />
+        ) : null}
+        <Grid item xs={12}>
+          <Stack width="100%" direction="row" justifyContent="center" spacing={1}>
+            <Button variant="contained" onClick={handleCancel} color="error">
+              cancel
+            </Button>
+            <Button variant="contained" onClick={handleSubmit(createUserHandler)}>
+              save
+            </Button>
+          </Stack>
+        </Grid>
       </Grid>
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : successMessage.length !== 0 ? (
-        <ActionSuccessAlert />
-      ) : errorMessage.length !== 0 ? (
-        <ErrorMessageAlert />
-      ) : null}
-      <Stack direction="row" spacing={1}>
-        <Button variant="contained" onClick={handleCancel} color="error">
-          cancel
-        </Button>
-        <Button variant="contained" onClick={handleSubmit(createUserHandler)}>
-          save
-        </Button>
-      </Stack>
     </PageWrapper>
   );
 };

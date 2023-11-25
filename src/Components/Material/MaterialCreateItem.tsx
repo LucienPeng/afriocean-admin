@@ -7,29 +7,31 @@ import moment from 'moment';
 import { DATE_TIME_FORMAT } from '../../model/application.model';
 import { useUserRedux } from '../../useUserRedux';
 import { useNavigate } from 'react-router-dom';
-export interface Material {
-  readonly serialIndex: string;
-  readonly erpId: string;
-  readonly department: string;
-  readonly materialName: string;
-  readonly materialZhName: string;
-  readonly spec: string;
-  readonly price: string;
-  readonly currency: string;
-  readonly brand: string;
-  readonly quantity: number;
-  readonly photo: string;
-  readonly barCode: string;
-}
+import { MaterialModel } from '../../model/material.model';
+import { useMaterialRedux } from '../../useMaterialRedux';
+import { Collections, useFirebaseDB } from '../../useFirebaseDB';
 
 const currency = ['CFA', 'EUR', 'TWD', 'USD'];
 
 export const MaterialItem = () => {
+  const { setFirebaseData } = useFirebaseDB();
+  const { itemCount } = useMaterialRedux();
   const { profile } = useUserRedux();
-  const { control } = useForm<Material>({
+  const { getValues, control } = useForm<MaterialModel>({
     mode: 'onSubmit',
-    //defaultValues: DEFAULT_FORM_VALUES,
+    defaultValues: {
+      serialIndex: String(itemCount + 1),
+    },
   });
+
+  const { serialIndex } = getValues();
+
+  const createItem = () => {
+    setFirebaseData(Collections.Material, {
+      serialIndex: serialIndex,
+    });
+  };
+
   const navigate = useNavigate();
   return (
     <PageWrapper icon={<QueueIcon />} componentName=" Ajouter objets" containerMaxWidth="lg">
@@ -37,7 +39,7 @@ export const MaterialItem = () => {
         <Grid item xs={12}>
           <Grid container>
             <Grid item xs={6}>
-              N° Index :
+              N° Index : {serialIndex}
             </Grid>
             <Grid item xs={6}>
               <Controller
@@ -228,7 +230,9 @@ export const MaterialItem = () => {
             <Button variant="contained" color="error" onClick={() => navigate('/material')}>
               Anuler
             </Button>
-            <Button variant="contained">Ajouter</Button>
+            <Button variant="contained" onClick={createItem}>
+              Ajouter
+            </Button>
           </Stack>
         </Grid>
       </Grid>

@@ -1,17 +1,15 @@
-import { Button, Stack } from '@mui/material';
+import { Button, CircularProgress, Stack, styled } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { PageWrapper } from '../Common/PageWrapper';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 import InventoryIcon from '@mui/icons-material/Inventory';
-import { useFirebaseDB } from '../../useFirebaseDB';
+import { Collections, useFirebaseDB } from '../../useFirebaseDB';
 import { useQuery } from 'react-query';
-import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
-
-const rows: GridRowsProp = [
-  { id: 1, col1: 'Hello', col2: 'World', col3: '111' },
-  { id: 2, col1: 'DataGridPro', col2: 'is Awesome' },
-  { id: 3, col1: 'MUI', col2: 'is Amazing' },
-];
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { useMaterialRedux } from '../../useMaterialRedux';
+import { materialActions } from '../../Store/Material/material-slice';
+import { MaterialModel } from '../../model/material.model';
+import { useState } from 'react';
 
 const columns: GridColDef[] = [
   { field: 'col1', headerName: 'N° Index' },
@@ -25,12 +23,44 @@ const columns: GridColDef[] = [
   { field: 'col9', headerName: 'Qrcode' },
 ];
 
+const mapRows = (data: MaterialModel[]) => {
+  return data.map((d, index) => {
+    return { id: index, col1: d.serialIndex, col2: d.erpId, col3: d.materialName };
+  });
+};
+
+const StyledDataGrid = styled(DataGrid)(() => ({
+  '& .MuiDataGrid-row': {
+    //backgroundColor: 'teal',
+    '&:hover': {
+      cursor: 'pointer',
+      // backgroundColor: 'red !important',
+    },
+    '&:nth-child(odd)': {
+      backgroundColor: 'grey',
+    },
+  },
+  '& .MuiDataGrid-cell': {
+    fontSize: '16px',
+    textAlign: 'left',
+  },
+}));
+
 export const MaterialPortal = () => {
+  const [rows, setRows] = useState<MaterialModel[]>([]);
   const { getFirebaseCollectionData } = useFirebaseDB();
-  const { data, isLoading } = useQuery({
+  const { dispatch } = useMaterialRedux();
+  const { isLoading } = useQuery({
     queryKey: 'materialList',
     queryFn: () => getFirebaseCollectionData('Material'),
-    onSuccess: (fetchedData) => console.log(fetchedData),
+    onSuccess: (fetchedData) => {
+      setRows((mapRows(fetchedData as any) as any) ?? []);
+      dispatch(
+        materialActions.setMaterial({
+          itemCount: fetchedData?.length,
+        }),
+      );
+    },
   });
 
   const navigate = useNavigate();
@@ -44,7 +74,18 @@ export const MaterialPortal = () => {
             Ajouter objets
           </Button>
         </Stack>
-        <DataGrid autoHeight rows={rows} columns={columns} />
+        <StyledDataGrid
+          disableColumnFilter
+          disableColumnMenu
+          hideFooterSelectedRowCount
+          slots={{
+            loadingOverlay: CircularProgress,
+          }}
+          loading={isLoading}
+          autoHeight
+          rows={rows}
+          columns={columns}
+        />
       </Stack>
     </PageWrapper>
   );

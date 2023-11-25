@@ -23,9 +23,9 @@ export interface NestedNavItem extends SingleNavItem {
 }
 
 const DEMANDES_SUB_NAV_ITEMS: SingleNavItem[] = [
-  { navTitle: 'Déplacement', path: '/demande/deplacement', icon: <TimeToLeaveIcon /> },
-  { navTitle: 'Absence / Congé', path: '/demande/absence-conge', icon: <LocalCafeIcon /> },
-  { navTitle: 'Heures supplémentaires', path: '/demande/heures-supplémentaires', icon: <AccessTimeFilledIcon /> },
+  { navTitle: 'Déplacement', path: '/application/deplacement', icon: <TimeToLeaveIcon /> },
+  { navTitle: 'Absence / Congé', path: '/application/absence-conge', icon: <LocalCafeIcon /> },
+  { navTitle: 'Heures supplémentaires', path: '/application/heures-supplémentaires', icon: <AccessTimeFilledIcon /> },
 ];
 
 const DEMANDES = { navTitle: 'Demandes', path: '#', icon: <AssignmentIcon />, subNavItem: DEMANDES_SUB_NAV_ITEMS };
@@ -41,7 +41,7 @@ const ADMIN_APPLICATION_PORTAL = {
   icon: <RemoveRedEyeIcon />,
 };
 
-const USER_APPLICATION_PORTAL = { navTitle: 'Mes Demandes', path: '/demande', icon: <RemoveRedEyeIcon /> };
+const USER_APPLICATION_PORTAL = { navTitle: 'Mes Demandes', path: '/application', icon: <RemoveRedEyeIcon /> };
 
 export const useGetNavItems = () => {
   const adminListItems = (

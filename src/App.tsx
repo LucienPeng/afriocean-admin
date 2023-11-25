@@ -8,22 +8,17 @@ import { ThemeProvider } from '@mui/material/styles';
 import ProtectedRoute from './ProtectedRoute';
 import DashboardPage from './Pages/DashboardPage';
 import UserPage from './Pages/UserPage';
-import MaterialPage from './Pages/MaterialPage';
 import AdminPage from './Pages/AdminPage';
 import SignInPage from './Pages/SignInPage';
-import DemandePage from './Pages/DemandePage';
 import { CreateUserComponent } from './Components/WorkSpace/AdminWorkSpace/CreateUserComponent';
 import { useAuthActions } from './Store/Auth/auth-actions';
 import { Roles } from './model/company.model';
-import { DeplacementForm } from './Components/Application/Form/DeplacementForm';
-import { Absence } from './Components/Application/Form/Absence';
-import { HeuresSupplementaires } from './Components/Application/Form/HeuresSupplementaires';
 import { AdminDeplacementList } from './Components/WorkSpace/AdminWorkSpace/AdminDeplacementList';
 import { UserDeplacementList } from './Components/WorkSpace/UserWorkSpace/UserDeplacementList';
 import { ApplicationsPortal } from './Components/Application/ApplicationsPortal';
+import { MaterialRoute } from './Routes/MaterialRoute';
+import { ApplicationRoute } from './Routes/ApplicationRoute';
 import moment from 'moment';
-import { MaterialPortal } from './Components/Material/MaterialPortal';
-import { MaterialItem } from './Components/Material/MaterialCreateItem';
 
 const getToken = async () => {
   const currentUser = getAuth().currentUser;
@@ -64,7 +59,6 @@ const App = () => {
           path="/*"
           element={<ProtectedRoute component={DashboardPage} permission={[Roles.ADMIN, Roles.USER]} />}
         />
-
         <Route path="/admin" element={<ProtectedRoute component={AdminPage} permission={[Roles.ADMIN]} />}>
           <Route path="/admin/create-user" element={<CreateUserComponent />} />
           <Route path="/admin/application" element={<ApplicationsPortal />} />
@@ -76,23 +70,8 @@ const App = () => {
           <Route path="/user/application/deplacement" element={<UserDeplacementList />} />
         </Route>
 
-        <Route
-          path="/material"
-          element={<ProtectedRoute component={MaterialPage} permission={[Roles.ADMIN, Roles.USER]} />}
-        >
-          <Route path="/material" element={<MaterialPortal />} />
-          <Route path="/material/create" element={<MaterialItem />} />
-        </Route>
-
-        <Route
-          path="/demande"
-          element={<ProtectedRoute component={DemandePage} permission={[Roles.ADMIN, Roles.USER]} />}
-        >
-          <Route path="/demande" element={<ApplicationsPortal />} />
-          <Route path="/demande/deplacement" element={<DeplacementForm />} />
-          <Route path="/demande/absence-conge" element={<Absence />} />
-          <Route path="/demande/heures-supplémentaires" element={<HeuresSupplementaires />} />
-        </Route>
+        {MaterialRoute()}
+        {ApplicationRoute()}
 
         <Route path="/login" element={<SignInPage />} />
       </Routes>
