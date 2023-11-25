@@ -23,6 +23,7 @@ import { useMutation } from 'react-query';
 import { EmailTemplate, useEmailNotification } from '../../../Utils/useEmailNotification';
 import { PageWrapper } from '../../Common/PageWrapper';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
+import { PageSection } from '../../Common/PageSection';
 
 export interface DeplacementFormModel extends ApplicationModel {
   readonly absenceStartTime: Moment | string;
@@ -107,126 +108,128 @@ export const DeplacementForm = () => {
 
   return (
     <PageWrapper icon={<DriveEtaIcon />} componentName="Demande de Déplacement" containerMaxWidth="sm">
-      <Grid container rowSpacing={3} columnSpacing={1}>
-        <Grid item xs={12}>
-          <Controller
-            name="requestDate"
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  sx={{ width: '100%' }}
-                  label="Date de demande"
-                  value={value}
-                  onChange={onChange}
-                  format={DATE_TIME_FORMAT}
-                />
-              </LocalizationProvider>
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="absenceStartTime"
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  sx={{ width: '100%' }}
-                  label="Absense à partir du"
-                  value={value}
-                  onChange={onChange}
-                  format={DATE_TIME_FORMAT}
-                />
-              </LocalizationProvider>
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="absenceEndTime"
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  sx={{ width: '100%' }}
-                  label="Absence Termine au (prévu)"
-                  value={value}
-                  onChange={onChange}
-                  format={DATE_TIME_FORMAT}
-                />
-              </LocalizationProvider>
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="motif"
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <FormControl fullWidth margin="none">
-                <InputLabel id="role-label">Motif</InputLabel>
-                <Select variant="outlined" fullWidth labelId="role" id="role" onChange={onChange} value={value}>
-                  {motifs.map((motif) => (
-                    <MenuItem key={motif} value={motif}>
-                      {motif}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          {isEnMission && (
+      <PageSection>
+        <Grid container rowSpacing={3} columnSpacing={1}>
+          <Grid item xs={12}>
             <Controller
-              name="destination"
+              name="requestDate"
               control={control}
               rules={{ required: true }}
               render={({ field: { onChange, value } }) => (
-                <StyledTextField
-                  fullWidth
-                  onChange={onChange}
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  id="destination"
-                  label="Destination"
-                  value={value}
-                />
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                  <DatePicker
+                    sx={{ width: '100%' }}
+                    label="Date de demande"
+                    value={value}
+                    onChange={onChange}
+                    format={DATE_TIME_FORMAT}
+                  />
+                </LocalizationProvider>
               )}
             />
-          )}
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="absenceStartTime"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                  <DatePicker
+                    sx={{ width: '100%' }}
+                    label="Absense à partir du"
+                    value={value}
+                    onChange={onChange}
+                    format={DATE_TIME_FORMAT}
+                  />
+                </LocalizationProvider>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="absenceEndTime"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                  <DatePicker
+                    sx={{ width: '100%' }}
+                    label="Absence Termine au (prévu)"
+                    value={value}
+                    onChange={onChange}
+                    format={DATE_TIME_FORMAT}
+                  />
+                </LocalizationProvider>
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="motif"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <FormControl fullWidth margin="none">
+                  <InputLabel id="role-label">Motif</InputLabel>
+                  <Select variant="outlined" fullWidth labelId="role" id="role" onChange={onChange} value={value}>
+                    {motifs.map((motif) => (
+                      <MenuItem key={motif} value={motif}>
+                        {motif}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            {isEnMission && (
+              <Controller
+                name="destination"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <StyledTextField
+                    fullWidth
+                    onChange={onChange}
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    id="destination"
+                    label="Destination"
+                    value={value}
+                  />
+                )}
+              />
+            )}
+          </Grid>
+          <Grid item xs={12}>
+            <Typography fontWeight={700} color="text.primary" textAlign="center">
+              {`Absence temps en total : ${getDurationInHours(
+                watch('absenceEndTime') as Moment,
+                watch('absenceStartTime') as Moment,
+              ).toFixed(1)} hr`}
+            </Typography>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Typography fontWeight={700} color="text.primary" textAlign="center">
-            {`Absence temps en total : ${getDurationInHours(
-              watch('absenceEndTime') as Moment,
-              watch('absenceStartTime') as Moment,
-            ).toFixed(1)} hr`}
-          </Typography>
-        </Grid>
-      </Grid>
-      {isLoading || isSending ? (
-        <CircularProgress color="secondary" />
-      ) : successMessage.length !== 0 ? (
-        <ActionSuccessAlert />
-      ) : errorMessage.length !== 0 ? (
-        <ErrorMessageAlert />
-      ) : null}
-      <Stack direction="row" spacing={1} mt={2}>
-        <Button variant="contained" onClick={cancelHandler} color="error">
-          cancel
-        </Button>
-        <Button variant="contained" onClick={handleSubmit(createUserHandler)}>
-          save
-        </Button>
-      </Stack>
+        {isLoading || isSending ? (
+          <CircularProgress color="secondary" />
+        ) : successMessage.length !== 0 ? (
+          <ActionSuccessAlert />
+        ) : errorMessage.length !== 0 ? (
+          <ErrorMessageAlert />
+        ) : null}
+        <Stack direction="row" spacing={1} mt={2}>
+          <Button variant="contained" onClick={cancelHandler} color="error">
+            cancel
+          </Button>
+          <Button variant="contained" onClick={handleSubmit(createUserHandler)}>
+            save
+          </Button>
+        </Stack>
+      </PageSection>
     </PageWrapper>
   );
 };

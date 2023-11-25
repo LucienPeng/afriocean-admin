@@ -1,3 +1,10 @@
+export enum Currency {
+  CFA,
+  EUR,
+  TWD,
+  USD
+}
+
 export interface MaterialModel {
   readonly serialIndex: string;
   readonly erpId: string;
@@ -6,9 +13,9 @@ export interface MaterialModel {
   readonly materialZhName: string;
   readonly spec: string;
   readonly price: string;
-  readonly currency: string;
+  readonly currency: Currency;
   readonly brand: string;
   readonly quantity: number;
   readonly photo: string;
-  readonly barCode: string;
 }
+

@@ -11,6 +11,7 @@ import { MaterialModel } from '../../model/material.model';
 import { useState } from 'react';
 import { DataGridComponent } from '../Common/StyledUI/StyledDataGrid';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import { PageSection } from '../Common/PageSection';
 
 const columns: GridColDef[] = [
   { field: 'col1', headerName: 'N° Index' },
@@ -51,20 +52,22 @@ export const MaterialPortal = () => {
 
   return (
     <PageWrapper componentName="Matériaux" icon={<InventoryIcon />} containerMaxWidth="lg">
-      <Stack width="100%" direction="column" spacing={5}>
-        <Stack width="100%" direction="row" justifyContent="flex-end" spacing={2}>
-          <StyledTextField placeholder="Search Material" />
-          <Button variant="outlined" onClick={() => navigate('/material/create')}>
-            Ajouter objets
-          </Button>
+      <PageSection>
+        <Stack width="100%" direction="column" spacing={5}>
+          <Stack width="100%" direction="row" justifyContent="flex-end" spacing={2}>
+            <StyledTextField placeholder="Search Material" />
+            <Button variant="outlined" onClick={() => navigate('/material/create')}>
+              Ajouter objets
+            </Button>
+          </Stack>
+          <DataGridComponent
+            isLoading={isLoading}
+            rows={rows}
+            columns={columns}
+            onCellClickHandler={() => navigate('/material/1/view')}
+          />
         </Stack>
-        <DataGridComponent
-          isLoading={isLoading}
-          rows={rows}
-          columns={columns}
-          onCellClickHandler={() => navigate('/material/1/view')}
-        />
-      </Stack>
+      </PageSection>
     </PageWrapper>
   );
 };
