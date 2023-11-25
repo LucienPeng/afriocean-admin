@@ -1,19 +1,19 @@
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select, Stack } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { PageWrapper } from '../Common/PageWrapper';
-import QueueIcon from '@mui/icons-material/Queue';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
-import moment from 'moment';
 import { DATE_TIME_FORMAT } from '../../model/application.model';
 import { useUserRedux } from '../../useUserRedux';
 import { useNavigate } from 'react-router-dom';
 import { MaterialModel } from '../../model/material.model';
 import { useMaterialRedux } from '../../useMaterialRedux';
 import { Collections, useFirebaseDB } from '../../useFirebaseDB';
+import QueueIcon from '@mui/icons-material/Queue';
+import moment from 'moment';
 
-const currency = ['CFA', 'EUR', 'TWD', 'USD'];
+const CURRENY_VALUE = ['CFA', 'EUR', 'TWD', 'USD'];
 
-export const MaterialItem = () => {
+export const MaterialItemForm = () => {
   const { setFirebaseData } = useFirebaseDB();
   const { itemCount } = useMaterialRedux();
   const { profile } = useUserRedux();
@@ -24,12 +24,22 @@ export const MaterialItem = () => {
     },
   });
 
-  const { serialIndex } = getValues();
+  const {
+    serialIndex,
+    // erpId,
+    // department,
+    // materialName,
+    // materialZhName,
+    // spec,
+    // price,
+    // currency,
+    // brand,
+    // quantity,
+    // photo,
+  } = getValues();
 
   const createItem = () => {
-    setFirebaseData(Collections.Material, {
-      serialIndex: serialIndex,
-    });
+    setFirebaseData(Collections.Material, { ...getValues(), erpId: 'rrr' });
   };
 
   const navigate = useNavigate();
@@ -187,7 +197,7 @@ export const MaterialItem = () => {
                       onChange={onChange}
                       value={value}
                     >
-                      {currency.map((role) => (
+                      {CURRENY_VALUE.map((role) => (
                         <MenuItem key={role} value={role}>
                           {role}
                         </MenuItem>

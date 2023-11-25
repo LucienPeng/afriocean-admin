@@ -1,15 +1,16 @@
-import { Button, CircularProgress, Stack, styled } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { PageWrapper } from '../Common/PageWrapper';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import { Collections, useFirebaseDB } from '../../useFirebaseDB';
+import { useFirebaseDB } from '../../useFirebaseDB';
 import { useQuery } from 'react-query';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import { useMaterialRedux } from '../../useMaterialRedux';
 import { materialActions } from '../../Store/Material/material-slice';
 import { MaterialModel } from '../../model/material.model';
 import { useState } from 'react';
+import { DataGridComponent } from '../Common/StyledUI/StyledDataGrid';
+import InventoryIcon from '@mui/icons-material/Inventory';
 
 const columns: GridColDef[] = [
   { field: 'col1', headerName: 'N° Index' },
@@ -28,23 +29,6 @@ const mapRows = (data: MaterialModel[]) => {
     return { id: index, col1: d.serialIndex, col2: d.erpId, col3: d.materialName };
   });
 };
-
-const StyledDataGrid = styled(DataGrid)(() => ({
-  '& .MuiDataGrid-row': {
-    //backgroundColor: 'teal',
-    '&:hover': {
-      cursor: 'pointer',
-      // backgroundColor: 'red !important',
-    },
-    '&:nth-child(odd)': {
-      backgroundColor: 'grey',
-    },
-  },
-  '& .MuiDataGrid-cell': {
-    fontSize: '16px',
-    textAlign: 'left',
-  },
-}));
 
 export const MaterialPortal = () => {
   const [rows, setRows] = useState<MaterialModel[]>([]);
@@ -74,17 +58,11 @@ export const MaterialPortal = () => {
             Ajouter objets
           </Button>
         </Stack>
-        <StyledDataGrid
-          disableColumnFilter
-          disableColumnMenu
-          hideFooterSelectedRowCount
-          slots={{
-            loadingOverlay: CircularProgress,
-          }}
-          loading={isLoading}
-          autoHeight
+        <DataGridComponent
+          isLoading={isLoading}
           rows={rows}
           columns={columns}
+          onCellClickHandler={() => navigate('/material/1/view')}
         />
       </Stack>
     </PageWrapper>
