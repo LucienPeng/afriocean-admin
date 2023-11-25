@@ -14,6 +14,7 @@ import { EmailTemplate } from './Utils/useEmailNotification';
 
 export enum Collections {
   Application = 'Application',
+  Material = 'Material',
 }
 
 export type MutationFunction = (data: MutationData) => Promise<void>;

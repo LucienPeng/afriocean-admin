@@ -1,15 +1,4 @@
-import {
-  Avatar,
-  Button,
-  Container,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Toolbar,
-} from '@mui/material';
+import { Button, FormControl, Grid, InputLabel, MenuItem, Select, Stack } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { Department, Profile, Roles } from '../../../model/company.model';
 import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase/auth';
@@ -18,9 +7,6 @@ import { useFirebaseDB } from '../../../useFirebaseDB';
 import { useHandleActionResultAlert } from '../../../Utils/useHandleActionResultAlert';
 import { useHandleLoading } from '../../../Utils/useHandleLoading';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
-import { StyledPaper } from '../../Common/StyledUI/StyledPaper';
-import { StyledTitle } from '../../Common/StyledUI/StyledTitle';
-import { StyledAppBar } from '../../Common/StyledUI/StyledAppBar';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { PageWrapper } from '../../Common/PageWrapper';
 
