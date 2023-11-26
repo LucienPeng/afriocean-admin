@@ -70,9 +70,13 @@ export const MaterialItemDetail = () => {
   const { selectedMaterialItem } = useMaterialRedux();
   const { getFirebaseDocumentData, setFirebaseData } = useFirebaseDB();
 
-  const { refetch, data, isLoading } = useQuery({
-    queryKey: ['materialItemDetail', selectedMaterialItem?.id],
-    queryFn: () => getFirebaseDocumentData('Material', selectedMaterialItem?.id ?? ''),
+  const {
+    refetch,
+    data: fetcheItemDetail,
+    isLoading,
+  } = useQuery({
+    queryKey: ['materialItemDetail'],
+    queryFn: () => getFirebaseDocumentData('Material', String(selectedMaterialItem?.id) ?? ''),
   });
 
   const { control, watch, reset, getValues, handleSubmit } = useForm<MaterialQuantityFlow>({
@@ -80,13 +84,13 @@ export const MaterialItemDetail = () => {
     defaultValues: DEFAULT_VALUES,
   });
 
-  const parsedQuantity = parseInt(data?.quantity) || 0;
+  const parsedQuantity = parseInt(fetcheItemDetail?.quantity) || 0;
   const { profile } = useUserRedux();
 
   const updateItemQuantity = useCallback(() => {
     const { calculation, operation, quantityToBeProcessed } = getValues();
     const parsedOperationQuantity = Number(quantityToBeProcessed) || 0;
-    const newData = { ...data };
+    const newData = { ...fetcheItemDetail };
 
     if (calculation === Calculation.IN) {
       newData.quantity += parsedOperationQuantity;
@@ -112,13 +116,13 @@ export const MaterialItemDetail = () => {
     setFirebaseData(Collections.Material, newData.id ?? '', newData);
     reset(DEFAULT_VALUES);
     refetch();
-  }, [getValues, data, profile?.firstName, parsedQuantity, setFirebaseData, reset, refetch]);
+  }, [getValues, fetcheItemDetail, profile?.firstName, parsedQuantity, setFirebaseData, reset, refetch]);
 
   return (
     <PageWrapper icon={<InventoryIcon />} componentName="DETAIL" containerMaxWidth="lg">
       <PageSection>
         {!isLoading ? (
-          <MaterialItemForm formMode={MaterialItemFormMode.EDIT} fetcheItemDetail={data as MaterialModel} />
+          <MaterialItemForm formMode={MaterialItemFormMode.EDIT} fetcheItemDetail={fetcheItemDetail as MaterialModel} />
         ) : (
           <CircularProgress color="secondary" />
         )}
@@ -271,8 +275,12 @@ export const MaterialItemDetail = () => {
       </PageSection>
 
       <PageSection>
-        {!isLoading && data && (
-          <DataGridComponent isLoading={isLoading} rows={mapRows(data as MaterialModel) ?? []} columns={columns} />
+        {!isLoading && fetcheItemDetail && (
+          <DataGridComponent
+            isLoading={isLoading}
+            rows={mapRows(fetcheItemDetail as MaterialModel) ?? []}
+            columns={columns}
+          />
         )}
       </PageSection>
     </PageWrapper>

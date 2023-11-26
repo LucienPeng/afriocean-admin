@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { useHandleActionResultAlert } from '../../Utils/useHandleActionResultAlert';
 import moment from 'moment';
+import { useState } from 'react';
 
 interface MaterialItemFormFormProps {
   readonly formMode?: MaterialItemFormMode;
@@ -18,19 +19,20 @@ interface MaterialItemFormFormProps {
 const CURRENCY_VALUE = Object.values(Currency).filter((currency) => isNaN(Number(currency)));
 
 export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
+  const { formMode, fetcheItemDetail } = props;
+  const [serialId, setSerialId] = useState<string | number>(fetcheItemDetail?.id ? fetcheItemDetail.id : 'Loading...');
   const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
     useHandleActionResultAlert();
   const { setFirebaseData, getFirebaseDocumentData } = useFirebaseDB();
-  const { formMode, fetcheItemDetail } = props;
   const { profile } = useUserRedux();
 
-  const { data: incrementalIndex, isLoading: isFetchingIndex } = useQuery({
+  const { isLoading: isFetchingIndex, refetch } = useQuery({
     queryKey: ['MaterialIncrementalId'],
     queryFn: () => getFirebaseDocumentData(Collections.IncrementalIndex, 'Material'),
+    onSuccess: (res) => setSerialId(res?.index + 1),
     enabled: formMode === MaterialItemFormMode.CREATE,
   });
 
-  const serialId = `${10000 + (incrementalIndex?.index ?? 0) + 1}`;
   const firstName = profile?.firstName;
   const department = profile?.department;
   const createDate = moment().format(DATE_TIME_FORMAT);
@@ -52,18 +54,20 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
 
   const editModeValues = fetcheItemDetail;
 
-  const { getValues, handleSubmit, control } = useForm<MaterialModel>({
+  const { getValues, handleSubmit, reset, control } = useForm<MaterialModel>({
     mode: 'onSubmit',
     defaultValues: formMode === MaterialItemFormMode.CREATE ? createModeValues : editModeValues,
   });
 
   const createMaterialItemRequest = async () => {
-    await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: 2 });
-    await setFirebaseData(Collections.Material, serialId, {
+    await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: serialId });
+    await setFirebaseData(Collections.Material, String(serialId), {
       ...getValues(),
       id: serialId,
       date: createDate,
     });
+    refetch();
+    reset(createModeValues);
   };
 
   const { mutate, isLoading } = useMutation(createMaterialItemRequest, {
