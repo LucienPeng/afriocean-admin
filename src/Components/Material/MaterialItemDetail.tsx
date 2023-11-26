@@ -5,100 +5,114 @@ import { DataGridComponent } from '../Common/StyledUI/StyledDataGrid';
 import { useMaterialRedux } from '../../useMaterialRedux';
 import { useQuery } from 'react-query';
 import { Collections, useFirebaseDB } from '../../useFirebaseDB';
-import { Button, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, Stack } from '@mui/material';
 import {
+  Button,
+  CircularProgress,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  Typography,
+} from '@mui/material';
+import {
+  Calculation,
   MaterialItemFormMode,
   MaterialModel,
   MaterialQuantityFlow,
-  QuantityOperation,
+  Operation,
 } from '../../model/material.model';
 import { GridColDef } from '@mui/x-data-grid';
 import { Controller, useForm } from 'react-hook-form';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
+import { StyledPaper } from '../Common/StyledUI/StyledPaper';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import moment from 'moment';
+import { DATE_TIME_FORMAT } from '../../model/application.model';
+import { useCallback } from 'react';
+import { useUserRedux } from '../../useUserRedux';
 
-const OPERATION_VALUE = Object.values(QuantityOperation).filter((operation) => isNaN(Number(operation)));
+const OPERATION_VALUE = Object.values(Operation).filter((operation) => isNaN(Number(operation)));
+const CALCULATION_VALUE = Object.values(Calculation).filter((operation) => isNaN(Number(operation)));
 
 const columns: GridColDef[] = [
   { field: 'date', headerName: 'Date' },
   { field: 'initiateur', headerName: 'Initiateur' },
-  { field: 'operation', headerName: 'Operation' },
-  { field: 'operationQuantity', headerName: 'Quantity' },
-  { field: 'totalQuantity', headerName: 'Total Quantity' },
+  { field: 'operation', headerName: 'Opération' },
+  { field: 'calculation', headerName: 'Calcul' },
+  { field: 'quantityToBeProcessed', headerName: 'Quantité' },
+  { field: 'subtotalQuantity', headerName: 'Sous-total' },
 ];
 
 const mapRows = (data: MaterialModel) => {
   if (!data) return;
-  return data.record?.map((s, i) => {
+  return data.record?.map((s, index) => {
     return {
-      id: i,
-      date: data.date,
-      initiateur: data.initiateur,
+      id: index,
+      initiateur: s.initiateur,
+      date: s.operationDate,
+      calculation: s.calculation,
       operation: s.operation,
-      operationQuantity: s.operationQuantity,
-      totalQuantity: s.totalQuantity,
+      quantityToBeProcessed: s.quantityToBeProcessed,
+      subtotalQuantity: s.subtotalQuantity,
     };
   });
 };
 
+const DEFAULT_VALUES = {
+  operation: Operation.INANDOUT,
+  calculation: Calculation.OUT,
+  quantityToBeProcessed: 0,
+};
+
 export const MaterialItemDetail = () => {
-  const { selected } = useMaterialRedux();
+  const { selectedMaterialItem } = useMaterialRedux();
   const { getFirebaseDocumentData, setFirebaseData } = useFirebaseDB();
 
   const { refetch, data, isLoading } = useQuery({
-    queryKey: ['materialItemDetail', selected?.id],
-    queryFn: () => getFirebaseDocumentData('Material', selected?.id ?? ''),
+    queryKey: ['materialItemDetail', selectedMaterialItem?.id],
+    queryFn: () => getFirebaseDocumentData('Material', selectedMaterialItem?.id ?? ''),
   });
 
-  const { control, getValues, handleSubmit } = useForm<MaterialQuantityFlow>({
+  const { control, watch, reset, getValues, handleSubmit } = useForm<MaterialQuantityFlow>({
     mode: 'onSubmit',
-    defaultValues: {
-      operation: QuantityOperation.INCREASE,
-      operationQuantity: 0,
-    },
+    defaultValues: DEFAULT_VALUES,
   });
 
-  //console.log(data);
+  const parsedQuantity = parseInt(data?.quantity) || 0;
+  const { profile } = useUserRedux();
 
-  const submit = () => {
-    const { operation, operationQuantity } = getValues();
-    const parsedQuantity = Number(data?.quantity) || 0; // Convert quantity to a number, defaulting to 0 if it's undefined or NaN
-    const parsedOperationQuantity = Number(operationQuantity) || 0; // Convert operationQuantity to a number, defaulting to 0 if it's undefined or NaN
+  const updateItemQuantity = useCallback(() => {
+    const { calculation, operation, quantityToBeProcessed } = getValues();
+    const parsedOperationQuantity = Number(quantityToBeProcessed) || 0;
+    const newData = { ...data };
 
-    console.log(operation);
-    const DD = {
-      ...data,
-      quantity: parsedQuantity + parsedOperationQuantity, // Perform addition with parsed quantities
-      record: [
-        ...(data?.record || []),
-        {
-          date: data?.date,
-          operation,
-          operationQuantity: parsedOperationQuantity, // Use parsed operation quantity
-          totalQuantity: parsedQuantity + parsedOperationQuantity, // Ca
-        },
-      ],
-    };
-    console.log(DD);
-    if (operation === QuantityOperation.INCREASE) {
-      // setFirebaseData(Collections.Material, data?.id ?? '', DD);
-    } else {
-      setFirebaseData(Collections.Material, data?.id ?? '', {
-        ...data,
-        quantity: Number(data?.quantity) ?? 0 + operationQuantity,
-        record: [
-          ...(data?.record || []),
-          {
-            date: data?.date,
-            operation,
-            operationQuantity,
-            totalQuantity: data?.quantity ?? 0 - operationQuantity,
-          },
-        ],
-      });
+    if (calculation === Calculation.IN) {
+      newData.quantity += parsedOperationQuantity;
+    } else if (calculation === Calculation.OUT) {
+      newData.quantity -= parsedOperationQuantity;
     }
-    // refetch();
-  };
+
+    newData.record = [
+      ...(newData.record || []),
+      {
+        initiateur: profile?.firstName,
+        operationDate: moment().format(DATE_TIME_FORMAT),
+        operation,
+        calculation,
+        quantityToBeProcessed: parsedOperationQuantity,
+        subtotalQuantity:
+          calculation === Calculation.IN
+            ? parsedQuantity + parsedOperationQuantity
+            : parsedQuantity - parsedOperationQuantity,
+      },
+    ];
+
+    setFirebaseData(Collections.Material, newData.id ?? '', newData);
+    reset(DEFAULT_VALUES);
+    refetch();
+  }, [getValues, data, profile?.firstName, parsedQuantity, setFirebaseData, reset, refetch]);
 
   return (
     <PageWrapper icon={<InventoryIcon />} componentName="DETAIL" containerMaxWidth="lg">
@@ -111,65 +125,149 @@ export const MaterialItemDetail = () => {
       </PageSection>
 
       <PageSection>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            Total : {data?.quantity}
-          </Grid>
-          <Grid item xs={6}>
-            <Stack direction="column" gap={3}>
-              <Controller
-                name="operation"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <FormControl fullWidth margin="none">
-                    <InputLabel id="operation-label">Operation</InputLabel>
-                    <Select
-                      variant="outlined"
-                      fullWidth
-                      labelId="operation"
-                      id="operation"
-                      value={value}
-                      onChange={onChange}
+        <Stack width="100%" direction="column" spacing={2}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={8}>
+              <Stack width="100%" direction="row" justifyContent="space-between" justifyItems="center">
+                <StyledPaper sx={{ border: '1px solid', borderColor: 'text.primary' }}>
+                  <Stack direction="column" alignItems="center" p={1} textAlign="center">
+                    <Typography fontSize="25px" fontWeight={700} color="text.primary">
+                      Current Total
+                    </Typography>
+                    <Typography fontSize="40px" fontWeight={700} color="text.primary">
+                      {parsedQuantity}
+                    </Typography>
+                  </Stack>
+                </StyledPaper>
+                <Stack direction="column" justifyContent="center" justifyItems="center">
+                  {watch('calculation') === Calculation.IN ? (
+                    <Typography fontSize="30px" color="blue" fontWeight={700}>
+                      ＋
+                    </Typography>
+                  ) : (
+                    <Typography fontSize="30px" color="red" fontWeight={700}>
+                      −
+                    </Typography>
+                  )}
+                </Stack>
+                <StyledPaper sx={{ border: '1px solid', borderColor: 'text.primary' }}>
+                  <Stack direction="column" alignItems="center" p={1} textAlign="center">
+                    <Typography
+                      fontSize="25px"
+                      fontWeight={700}
+                      color={watch('calculation') === Calculation.IN ? 'blue' : 'red'}
                     >
-                      {OPERATION_VALUE.map((operation) => (
-                        <MenuItem key={operation} value={operation}>
-                          {operation}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-              />
-
-              <Controller
-                name="operationQuantity"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <StyledTextField
-                    fullWidth
-                    onChange={onChange}
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    id="quantity"
-                    label="Quantité"
-                    value={value}
-                  />
-                )}
-              />
-              <Stack direction="row" width="100%" spacing={2} justifyContent="flex-end">
-                <Button variant="contained" color="error">
-                  Anuler
-                </Button>
-                <Button variant="contained" onClick={handleSubmit(submit)}>
-                  Save
-                </Button>
+                      {watch('calculation') === Calculation.IN ? 'Augmentation' : 'Déduction'}
+                    </Typography>
+                    <Typography
+                      fontSize="40px"
+                      fontWeight={700}
+                      color={watch('calculation') === Calculation.IN ? 'blue' : 'red'}
+                    >
+                      {watch('quantityToBeProcessed')}
+                    </Typography>
+                  </Stack>
+                </StyledPaper>
+                <Stack direction="column" justifyContent="center" justifyItems="center">
+                  <Typography fontSize="30px" color="text.primary" fontWeight={700}>
+                    =
+                  </Typography>
+                </Stack>
+                <StyledPaper sx={{ border: '1px solid', borderColor: 'text.primary' }}>
+                  <Stack direction="column" alignItems="center" p={1} textAlign="center">
+                    <Typography fontSize="25px" fontWeight={700} color="text.primary">
+                      Stock en Resultat :
+                    </Typography>
+                    <Typography fontSize="40px" fontWeight={700} color="text.primary">
+                      {watch('calculation') === Calculation.IN
+                        ? parsedQuantity + Number(watch('quantityToBeProcessed'))
+                        : parsedQuantity - Number(watch('quantityToBeProcessed'))}
+                    </Typography>
+                  </Stack>
+                  <Typography fontSize="25px" fontWeight={700} color="text.primary"></Typography>
+                </StyledPaper>
               </Stack>
-            </Stack>
+            </Grid>
+            <Grid item xs={4}>
+              <Stack direction="column" gap={3}>
+                <Controller
+                  name="operation"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { onChange, value } }) => (
+                    <FormControl fullWidth margin="none">
+                      <InputLabel id="operation-label">Operation</InputLabel>
+                      <Select
+                        variant="outlined"
+                        fullWidth
+                        labelId="operation"
+                        id="operation"
+                        value={value}
+                        onChange={onChange}
+                      >
+                        {OPERATION_VALUE.map((operation) => (
+                          <MenuItem key={operation} value={operation}>
+                            {operation}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
+                />
+                <Controller
+                  name="calculation"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { onChange, value } }) => (
+                    <FormControl fullWidth margin="none">
+                      <InputLabel id="calculation-label">Entreé/Sortie</InputLabel>
+                      <Select
+                        variant="outlined"
+                        fullWidth
+                        labelId="calculation"
+                        id="calculation"
+                        value={value}
+                        onChange={onChange}
+                      >
+                        {CALCULATION_VALUE.map((calculation) => (
+                          <MenuItem key={calculation} value={calculation}>
+                            {calculation}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
+                />
+                <Controller
+                  name="quantityToBeProcessed"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { onChange, value } }) => (
+                    <StyledTextField
+                      fullWidth
+                      onChange={onChange}
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      id="quantityToBeProcessed"
+                      label="Quantité"
+                      value={value}
+                    />
+                  )}
+                />
+              </Stack>
+            </Grid>
           </Grid>
-        </Grid>
+
+          <Stack direction="row" width="100%" spacing={2} justifyContent="center">
+            <Button variant="contained" color="error">
+              Anuler
+            </Button>
+            <Button variant="contained" onClick={handleSubmit(updateItemQuantity)}>
+              Save
+            </Button>
+          </Stack>
+        </Stack>
       </PageSection>
 
       <PageSection>

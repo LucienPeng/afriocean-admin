@@ -6,7 +6,7 @@ import { MaterialTableRow } from './model/material.model';
 export const useMaterialRedux = () => {
   const dispatch = useDispatch<ThunkDispatch<RootState, unknown, AnyAction>>();
   const itemCount = useSelector<RootState, number>((state) => state.material.itemCount);
-  const selected = useSelector<RootState, MaterialTableRow | null>((state) => state.material.selectedMaterialItem);
+  const selectedMaterialItem = useSelector<RootState, MaterialTableRow | null>((state) => state.material.selectedMaterialItem);
 
-  return { dispatch, itemCount, selected };
+  return { dispatch, itemCount, selectedMaterialItem };
 };

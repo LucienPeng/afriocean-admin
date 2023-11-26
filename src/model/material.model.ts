@@ -1,20 +1,25 @@
 import { Moment } from 'moment';
 
 export enum MaterialItemFormMode {
-  CREATE,
-  EDIT,
+  CREATE = 'Create',
+  EDIT = 'Edit',
 }
 
 export enum Currency {
-  CFA,
-  EUR,
-  TWD,
-  USD,
+  CFA = 'CFA',
+  EUR = 'EUR',
+  TWD = 'TWD',
+  USD = 'USD',
 }
 
-export enum QuantityOperation {
-  INCREASE,
-  DECREASE
+export enum Operation {
+  INANDOUT = 'Entrée-sortie',
+  INVENTORY = 'Inventaire'
+}
+
+export enum Calculation {
+  IN = 'Entrée',
+  OUT = 'Sortie'
 }
 
 export interface MaterialModel {
@@ -48,7 +53,10 @@ export interface MaterialTableRow {
 
 
 export interface MaterialQuantityFlow {
-  readonly operation: QuantityOperation;
-  readonly operationQuantity: number;
-  readonly totalQuantity: number;
+  readonly initiateur: string;
+  readonly calculation: Calculation;
+  readonly operation: Operation;
+  readonly operationDate: string;
+  readonly quantityToBeProcessed: number;
+  readonly subtotalQuantity: number;
 }
