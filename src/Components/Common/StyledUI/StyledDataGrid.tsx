@@ -1,5 +1,5 @@
 import { CircularProgress, styled } from '@mui/material';
-import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 
 const StyledDataGrid = styled(DataGrid)((themeOptions) => ({
   '& .MuiDataGrid-row': {
@@ -20,7 +20,7 @@ interface DataGridProps {
   readonly isLoading: boolean;
   readonly rows: GridRowsProp;
   readonly columns: GridColDef[];
-  readonly onCellClickHandler: () => void;
+  readonly onCellClickHandler?: (param: GridCellParams) => void;
 }
 
 export const DataGridComponent = (props: DataGridProps) => {

@@ -3,6 +3,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   getFirestore,
   query,
@@ -15,6 +16,7 @@ import { EmailTemplate } from './Utils/useEmailNotification';
 export enum Collections {
   Application = 'Application',
   Material = 'Material',
+  IncrementalIndex = 'IncrementalIndex'
 }
 
 export type MutationFunction = (data: MutationData) => Promise<void>;
@@ -48,6 +50,17 @@ export const useFirebaseDB = () => {
     return data;
   };
 
+  const getFirebaseDocumentData = async (collectionPath: string, documentId: string) => {
+    const docRef = doc(db, collectionPath, documentId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      console.log(docSnap.data())
+      return docSnap.data();
+    } else {
+      return null;
+    }
+  };
+
   const getFirebaseConditionQueryData = async (
     collectionPath: string,
     key: string,
@@ -79,8 +92,13 @@ export const useFirebaseDB = () => {
     return data;
   };
 
-  const setFirebaseData = async (collectionPath: string, newData: unknown) => {
+  const createFirebaseData = async (collectionPath: string, newData: unknown) => {
     const docRef = await addDoc(collection(db, collectionPath), newData);
+    return docRef;
+  };
+
+  const setFirebaseData = async (collectionPath: string, documentId: string, data: unknown) => {
+    const docRef = await setDoc(doc(db, collectionPath, documentId), data);
     return docRef;
   };
 
@@ -94,7 +112,9 @@ export const useFirebaseDB = () => {
     storage,
     collection,
     getFirebaseCollectionData,
+    getFirebaseDocumentData,
     getFirebaseConditionQueryData,
+    createFirebaseData,
     setFirebaseData,
     getFirebaseMultiConditionQueryData,
     updateFirebaseData,

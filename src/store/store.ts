@@ -3,8 +3,8 @@ import { combineReducers } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from './Auth/auth-slice';
-import materialReducer from './Material/material-slice'
-import { MaterialState } from './Material/material.model'
+import materialReducer from './Material/material-slice';
+import { MaterialState } from './Material/material.model';
 import { AuthState } from './Auth/auth.model';
 
 export interface RootState {
@@ -21,7 +21,6 @@ const rootReducer = combineReducers({
   auth: authReducer,
   material: materialReducer,
 });
-
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

@@ -10,12 +10,12 @@ export enum Applications {
 export interface ApplicationModel {
   readonly uid?: string;
   readonly id?: string;
-  readonly isProcessed?: boolean;
-  readonly isApproved?: boolean | null;
   readonly firstName?: string;
-  readonly email?: string;
   readonly department?: string;
   readonly requestDate?: Moment | string;
+  readonly isProcessed?: boolean;
+  readonly isApproved?: boolean | null;
+  readonly email?: string;
   readonly applicationType?: Applications;
   readonly comment?: string;
 }

@@ -52,13 +52,13 @@ export const DeplacementForm = () => {
   });
   const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
     useHandleActionResultAlert();
-  const { setFirebaseData } = useFirebaseDB();
+  const { createFirebaseData } = useFirebaseDB();
   const { sendEmailNotification } = useEmailNotification();
 
   const sendEmail: (data: EmailTemplate) => Promise<void> = async (params: EmailTemplate) =>
     sendEmailNotification(params);
 
-  const createNewUser = (newData: unknown) => setFirebaseData('Application', newData);
+  const createNewUser = (newData: unknown) => createFirebaseData('Application', newData);
 
   const { mutate, isLoading: isSending } = useMutation(sendEmail);
   const { mutateAsync, isLoading } = useMutation(createNewUser);

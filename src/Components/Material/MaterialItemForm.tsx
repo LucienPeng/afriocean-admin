@@ -1,32 +1,45 @@
 import { Button, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, Stack } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
-import { PageWrapper } from '../Common/PageWrapper';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 import { DATE_TIME_FORMAT } from '../../model/application.model';
+import { Currency, MaterialItemFormMode, MaterialModel } from '../../model/material.model';
+import { Collections, useFirebaseDB } from '../../useFirebaseDB';
 import { useUserRedux } from '../../useUserRedux';
 import { useNavigate } from 'react-router-dom';
-import { Currency, MaterialModel } from '../../model/material.model';
-import { useMaterialRedux } from '../../useMaterialRedux';
-import { Collections, useFirebaseDB } from '../../useFirebaseDB';
-import QueueIcon from '@mui/icons-material/Queue';
-import moment from 'moment';
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { useHandleActionResultAlert } from '../../Utils/useHandleActionResultAlert';
-import { PageSection } from '../Common/PageSection';
+import moment from 'moment';
 
-const CURRENY_VALUE = Object.values(Currency).filter((currency) => isNaN(Number(currency)));
+interface MaterialItemFormFormProps {
+  readonly formMode?: MaterialItemFormMode;
+  readonly fetcheItemDetail?: MaterialModel;
+}
 
-export const MaterialItemForm = () => {
-  const { setFirebaseData } = useFirebaseDB();
-  const { itemCount } = useMaterialRedux();
-  const { profile } = useUserRedux();
+const CURRENCY_VALUE = Object.values(Currency).filter((currency) => isNaN(Number(currency)));
+
+export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
   const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
     useHandleActionResultAlert();
+  const { setFirebaseData, getFirebaseDocumentData } = useFirebaseDB();
+  const { formMode, fetcheItemDetail } = props;
+  const { profile } = useUserRedux();
 
-  const defaultValues = {
-    serialIndex: String(itemCount + 1),
+  const { data: incrementalIndex, isLoading: isFetchingIndex } = useQuery({
+    queryKey: ['MaterialIncrementalId'],
+    queryFn: () => getFirebaseDocumentData(Collections.IncrementalIndex, 'Material'),
+    enabled: formMode === MaterialItemFormMode.CREATE,
+  });
+
+  const serialId = `${10000 + (incrementalIndex?.index ?? 0) + 1}`;
+  const firstName = profile?.firstName;
+  const department = profile?.department;
+  const createDate = moment().format(DATE_TIME_FORMAT);
+
+  const createModeValues = {
+    firstName,
+    department,
+    createDate,
     erpId: '',
-    department: profile?.department,
     materialName: '',
     materialZhName: '',
     spec: '',
@@ -37,71 +50,132 @@ export const MaterialItemForm = () => {
     photo: '',
   };
 
-  const { getValues, control } = useForm<MaterialModel>({
+  const editModeValues = fetcheItemDetail;
+
+  const { getValues, handleSubmit, control } = useForm<MaterialModel>({
     mode: 'onSubmit',
-    defaultValues,
+    defaultValues: formMode === MaterialItemFormMode.CREATE ? createModeValues : editModeValues,
   });
 
-  const submii = async () => {
-    mutate();
+  const createMaterialItemRequest = async () => {
+    await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: 2 });
+    await setFirebaseData(Collections.Material, serialId, {
+      ...getValues(),
+      id: serialId,
+      date: createDate,
+    });
   };
 
-  const createItem = async () => {
-    await setFirebaseData(Collections.Material, getValues());
-  };
-
-  const { mutate, isLoading } = useMutation(createItem, {
+  const { mutate, isLoading } = useMutation(createMaterialItemRequest, {
     onSuccess: () => setSuccessMessage('Object a été bien crée'),
     onError: () => setErrorMessage('Quelque chose ne fonntionne correctement pas '),
   });
 
   const navigate = useNavigate();
+  const submitCreateMaterialItemRequest = async () => mutate();
 
   return (
-    <PageWrapper icon={<QueueIcon />} componentName=" Ajouter objets" containerMaxWidth="lg">
-      <PageSection>
-        <Grid container rowSpacing={3} columnSpacing={1}>
-          <Grid item xs={12}>
-            <Grid container>
-              <Grid item xs={6}>
-                N° Index : {getValues('serialIndex')}
-              </Grid>
-              <Grid item xs={6}>
-                <Controller
-                  name="erpId"
-                  control={control}
-                  render={({ field: { onChange, value } }) => (
-                    <StyledTextField
-                      fullWidth
-                      onChange={onChange}
-                      variant="standard"
-                      margin="normal"
-                      required
-                      id="erpId"
-                      label="N° ERP :"
-                      value={value}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
+    <Grid container rowSpacing={3} columnSpacing={1}>
+      <Grid item xs={12}>
+        <Grid container>
+          <Grid item xs={6}>
+            N° Index : {isFetchingIndex ? 'Loading...' : serialId}
           </Grid>
-          <Grid item xs={12}>
-            <Grid container justifyContent="space-between">
-              <Grid item xs={3}>
-                Initiateur : {profile?.firstName}
-              </Grid>
-              <Grid item xs={3}>
-                Department : {profile?.department}
-              </Grid>
-              <Grid item xs={3}>
-                Date : {moment().format(DATE_TIME_FORMAT)}
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={6}>
             <Controller
-              name="materialName"
+              name="erpId"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <StyledTextField
+                  fullWidth
+                  onChange={onChange}
+                  variant="standard"
+                  margin="normal"
+                  required
+                  id="erpId"
+                  label="N° ERP :"
+                  value={value}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container justifyContent="space-between">
+          <Grid item xs={3}>
+            Initiateur : {firstName}
+          </Grid>
+          <Grid item xs={3}>
+            Department : {department}
+          </Grid>
+          <Grid item xs={3}>
+            Date de création: {createDate}
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Controller
+          name="materialName"
+          control={control}
+          rules={{ required: true }}
+          render={({ field: { onChange, value } }) => (
+            <StyledTextField
+              fullWidth
+              onChange={onChange}
+              variant="outlined"
+              margin="normal"
+              required
+              id="materialName"
+              label="Titre"
+              value={value}
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Controller
+          name="materialZhName"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <StyledTextField
+              fullWidth
+              onChange={onChange}
+              variant="outlined"
+              margin="normal"
+              required
+              id="materialZhName"
+              label="Titre en chinois"
+              value={value}
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Controller
+          name="spec"
+          control={control}
+          rules={{ required: true }}
+          render={({ field: { onChange, value } }) => (
+            <StyledTextField
+              fullWidth
+              onChange={onChange}
+              variant="outlined"
+              margin="normal"
+              required
+              id="spec"
+              label="Spécification"
+              value={value}
+            />
+          )}
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={3}>
+            <Controller
+              name="brand"
               control={control}
               rules={{ required: true }}
               render={({ field: { onChange, value } }) => (
@@ -111,34 +185,16 @@ export const MaterialItemForm = () => {
                   variant="outlined"
                   margin="normal"
                   required
-                  id="materialName"
-                  label="Object"
+                  id="brand"
+                  label="Marque"
                   value={value}
                 />
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={3}>
             <Controller
-              name="materialZhName"
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <StyledTextField
-                  fullWidth
-                  onChange={onChange}
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  id="materialZhName"
-                  label="Objet en chinois"
-                  value={value}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Controller
-              name="spec"
+              name="price"
               control={control}
               rules={{ required: true }}
               render={({ field: { onChange, value } }) => (
@@ -148,127 +204,97 @@ export const MaterialItemForm = () => {
                   variant="outlined"
                   margin="normal"
                   required
-                  id="spec"
-                  label="spécification"
+                  id="price"
+                  label="Prix"
                   value={value}
                 />
               )}
             />
           </Grid>
+          <Grid item xs={12} sm={3}>
+            <Controller
+              name="currency"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <FormControl fullWidth margin="none">
+                  <InputLabel id="role-label">Devise</InputLabel>
+                  <Select
+                    variant="outlined"
+                    fullWidth
+                    labelId="currency"
+                    id="currency"
+                    onChange={onChange}
+                    value={value}
+                  >
+                    {CURRENCY_VALUE.map((currency) => (
+                      <MenuItem key={currency} value={currency}>
+                        {currency}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <Controller
+              name="quantity"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <StyledTextField
+                  fullWidth
+                  onChange={onChange}
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  id="quantity"
+                  label="Default Quantité"
+                  value={value}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid item xs={6}>
+        Barcode
+      </Grid>
+      <Grid item xs={6}>
+        QR code
+      </Grid>
 
-          <Grid item xs={12}>
-            <Grid container spacing={1}>
-              <Grid item xs={12} sm={3}>
-                <Controller
-                  name="brand"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { onChange, value } }) => (
-                    <StyledTextField
-                      fullWidth
-                      onChange={onChange}
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      id="brand"
-                      label="Marque"
-                      value={value}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <Controller
-                  name="price"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { onChange, value } }) => (
-                    <StyledTextField
-                      fullWidth
-                      onChange={onChange}
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      id="price"
-                      label="Prix"
-                      value={value}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <Controller
-                  name="currency"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { onChange, value } }) => (
-                    <FormControl fullWidth margin="none">
-                      <InputLabel id="role-label">Devise</InputLabel>
-                      <Select
-                        variant="outlined"
-                        fullWidth
-                        labelId="currency"
-                        id="currency"
-                        onChange={onChange}
-                        value={value}
-                      >
-                        {CURRENY_VALUE.map((role) => (
-                          <MenuItem key={role} value={role}>
-                            {role}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <Controller
-                  name="quantity"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { onChange, value } }) => (
-                    <StyledTextField
-                      fullWidth
-                      onChange={onChange}
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      id="quantity"
-                      label="Default Quantité"
-                      value={value}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={6}>
-            Barcode
-          </Grid>
-          <Grid item xs={6}>
-            QR code
-          </Grid>
-
-          <Grid item xs={12}>
-            <Stack width="100%" direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
-              {isLoading ? (
-                <CircularProgress color="secondary" />
-              ) : successMessage.length !== 0 ? (
-                <ActionSuccessAlert />
-              ) : errorMessage.length !== 0 ? (
-                <ErrorMessageAlert />
-              ) : null}
+      <Grid item xs={12}>
+        <Stack width="100%" direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
+          {isLoading ? (
+            <CircularProgress color="secondary" />
+          ) : successMessage.length !== 0 ? (
+            <ActionSuccessAlert />
+          ) : errorMessage.length !== 0 ? (
+            <ErrorMessageAlert />
+          ) : null}
+          {formMode === MaterialItemFormMode.CREATE ? (
+            <>
               <Button variant="contained" color="error" onClick={() => navigate('/material')}>
                 Anuler
               </Button>
-              <Button variant="contained" onClick={submii}>
+              <Button variant="contained" onClick={handleSubmit(submitCreateMaterialItemRequest)}>
                 Ajouter
               </Button>
-            </Stack>
-          </Grid>
-        </Grid>
-      </PageSection>
-    </PageWrapper>
+            </>
+          ) : (
+            <>
+              <Button variant="contained" color="error" onClick={() => navigate('/material')}>
+                Anuler
+              </Button>
+              <Button variant="contained" onClick={handleSubmit(submitCreateMaterialItemRequest)}>
+                Save
+              </Button>
+            </>
+          )}
+        </Stack>
+      </Grid>
+    </Grid>
   );
 };
