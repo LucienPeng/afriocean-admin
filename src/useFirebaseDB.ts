@@ -16,7 +16,7 @@ import { EmailTemplate } from './Utils/useEmailNotification';
 export enum Collections {
   Application = 'Application',
   Material = 'Material',
-  IncrementalIndex = 'IncrementalIndex'
+  IncrementalIndex = 'IncrementalIndex',
 }
 
 export type MutationFunction = (data: MutationData) => Promise<void>;

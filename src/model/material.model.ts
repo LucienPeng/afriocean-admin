@@ -14,31 +14,32 @@ export enum Currency {
 
 export enum Operation {
   INANDOUT = 'Entrée-sortie',
-  INVENTORY = 'Inventaire'
+  INVENTORY = 'Inventaire',
 }
 
 export enum Calculation {
   IN = 'Entrée',
-  OUT = 'Sortie'
+  OUT = 'Sortie',
 }
 
 export interface MaterialModel {
   readonly id?: string;
+  readonly itemId: string;
+  readonly erpId: string;
   readonly firstName: string;
   readonly department: string;
   readonly requestDate: Moment | string;
-  readonly erpId: string;
   readonly materialName: string;
   readonly materialZhName: string;
-  readonly initiateur: string;
   readonly spec: string;
   readonly price: string;
   readonly currency: Currency;
   readonly brand: string;
-  readonly quantity: number;
+  readonly defaultQuantity: number;
+  readonly totalQuantity: number;
   readonly photo: string;
-  readonly date: string
-  readonly record: MaterialQuantityFlow[]
+  readonly date: string;
+  readonly record: MaterialQuantityFlow[];
 }
 
 export interface MaterialTableRow {
@@ -47,10 +48,9 @@ export interface MaterialTableRow {
   readonly materialName: string;
   readonly materialZhName: string;
   readonly spec: string;
-  readonly quantity: number;
+  readonly totalQuantity: number;
   readonly photo: string;
 }
-
 
 export interface MaterialQuantityFlow {
   readonly initiateur: string;

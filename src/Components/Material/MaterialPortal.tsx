@@ -14,14 +14,15 @@ import { PageSection } from '../Common/PageSection';
 import InventoryIcon from '@mui/icons-material/Inventory';
 
 const materialItemColumns: GridColDef[] = [
-  { field: 'id', headerName: 'N° Index' },
-  { field: 'erpId', headerName: 'N° ERP' },
-  { field: 'materialName', headerName: 'Titre' },
-  { field: 'materialZhName', headerName: 'Titre Chinois' },
+  { field: 'id', headerName: 'N° Index', flex: 1 },
+  { field: 'erpId', headerName: 'N° ERP', flex: 1 },
+  { field: 'itemId', headerName: 'N° Article', flex: 1 },
+  { field: 'materialName', headerName: 'Titre', flex: 1 },
+  { field: 'materialZhName', headerName: 'Titre Chinois', flex: 1 },
   { field: 'spec', headerName: 'Spécification' },
   { field: 'initiateur', headerName: 'Initiateur' },
   { field: 'photo', headerName: 'Photo' },
-  { field: 'quantity', headerName: 'Quantité' },
+  { field: 'totalQuantity', headerName: 'Stock Total', flex: 1 },
 ];
 
 const mapMaterialItemRows = (data: MaterialModel[]): MaterialTableRow[] => {
@@ -29,11 +30,13 @@ const mapMaterialItemRows = (data: MaterialModel[]): MaterialTableRow[] => {
     return {
       id: d.id ?? '',
       erpId: d.erpId,
+      itemId: d.itemId,
       materialName: d.materialName,
       materialZhName: d.materialZhName,
+      initiateur: d.firstName,
       spec: d.spec,
       photo: d.photo,
-      quantity: d.quantity,
+      totalQuantity: d.totalQuantity,
     };
   });
 };
@@ -46,14 +49,7 @@ export const MaterialPortal = () => {
   const { isLoading } = useQuery({
     queryKey: 'materialList',
     queryFn: () => getFirebaseCollectionData('Material'),
-    onSuccess: (fetchedData) => {
-      setRows(mapMaterialItemRows(fetchedData as MaterialModel[]));
-      dispatch(
-        materialActions.setMaterial({
-          itemCount: fetchedData?.length,
-        }),
-      );
-    },
+    onSuccess: (fetchedData) => setRows(mapMaterialItemRows(fetchedData as MaterialModel[])),
   });
 
   const navigate = useNavigate();

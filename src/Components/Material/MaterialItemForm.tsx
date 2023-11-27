@@ -1,4 +1,14 @@
-import { Button, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, Stack } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 import { DATE_TIME_FORMAT } from '../../model/application.model';
@@ -8,8 +18,11 @@ import { useUserRedux } from '../../useUserRedux';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { useHandleActionResultAlert } from '../../Utils/useHandleActionResultAlert';
+import { ChangeEvent, useState } from 'react';
 import moment from 'moment';
-import { useState } from 'react';
+import QRCode from 'react-qr-code';
+import Barcode from 'react-barcode';
+import { Box } from '@mui/system';
 
 interface MaterialItemFormFormProps {
   readonly formMode?: MaterialItemFormMode;
@@ -20,6 +33,7 @@ const CURRENCY_VALUE = Object.values(Currency).filter((currency) => isNaN(Number
 
 export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
   const { formMode, fetcheItemDetail } = props;
+  const [previewURL, setPreviewURL] = useState('');
   const [serialId, setSerialId] = useState<string | number>(fetcheItemDetail?.id ? fetcheItemDetail.id : 'Loading...');
   const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
     useHandleActionResultAlert();
@@ -48,13 +62,14 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
     price: '',
     currency: Currency.CFA,
     brand: '',
-    quantity: 0,
+    defaultQuantity: 0,
+    totalQuantity: 0,
     photo: '',
   };
 
   const editModeValues = fetcheItemDetail;
 
-  const { getValues, handleSubmit, reset, control } = useForm<MaterialModel>({
+  const { getValues, handleSubmit, reset, watch, control } = useForm<MaterialModel>({
     mode: 'onSubmit',
     defaultValues: formMode === MaterialItemFormMode.CREATE ? createModeValues : editModeValues,
   });
@@ -65,6 +80,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
       ...getValues(),
       id: serialId,
       date: createDate,
+      totalQuantity: getValues('defaultQuantity'),
     });
     refetch();
     reset(createModeValues);
@@ -78,14 +94,54 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
   const navigate = useNavigate();
   const submitCreateMaterialItemRequest = async () => mutate();
 
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewURL(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewURL('');
+    }
+  };
+
   return (
     <Grid container rowSpacing={3} columnSpacing={1}>
       <Grid item xs={12}>
-        <Grid container>
-          <Grid item xs={6}>
-            N° Index : {isFetchingIndex ? 'Loading...' : serialId}
+        <Grid container columnSpacing={3} alignItems="center">
+          <Grid item xs={2}>
+            <Typography
+              fontWeight={700}
+              color="text.primary"
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              gap={2}
+            >
+              N° Index : {isFetchingIndex ? <CircularProgress size={15} /> : serialId}
+            </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={5}>
+            <Controller
+              name="itemId"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <StyledTextField
+                  fullWidth
+                  onChange={onChange}
+                  variant="standard"
+                  margin="normal"
+                  required
+                  id="itemId"
+                  label="N° Article :"
+                  value={value}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={5}>
             <Controller
               name="erpId"
               control={control}
@@ -243,7 +299,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
           </Grid>
           <Grid item xs={12} sm={3}>
             <Controller
-              name="quantity"
+              name="defaultQuantity"
               control={control}
               rules={{ required: true }}
               render={({ field: { onChange, value } }) => (
@@ -262,31 +318,56 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={6}>
-        Barcode
+      <Grid item xs={12} sm={6} lg={12}>
+        <Grid container>
+          <Grid item xs={4}>
+            <Box maxHeight="300px" maxWidth="200px" component="img" src={previewURL} />
+          </Grid>
+          <Grid item xs={6}>
+            <Stack direction="column" spacing={2} alignItems="center" justifyContent="center">
+              <Typography color="text.primary">Photo</Typography>
+              <Controller
+                name="photo"
+                control={control}
+                defaultValue={''}
+                render={() => <input type="file" onChange={handleFileChange} />}
+              />
+            </Stack>
+          </Grid>
+        </Grid>
       </Grid>
-      <Grid item xs={6}>
-        QR code
+
+      <Grid item xs={12} sm={6} lg={5}>
+        <Stack direction="column" spacing={1} alignItems="center" justifyContent="center" overflow="hidden">
+          <Typography color="text.primary">Barcode</Typography>
+          {watch('itemId') && <Barcode value={watch('itemId') ?? ''} height={80} />}
+        </Stack>
+      </Grid>
+      <Grid item xs={12} sm={6} lg={7}>
+        <Stack direction="column" spacing={2} alignItems="center" justifyContent="center">
+          <Typography color="text.primary">QR code</Typography>
+          {watch('itemId') && <QRCode value={watch('itemId')} size={80} />}
+        </Stack>
       </Grid>
 
       <Grid item xs={12}>
-        <Stack width="100%" direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
+        <Stack width="100%" direction="row" justifyContent="center" alignItems="center" spacing={2}>
           {isLoading ? (
-            <CircularProgress color="secondary" />
+            <CircularProgress color="secondary" size={20} />
           ) : successMessage.length !== 0 ? (
             <ActionSuccessAlert />
           ) : errorMessage.length !== 0 ? (
             <ErrorMessageAlert />
           ) : null}
           {formMode === MaterialItemFormMode.CREATE ? (
-            <>
+            <Stack direction="row" spacing={1} py={1}>
               <Button variant="contained" color="error" onClick={() => navigate('/material')}>
                 Anuler
               </Button>
               <Button variant="contained" onClick={handleSubmit(submitCreateMaterialItemRequest)}>
                 Ajouter
               </Button>
-            </>
+            </Stack>
           ) : (
             <>
               <Button variant="contained" color="error" onClick={() => navigate('/material')}>

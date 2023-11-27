@@ -2,10 +2,10 @@ import { PageWrapper } from '../Common/PageWrapper';
 import { PageSection } from '../Common/PageSection';
 import { MaterialItemForm } from './MaterialItemForm';
 import { DataGridComponent } from '../Common/StyledUI/StyledDataGrid';
-import { useMaterialRedux } from '../../useMaterialRedux';
 import { useQuery } from 'react-query';
 import { Collections, useFirebaseDB } from '../../useFirebaseDB';
 import {
+  Backdrop,
   Button,
   CircularProgress,
   FormControl,
@@ -29,29 +29,29 @@ import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 import { StyledPaper } from '../Common/StyledUI/StyledPaper';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import moment from 'moment';
-import { DATE_TIME_FORMAT } from '../../model/application.model';
+import { DATE_FORMAT, DATE_TIME_FORMAT } from '../../model/application.model';
 import { useCallback } from 'react';
 import { useUserRedux } from '../../useUserRedux';
+import { useParams } from 'react-router';
 
 const OPERATION_VALUE = Object.values(Operation).filter((operation) => isNaN(Number(operation)));
 const CALCULATION_VALUE = Object.values(Calculation).filter((operation) => isNaN(Number(operation)));
 
 const columns: GridColDef[] = [
-  { field: 'date', headerName: 'Date' },
-  { field: 'initiateur', headerName: 'Initiateur' },
-  { field: 'operation', headerName: 'Opération' },
-  { field: 'calculation', headerName: 'Calcul' },
-  { field: 'quantityToBeProcessed', headerName: 'Quantité' },
-  { field: 'subtotalQuantity', headerName: 'Sous-total' },
+  { field: 'date', headerName: 'Date', flex: 1 },
+  { field: 'initiateur', headerName: 'Initiateur', flex: 1 },
+  { field: 'operation', headerName: 'Opération', flex: 1 },
+  { field: 'calculation', headerName: 'Calcul', flex: 1 },
+  { field: 'quantityToBeProcessed', headerName: 'Quantité', flex: 1 },
+  { field: 'subtotalQuantity', headerName: 'Sous-total', flex: 1 },
 ];
 
 const mapRows = (data: MaterialModel) => {
-  if (!data) return;
   return data.record?.map((s, index) => {
     return {
       id: index,
       initiateur: s.initiateur,
-      date: s.operationDate,
+      date: moment(s.operationDate, DATE_TIME_FORMAT).startOf('day').format(DATE_FORMAT),
       calculation: s.calculation,
       operation: s.operation,
       quantityToBeProcessed: s.quantityToBeProcessed,
@@ -66,223 +66,242 @@ const DEFAULT_VALUES = {
   quantityToBeProcessed: 0,
 };
 
-export const MaterialItemDetail = () => {
-  const { selectedMaterialItem } = useMaterialRedux();
-  const { getFirebaseDocumentData, setFirebaseData } = useFirebaseDB();
+const useMaterialItemDetail = (id: string | undefined) => {
+  const { getFirebaseDocumentData } = useFirebaseDB();
 
-  const {
-    refetch,
-    data: fetcheItemDetail,
-    isLoading,
-  } = useQuery({
-    queryKey: ['materialItemDetail'],
-    queryFn: () => getFirebaseDocumentData('Material', String(selectedMaterialItem?.id) ?? ''),
+  const { refetch, data, isLoading } = useQuery<MaterialModel>({
+    queryKey: ['materialItemDetail', id],
+    queryFn: () => getFirebaseDocumentData('Material', id ?? '') as Promise<MaterialModel>,
+    enabled: !!id,
   });
 
+  return { refetch, data, isLoading };
+};
+
+export const MaterialItemDetail = () => {
+  const { id } = useParams();
+  const { setFirebaseData } = useFirebaseDB();
+  const { profile } = useUserRedux();
+  const { refetch, data: fetcheItemDetail, isLoading } = useMaterialItemDetail(id);
   const { control, watch, reset, getValues, handleSubmit } = useForm<MaterialQuantityFlow>({
     mode: 'onSubmit',
     defaultValues: DEFAULT_VALUES,
   });
 
-  const parsedQuantity = parseInt(fetcheItemDetail?.quantity) || 0;
-  const { profile } = useUserRedux();
+  const { calculation, operation, quantityToBeProcessed } = getValues();
+
+  const totalQuantity: number = Number(fetcheItemDetail?.totalQuantity) || 0;
+  const parsedOperationQuantity = Number(quantityToBeProcessed) || 0;
+  const componentTitle: string = fetcheItemDetail ? `${fetcheItemDetail?.id} / ${fetcheItemDetail?.materialName}` : '';
 
   const updateItemQuantity = useCallback(() => {
-    const { calculation, operation, quantityToBeProcessed } = getValues();
-    const parsedOperationQuantity = Number(quantityToBeProcessed) || 0;
+    if (!fetcheItemDetail) return;
     const newData = { ...fetcheItemDetail };
 
+    let updatedTotalQuantity = 0;
+
     if (calculation === Calculation.IN) {
-      newData.quantity += parsedOperationQuantity;
+      updatedTotalQuantity = totalQuantity + parsedOperationQuantity;
     } else if (calculation === Calculation.OUT) {
-      newData.quantity -= parsedOperationQuantity;
+      updatedTotalQuantity = totalQuantity - parsedOperationQuantity;
     }
+
+    newData.totalQuantity = updatedTotalQuantity;
 
     newData.record = [
       ...(newData.record || []),
       {
-        initiateur: profile?.firstName,
+        initiateur: profile?.firstName ?? '',
         operationDate: moment().format(DATE_TIME_FORMAT),
         operation,
         calculation,
         quantityToBeProcessed: parsedOperationQuantity,
-        subtotalQuantity:
-          calculation === Calculation.IN
-            ? parsedQuantity + parsedOperationQuantity
-            : parsedQuantity - parsedOperationQuantity,
+        subtotalQuantity: updatedTotalQuantity, // Update subtotal directly with updatedTotalQuantity
       },
     ];
 
-    setFirebaseData(Collections.Material, newData.id ?? '', newData);
+    setFirebaseData(Collections.Material, String(newData.id), newData);
     reset(DEFAULT_VALUES);
     refetch();
-  }, [getValues, fetcheItemDetail, profile?.firstName, parsedQuantity, setFirebaseData, reset, refetch]);
+  }, [
+    calculation,
+    fetcheItemDetail,
+    operation,
+    parsedOperationQuantity,
+    profile?.firstName,
+    refetch,
+    reset,
+    setFirebaseData,
+    totalQuantity,
+  ]);
 
   return (
-    <PageWrapper icon={<InventoryIcon />} componentName="DETAIL" containerMaxWidth="lg">
-      <PageSection>
-        {!isLoading ? (
-          <MaterialItemForm formMode={MaterialItemFormMode.EDIT} fetcheItemDetail={fetcheItemDetail as MaterialModel} />
-        ) : (
-          <CircularProgress color="secondary" />
-        )}
-      </PageSection>
+    <PageWrapper icon={<InventoryIcon />} componentName={componentTitle} containerMaxWidth="lg">
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+        <CircularProgress color="primary" />
+      </Backdrop>
+      {!isLoading && (
+        <>
+          <PageSection>
+            <MaterialItemForm
+              formMode={MaterialItemFormMode.EDIT}
+              fetcheItemDetail={fetcheItemDetail as MaterialModel}
+            />
+          </PageSection>
 
-      <PageSection>
-        <Stack width="100%" direction="column" spacing={2}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={8}>
-              <Stack width="100%" direction="row" justifyContent="space-between" justifyItems="center">
-                <StyledPaper sx={{ border: '1px solid', borderColor: 'text.primary' }}>
-                  <Stack direction="column" alignItems="center" p={1} textAlign="center">
-                    <Typography fontSize="25px" fontWeight={700} color="text.primary">
-                      Current Total
-                    </Typography>
-                    <Typography fontSize="40px" fontWeight={700} color="text.primary">
-                      {parsedQuantity}
-                    </Typography>
+          <PageSection>
+            <Stack width="100%" direction="column" justifyContent="center" alignItems="center" spacing={2}>
+              <Grid container spacing={3} alignItems="center" justifyContent="space-between">
+                <Grid item xs={7}>
+                  <Stack
+                    width="100%"
+                    direction="column"
+                    justifyContent="space-between"
+                    justifyItems="center"
+                    spacing={3}
+                  >
+                    <Stack spacing={2} direction="row" width="100%" justifyContent="space-between">
+                      <StyledPaper sx={{ width: '100%' }}>
+                        <Stack direction="column" alignItems="center" p={1} textAlign="center">
+                          <Typography fontSize="25px" fontWeight={700} color="text.primary">
+                            Quantité présente
+                          </Typography>
+                          <Typography fontSize="40px" fontWeight={700} color="text.primary">
+                            {totalQuantity}
+                          </Typography>
+                        </Stack>
+                      </StyledPaper>
+                      <StyledPaper sx={{ width: '100%' }}>
+                        <Stack direction="column" alignItems="center" p={1} textAlign="center">
+                          <Typography
+                            fontSize="25px"
+                            fontWeight={700}
+                            color={watch('calculation') === Calculation.IN ? 'blue' : 'red'}
+                          >
+                            {watch('calculation') === Calculation.IN ? 'Augmentation' : 'Déduction'}
+                          </Typography>
+                          <Typography
+                            fontSize="40px"
+                            fontWeight={700}
+                            color={watch('calculation') === Calculation.IN ? 'blue' : 'red'}
+                          >
+                            {watch('calculation') === Calculation.IN
+                              ? '+' + ' ' + watch('quantityToBeProcessed')
+                              : '-' + ' ' + watch('quantityToBeProcessed')}
+                          </Typography>
+                        </Stack>
+                      </StyledPaper>
+                    </Stack>
+
+                    <StyledPaper>
+                      <Stack direction="column" alignItems="center" p={1} textAlign="center">
+                        <Typography fontSize="25px" fontWeight={700} color="text.primary">
+                          Stock Total :
+                        </Typography>
+                        <Typography fontSize="40px" fontWeight={700} color="text.primary">
+                          ={' '}
+                          {watch('calculation') === Calculation.IN
+                            ? totalQuantity + Number(watch('quantityToBeProcessed'))
+                            : totalQuantity - Number(watch('quantityToBeProcessed'))}
+                        </Typography>
+                      </Stack>
+                      <Typography fontSize="25px" fontWeight={700} color="text.primary"></Typography>
+                    </StyledPaper>
                   </Stack>
-                </StyledPaper>
-                <Stack direction="column" justifyContent="center" justifyItems="center">
-                  {watch('calculation') === Calculation.IN ? (
-                    <Typography fontSize="30px" color="blue" fontWeight={700}>
-                      ＋
-                    </Typography>
-                  ) : (
-                    <Typography fontSize="30px" color="red" fontWeight={700}>
-                      −
-                    </Typography>
-                  )}
-                </Stack>
-                <StyledPaper sx={{ border: '1px solid', borderColor: 'text.primary' }}>
-                  <Stack direction="column" alignItems="center" p={1} textAlign="center">
-                    <Typography
-                      fontSize="25px"
-                      fontWeight={700}
-                      color={watch('calculation') === Calculation.IN ? 'blue' : 'red'}
-                    >
-                      {watch('calculation') === Calculation.IN ? 'Augmentation' : 'Déduction'}
-                    </Typography>
-                    <Typography
-                      fontSize="40px"
-                      fontWeight={700}
-                      color={watch('calculation') === Calculation.IN ? 'blue' : 'red'}
-                    >
-                      {watch('quantityToBeProcessed')}
-                    </Typography>
-                  </Stack>
-                </StyledPaper>
-                <Stack direction="column" justifyContent="center" justifyItems="center">
-                  <Typography fontSize="30px" color="text.primary" fontWeight={700}>
-                    =
-                  </Typography>
-                </Stack>
-                <StyledPaper sx={{ border: '1px solid', borderColor: 'text.primary' }}>
-                  <Stack direction="column" alignItems="center" p={1} textAlign="center">
-                    <Typography fontSize="25px" fontWeight={700} color="text.primary">
-                      Stock en Resultat :
-                    </Typography>
-                    <Typography fontSize="40px" fontWeight={700} color="text.primary">
-                      {watch('calculation') === Calculation.IN
-                        ? parsedQuantity + Number(watch('quantityToBeProcessed'))
-                        : parsedQuantity - Number(watch('quantityToBeProcessed'))}
-                    </Typography>
-                  </Stack>
-                  <Typography fontSize="25px" fontWeight={700} color="text.primary"></Typography>
-                </StyledPaper>
-              </Stack>
-            </Grid>
-            <Grid item xs={4}>
-              <Stack direction="column" gap={3}>
-                <Controller
-                  name="operation"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { onChange, value } }) => (
-                    <FormControl fullWidth margin="none">
-                      <InputLabel id="operation-label">Operation</InputLabel>
-                      <Select
-                        variant="outlined"
-                        fullWidth
-                        labelId="operation"
-                        id="operation"
-                        value={value}
-                        onChange={onChange}
-                      >
-                        {OPERATION_VALUE.map((operation) => (
-                          <MenuItem key={operation} value={operation}>
-                            {operation}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  )}
-                />
-                <Controller
-                  name="calculation"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { onChange, value } }) => (
-                    <FormControl fullWidth margin="none">
-                      <InputLabel id="calculation-label">Entreé/Sortie</InputLabel>
-                      <Select
-                        variant="outlined"
-                        fullWidth
-                        labelId="calculation"
-                        id="calculation"
-                        value={value}
-                        onChange={onChange}
-                      >
-                        {CALCULATION_VALUE.map((calculation) => (
-                          <MenuItem key={calculation} value={calculation}>
-                            {calculation}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  )}
-                />
-                <Controller
-                  name="quantityToBeProcessed"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { onChange, value } }) => (
-                    <StyledTextField
-                      fullWidth
-                      onChange={onChange}
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      id="quantityToBeProcessed"
-                      label="Quantité"
-                      value={value}
+                </Grid>
+                <Grid item xs={5}>
+                  <Stack direction="column" gap={3}>
+                    <Controller
+                      name="operation"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { onChange, value } }) => (
+                        <FormControl fullWidth margin="none">
+                          <InputLabel id="operation-label">Operation</InputLabel>
+                          <Select
+                            variant="outlined"
+                            fullWidth
+                            labelId="operation"
+                            id="operation"
+                            value={value}
+                            onChange={onChange}
+                          >
+                            {OPERATION_VALUE.map((operation) => (
+                              <MenuItem key={operation} value={operation}>
+                                {operation}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      )}
                     />
-                  )}
-                />
+                    <Controller
+                      name="calculation"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { onChange, value } }) => (
+                        <FormControl fullWidth margin="none">
+                          <InputLabel id="calculation-label">Entreé/Sortie</InputLabel>
+                          <Select
+                            variant="outlined"
+                            fullWidth
+                            labelId="calculation"
+                            id="calculation"
+                            value={value}
+                            onChange={onChange}
+                          >
+                            {CALCULATION_VALUE.map((calculation) => (
+                              <MenuItem key={calculation} value={calculation}>
+                                {calculation}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      )}
+                    />
+                    <Controller
+                      name="quantityToBeProcessed"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { onChange, value } }) => (
+                        <StyledTextField
+                          fullWidth
+                          onChange={onChange}
+                          variant="outlined"
+                          margin="normal"
+                          required
+                          id="quantityToBeProcessed"
+                          label="Quantité"
+                          value={value}
+                        />
+                      )}
+                    />
+                  </Stack>
+                </Grid>
+              </Grid>
+
+              <Stack direction="row" width="100%" spacing={2} justifyContent="center">
+                <Button variant="contained" color="error">
+                  Anuler
+                </Button>
+                <Button variant="contained" onClick={handleSubmit(updateItemQuantity)}>
+                  Save
+                </Button>
               </Stack>
-            </Grid>
-          </Grid>
+            </Stack>
+          </PageSection>
 
-          <Stack direction="row" width="100%" spacing={2} justifyContent="center">
-            <Button variant="contained" color="error">
-              Anuler
-            </Button>
-            <Button variant="contained" onClick={handleSubmit(updateItemQuantity)}>
-              Save
-            </Button>
-          </Stack>
-        </Stack>
-      </PageSection>
-
-      <PageSection>
-        {!isLoading && fetcheItemDetail && (
-          <DataGridComponent
-            isLoading={isLoading}
-            rows={mapRows(fetcheItemDetail as MaterialModel) ?? []}
-            columns={columns}
-          />
-        )}
-      </PageSection>
+          <PageSection>
+            {fetcheItemDetail && (
+              <DataGridComponent
+                isLoading={isLoading}
+                rows={mapRows(fetcheItemDetail as MaterialModel) ?? []}
+                columns={columns}
+              />
+            )}
+          </PageSection>
+        </>
+      )}
     </PageWrapper>
   );
 };
