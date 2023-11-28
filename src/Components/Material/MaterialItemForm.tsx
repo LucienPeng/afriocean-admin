@@ -3,6 +3,7 @@ import {
   CircularProgress,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -18,12 +19,15 @@ import { useUserRedux } from '../../useUserRedux';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { useHandleActionResultAlert } from '../../Utils/useHandleActionResultAlert';
-import { ChangeEvent, useState } from 'react';
+import { useState } from 'react';
 import moment from 'moment';
 import QRCode from 'react-qr-code';
 import Barcode from 'react-barcode';
 import { Box } from '@mui/system';
-
+import { useFirebaseStorage } from '../../Utils/Firebase/useFirebaseStorage';
+import { MuiFileInput } from 'mui-file-input';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import CancelIcon from '@mui/icons-material/Cancel';
 interface MaterialItemFormFormProps {
   readonly formMode?: MaterialItemFormMode;
   readonly fetcheItemDetail?: MaterialModel;
@@ -33,11 +37,13 @@ const CURRENCY_VALUE = Object.values(Currency).filter((currency) => isNaN(Number
 
 export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
   const { formMode, fetcheItemDetail } = props;
-  const [previewURL, setPreviewURL] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [previewURL, setPreviewURL] = useState(fetcheItemDetail?.photo ? fetcheItemDetail.photo : '');
   const [serialId, setSerialId] = useState<string | number>(fetcheItemDetail?.id ? fetcheItemDetail.id : 'Loading...');
   const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
     useHandleActionResultAlert();
   const { setFirebaseData, getFirebaseDocumentData } = useFirebaseDB();
+  const { uploadImage } = useFirebaseStorage();
   const { profile } = useUserRedux();
 
   const { isLoading: isFetchingIndex, refetch } = useQuery({
@@ -75,15 +81,20 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
   });
 
   const createMaterialItemRequest = async () => {
+    const photoPath = await uploadImage(file, file?.name);
+
     await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: serialId });
     await setFirebaseData(Collections.Material, String(serialId), {
       ...getValues(),
+      photo: photoPath,
       id: serialId,
       date: createDate,
       totalQuantity: getValues('defaultQuantity'),
     });
+
     refetch();
     reset(createModeValues);
+    setFile(null);
   };
 
   const { mutate, isLoading } = useMutation(createMaterialItemRequest, {
@@ -94,17 +105,23 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
   const navigate = useNavigate();
   const submitCreateMaterialItemRequest = async () => mutate();
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileChange = (newValue: File | null) => {
+    const file = newValue;
     if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewURL(reader.result as string);
       };
       reader.readAsDataURL(file);
+      setFile(file);
     } else {
       setPreviewURL('');
     }
+  };
+
+  const handleRemoveFile = () => {
+    setFile(null);
+    setPreviewURL('');
   };
 
   return (
@@ -319,35 +336,62 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
         </Grid>
       </Grid>
       <Grid item xs={12} sm={6} lg={12}>
-        <Grid container>
-          <Grid item xs={4}>
-            <Box maxHeight="300px" maxWidth="200px" component="img" src={previewURL} />
-          </Grid>
+        <Grid container justifyContent="space-between" alignItems="flex-start">
           <Grid item xs={6}>
-            <Stack direction="column" spacing={2} alignItems="center" justifyContent="center">
+            <Stack alignItems="center" spacing={1}>
               <Typography color="text.primary">Photo</Typography>
+              <Box maxHeight="300px" maxWidth="200px" component="img" src={previewURL} />
               <Controller
                 name="photo"
                 control={control}
                 defaultValue={''}
-                render={() => <input type="file" onChange={handleFileChange} />}
+                render={() => (
+                  <MuiFileInput
+                    fullWidth
+                    size="small"
+                    variant="outlined"
+                    placeholder="Sélétionner une image"
+                    InputProps={{
+                      inputProps: {
+                        accept: 'image/*',
+                      },
+                      startAdornment: <AttachFileIcon />,
+                      endAdornment: (
+                        <IconButton onClick={handleRemoveFile}>
+                          <CancelIcon />
+                        </IconButton>
+                      ),
+                    }}
+                    value={file}
+                    onChange={handleFileChange}
+                  />
+                )}
               />
             </Stack>
           </Grid>
+          <Grid item xs={6}>
+            {watch('itemId') && (
+              <Stack spacing={2} alignItems="center">
+                <Stack direction="column" spacing={2} alignItems="center" justifyContent="center">
+                  <Typography color="text.primary">QR code</Typography>
+                  <QRCode value={watch('itemId')} size={80} />
+                </Stack>
+                <Stack
+                  width="100%"
+                  direction="column"
+                  spacing={1}
+                  alignItems="center"
+                  justifyContent="center"
+                  overflow="hidden"
+                  sx={{ overflow: 'hidden' }}
+                >
+                  <Typography color="text.primary">Barcode</Typography>
+                  <Barcode value={watch('itemId') ?? ''} width={1} height={30} />
+                </Stack>
+              </Stack>
+            )}
+          </Grid>
         </Grid>
-      </Grid>
-
-      <Grid item xs={12} sm={6} lg={5}>
-        <Stack direction="column" spacing={1} alignItems="center" justifyContent="center" overflow="hidden">
-          <Typography color="text.primary">Barcode</Typography>
-          {watch('itemId') && <Barcode value={watch('itemId') ?? ''} height={80} />}
-        </Stack>
-      </Grid>
-      <Grid item xs={12} sm={6} lg={7}>
-        <Stack direction="column" spacing={2} alignItems="center" justifyContent="center">
-          <Typography color="text.primary">QR code</Typography>
-          {watch('itemId') && <QRCode value={watch('itemId')} size={80} />}
-        </Stack>
       </Grid>
 
       <Grid item xs={12}>

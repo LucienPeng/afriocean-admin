@@ -10,7 +10,6 @@ import {
   setDoc,
   where,
 } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
 import { EmailTemplate } from '../useEmailNotification';
 
 export enum Collections {
@@ -42,7 +41,6 @@ type AdditionalCondition = {
 
 export const useFirebaseDB = () => {
   const db = getFirestore();
-  const storage = getStorage();
 
   const getFirebaseCollectionData = async (collectionPath: string) => {
     const querySnapshot = await getDocs(collection(db, collectionPath));
@@ -108,7 +106,6 @@ export const useFirebaseDB = () => {
 
   return {
     db,
-    storage,
     collection,
     getFirebaseCollectionData,
     getFirebaseDocumentData,
