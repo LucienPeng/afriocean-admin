@@ -3,7 +3,7 @@ import { PageSection } from '../Common/PageSection';
 import { MaterialItemForm } from './MaterialItemForm';
 import { DataGridComponent } from '../Common/StyledUI/StyledDataGrid';
 import { useQuery } from 'react-query';
-import { Collections, useFirebaseDB } from '../../useFirebaseDB';
+import { Collections, useFirebaseDB } from '../../Utils/Firebase/useFirebaseDB';
 import {
   Backdrop,
   Button,
@@ -116,7 +116,7 @@ export const MaterialItemDetail = () => {
         operation,
         calculation,
         quantityToBeProcessed: parsedOperationQuantity,
-        subtotalQuantity: updatedTotalQuantity, // Update subtotal directly with updatedTotalQuantity
+        subtotalQuantity: updatedTotalQuantity,
       },
     ];
 

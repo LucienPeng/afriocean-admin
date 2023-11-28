@@ -2,7 +2,7 @@ import { useQuery } from 'react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMaterialRedux } from '../../useMaterialRedux';
-import { useFirebaseDB } from '../../useFirebaseDB';
+import { useFirebaseDB } from '../../Utils/Firebase/useFirebaseDB';
 import { PageWrapper } from '../Common/PageWrapper';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';

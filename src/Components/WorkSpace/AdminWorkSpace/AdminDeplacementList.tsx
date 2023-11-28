@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useMutation, useQuery } from 'react-query';
-import { Collections, MutationFunction, useFirebaseDB } from '../../../useFirebaseDB';
+import { Collections, MutationFunction, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
 import { DeplacementFormModel } from '../../Application/Form/DeplacementForm';
 import { StyledPaper } from '../../Common/StyledUI/StyledPaper';

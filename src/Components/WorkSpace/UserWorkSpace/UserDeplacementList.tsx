@@ -2,7 +2,7 @@ import { Applications, DATE_TIME_FORMAT } from '../../../model/application.model
 import { useState } from 'react';
 import { CircularProgress, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useQuery } from 'react-query';
-import { Collections, useFirebaseDB } from '../../../useFirebaseDB';
+import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { DeplacementFormModel } from '../../Application/Form/DeplacementForm';
 import { useUserRedux } from '../../../useUserRedux';
 import { StyledTableRow } from '../../Common/StyledUI/StyledTable';

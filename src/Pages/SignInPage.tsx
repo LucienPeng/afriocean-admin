@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { authActions } from '../Store/Auth/auth-slice';
 import { useNavigate } from 'react-router-dom';
 import { useUserRedux } from '../useUserRedux';
-import { useFirebaseDB } from '../useFirebaseDB';
+import { useFirebaseDB } from '../Utils/Firebase/useFirebaseDB';
 import { doc, getDoc } from '@firebase/firestore';
 import { Copyright } from '../Components/Common/CopyRight';
 import { useHandleActionResultAlert } from '../Utils/useHandleActionResultAlert';

@@ -13,7 +13,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 import { DATE_TIME_FORMAT } from '../../model/application.model';
 import { Currency, MaterialItemFormMode, MaterialModel } from '../../model/material.model';
-import { Collections, useFirebaseDB } from '../../useFirebaseDB';
+import { Collections, useFirebaseDB } from '../../Utils/Firebase/useFirebaseDB';
 import { useUserRedux } from '../../useUserRedux';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';

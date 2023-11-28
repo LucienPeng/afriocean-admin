@@ -12,7 +12,7 @@ import {
 import moment, { Moment } from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Controller, useForm } from 'react-hook-form';
-import { useFirebaseDB } from '../../../useFirebaseDB';
+import { useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { useHandleActionResultAlert } from '../../../Utils/useHandleActionResultAlert';
 import { useUserRedux } from '../../../useUserRedux';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';

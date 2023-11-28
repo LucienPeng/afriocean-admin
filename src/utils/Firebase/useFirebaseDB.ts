@@ -11,7 +11,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { EmailTemplate } from './Utils/useEmailNotification';
+import { EmailTemplate } from '../useEmailNotification';
 
 export enum Collections {
   Application = 'Application',

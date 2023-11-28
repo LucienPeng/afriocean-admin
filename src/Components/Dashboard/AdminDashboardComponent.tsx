@@ -11,7 +11,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useFirebaseDB } from '../../useFirebaseDB';
+import { useFirebaseDB } from '../../Utils/Firebase/useFirebaseDB';
 import { useQuery } from 'react-query';
 import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/application.model';
 import { StyledPaper } from '../Common/StyledUI/StyledPaper';

@@ -3,7 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Department, Profile, Roles } from '../../../model/company.model';
 import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { useFirebaseDB } from '../../../useFirebaseDB';
+import { useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { useHandleActionResultAlert } from '../../../Utils/useHandleActionResultAlert';
 import { useHandleLoading } from '../../../Utils/useHandleLoading';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
