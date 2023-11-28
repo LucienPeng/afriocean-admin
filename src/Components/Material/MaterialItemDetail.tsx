@@ -30,7 +30,7 @@ import { StyledPaper } from '../Common/StyledUI/StyledPaper';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import moment from 'moment';
 import { DATE_FORMAT, DATE_TIME_FORMAT } from '../../model/application.model';
-import { useCallback } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import { useUserRedux } from '../../useUserRedux';
 import { useParams } from 'react-router';
 
@@ -63,47 +63,57 @@ const mapRows = (data: MaterialModel) => {
 const DEFAULT_VALUES = {
   operation: Operation.INANDOUT,
   calculation: Calculation.OUT,
-  quantityToBeProcessed: 0,
+  quantityToBeProcessed: '',
 };
 
 const useMaterialItemDetail = (id: string | undefined) => {
   const { getFirebaseDocumentData } = useFirebaseDB();
 
-  const { refetch, data, isLoading } = useQuery<MaterialModel>({
+  const { refetch, data, isLoading, isFetching } = useQuery<MaterialModel>({
     queryKey: ['materialItemDetail', id],
     queryFn: () => getFirebaseDocumentData('Material', id ?? '') as Promise<MaterialModel>,
     enabled: !!id,
   });
 
-  return { refetch, data, isLoading };
+  return { refetch, data, isLoading, isFetching };
 };
 
 export const MaterialItemDetail = () => {
+  const [num, setNum] = useState<number | string>('');
   const { id } = useParams();
   const { setFirebaseData } = useFirebaseDB();
   const { profile } = useUserRedux();
-  const { refetch, data: fetcheItemDetail, isLoading } = useMaterialItemDetail(id);
-  const { control, watch, reset, getValues, handleSubmit } = useForm<MaterialQuantityFlow>({
+  const { refetch, data: fetcheItemDetail, isLoading, isFetching } = useMaterialItemDetail(id);
+  const { control, watch, reset, getValues, handleSubmit, setValue } = useForm<MaterialQuantityFlow>({
     mode: 'onSubmit',
     defaultValues: DEFAULT_VALUES,
   });
 
-  const { calculation, operation, quantityToBeProcessed } = getValues();
+  const { calculation, operation } = getValues();
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const regex = /^[0-9\b]+$/;
+    if (e.target.value === '' || regex.test(e.target.value)) {
+      const value = parseInt(e.target.value);
+      const yy = isNaN(value) ? '' : parseInt(e.target.value);
+      setNum(yy);
+      setValue('quantityToBeProcessed', yy);
+    }
+  };
 
   const totalQuantity: number = Number(fetcheItemDetail?.totalQuantity) || 0;
-  const parsedOperationQuantity = Number(quantityToBeProcessed) || 0;
   const componentTitle: string = fetcheItemDetail ? `${fetcheItemDetail?.id} / ${fetcheItemDetail?.materialName}` : '';
 
-  const updateItemQuantity = useCallback(() => {
+  const updateItemQuantity = useCallback(async () => {
     if (!fetcheItemDetail) return;
     const newData = { ...fetcheItemDetail };
 
     let updatedTotalQuantity = 0;
 
     if (calculation === Calculation.IN) {
-      updatedTotalQuantity = totalQuantity + parsedOperationQuantity;
+      updatedTotalQuantity = totalQuantity + (num as number);
     } else if (calculation === Calculation.OUT) {
-      updatedTotalQuantity = totalQuantity - parsedOperationQuantity;
+      updatedTotalQuantity = totalQuantity - (num as number);
     }
 
     newData.totalQuantity = updatedTotalQuantity;
@@ -115,19 +125,20 @@ export const MaterialItemDetail = () => {
         operationDate: moment().format(DATE_TIME_FORMAT),
         operation,
         calculation,
-        quantityToBeProcessed: parsedOperationQuantity,
+        quantityToBeProcessed: num,
         subtotalQuantity: updatedTotalQuantity,
       },
     ];
 
-    setFirebaseData(Collections.Material, String(newData.id), newData);
+    await setFirebaseData(Collections.Material, String(newData.id), newData);
+    await refetch();
+    setNum(0);
     reset(DEFAULT_VALUES);
-    refetch();
   }, [
     calculation,
     fetcheItemDetail,
+    num,
     operation,
-    parsedOperationQuantity,
     profile?.firstName,
     refetch,
     reset,
@@ -185,9 +196,7 @@ export const MaterialItemDetail = () => {
                             fontWeight={700}
                             color={watch('calculation') === Calculation.IN ? 'blue' : 'red'}
                           >
-                            {watch('calculation') === Calculation.IN
-                              ? '+' + ' ' + watch('quantityToBeProcessed')
-                              : '-' + ' ' + watch('quantityToBeProcessed')}
+                            {watch('calculation') === Calculation.IN ? '+' + ' ' + num : '-' + ' ' + num}
                           </Typography>
                         </Stack>
                       </StyledPaper>
@@ -201,8 +210,8 @@ export const MaterialItemDetail = () => {
                         <Typography fontSize="40px" fontWeight={700} color="text.primary">
                           ={' '}
                           {watch('calculation') === Calculation.IN
-                            ? totalQuantity + Number(watch('quantityToBeProcessed'))
-                            : totalQuantity - Number(watch('quantityToBeProcessed'))}
+                            ? totalQuantity + (num as number)
+                            : totalQuantity - (num as number)}
                         </Typography>
                       </Stack>
                       <Typography fontSize="25px" fontWeight={700} color="text.primary"></Typography>
@@ -263,16 +272,17 @@ export const MaterialItemDetail = () => {
                       name="quantityToBeProcessed"
                       control={control}
                       rules={{ required: true }}
-                      render={({ field: { onChange, value } }) => (
+                      render={({ field: { value } }) => (
                         <StyledTextField
+                          value={value}
+                          type="text"
                           fullWidth
-                          onChange={onChange}
+                          onChange={handleChange}
                           variant="outlined"
                           margin="normal"
                           required
                           id="quantityToBeProcessed"
                           label="Quantité"
-                          value={value}
                         />
                       )}
                     />
@@ -281,6 +291,7 @@ export const MaterialItemDetail = () => {
               </Grid>
 
               <Stack direction="row" width="100%" spacing={2} justifyContent="center">
+                {isFetching && <CircularProgress color="secondary" />}
                 <Button variant="contained" color="error">
                   Anuler
                 </Button>

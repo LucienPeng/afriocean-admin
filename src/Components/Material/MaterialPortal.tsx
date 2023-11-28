@@ -21,7 +21,11 @@ const materialItemColumns: GridColDef[] = [
   { field: 'materialZhName', headerName: 'Titre Chinois', flex: 1 },
   { field: 'spec', headerName: 'Spécification' },
   { field: 'initiateur', headerName: 'Initiateur' },
-  { field: 'photo', headerName: 'Photo' },
+  {
+    field: 'photo',
+    headerName: 'Photo',
+    renderCell: (params) => <img src={params.value} alt="item" style={{ width: 50, height: 50 }} />,
+  },
   { field: 'totalQuantity', headerName: 'Stock Total', flex: 1 },
 ];
 

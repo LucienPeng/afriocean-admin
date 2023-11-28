@@ -57,6 +57,6 @@ export interface MaterialQuantityFlow {
   readonly calculation: Calculation;
   readonly operation: Operation;
   readonly operationDate: string;
-  readonly quantityToBeProcessed: number;
+  readonly quantityToBeProcessed: number | string;
   readonly subtotalQuantity: number;
 }
