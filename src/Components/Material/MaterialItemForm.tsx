@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   CircularProgress,
   FormControl,
@@ -20,12 +21,11 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { useHandleActionResultAlert } from '../../Utils/useHandleActionResultAlert';
 import { useState } from 'react';
+import { useFirebaseStorage } from '../../Utils/Firebase/useFirebaseStorage';
+import { MuiFileInput } from 'mui-file-input';
 import moment from 'moment';
 import QRCode from 'react-qr-code';
 import Barcode from 'react-barcode';
-import { Box } from '@mui/system';
-import { useFirebaseStorage } from '../../Utils/Firebase/useFirebaseStorage';
-import { MuiFileInput } from 'mui-file-input';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import CancelIcon from '@mui/icons-material/Cancel';
 interface MaterialItemFormFormProps {
@@ -335,9 +335,9 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12} sm={6} lg={12}>
-        <Grid container justifyContent="space-between" alignItems="flex-start">
-          <Grid item xs={6}>
+      <Grid item xs={12}>
+        <Grid container justifyContent="space-between" alignItems="flex-start" spacing={5}>
+          <Grid item xs={12} sm={6}>
             <Stack alignItems="center" spacing={1}>
               <Typography color="text.primary">Photo</Typography>
               <Box maxHeight="300px" maxWidth="200px" component="img" src={previewURL} />
@@ -369,9 +369,9 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
               />
             </Stack>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             {watch('itemId') && (
-              <Stack spacing={2} alignItems="center">
+              <Stack spacing={5} alignItems="center">
                 <Stack direction="column" spacing={2} alignItems="center" justifyContent="center">
                   <Typography color="text.primary">QR code</Typography>
                   <QRCode value={watch('itemId')} size={80} />

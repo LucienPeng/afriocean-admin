@@ -4,7 +4,7 @@ import { MaterialItemFormViewWrapper } from '../Components/Material/MaterialItem
 import { Roles } from '../model/company.model';
 import ProtectedRoute from '../ProtectedRoute';
 import MaterialPage from '../Pages/MaterialPage';
-import { MaterialItemDetail } from '../Components/Material/MaterialItemDetail';
+import { MaterialItemDetail } from '../Components/Material/MaterialItemDetail/MaterialItemDetailWrapper';
 
 export const MaterialRoute = () => {
   return (

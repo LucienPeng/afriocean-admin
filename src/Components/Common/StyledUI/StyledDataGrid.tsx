@@ -1,6 +1,7 @@
 import { CircularProgress, styled } from '@mui/material';
 import { Stack } from '@mui/system';
-import { DataGrid, GridCellParams, GridColDef, GridRowsProp } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridColDef, GridRowModel, GridRowsProp } from '@mui/x-data-grid';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const StyledDataGrid = styled(DataGrid)((themeOptions) => ({
   width: '100%',
@@ -19,6 +20,7 @@ const StyledDataGrid = styled(DataGrid)((themeOptions) => ({
 }));
 
 interface DataGridProps {
+  readonly isFetching?: boolean;
   readonly isLoading: boolean;
   readonly rows: GridRowsProp;
   readonly columns: GridColDef[];
@@ -26,19 +28,22 @@ interface DataGridProps {
 }
 
 export const DataGridComponent = (props: DataGridProps) => {
-  const { isLoading, rows, columns, onCellClickHandler } = props;
+  const { isLoading, isFetching, rows, columns, onCellClickHandler } = props;
+  const processRowUpdate = (newRow: GridRowModel) => newRow;
+
   return (
     <StyledDataGrid
+      processRowUpdate={processRowUpdate}
       autoHeight
       disableColumnFilter
       disableColumnMenu
       hideFooterSelectedRowCount
-      loading={isLoading}
+      loading={isLoading || isFetching}
       rows={rows}
       columns={columns}
       onCellClick={onCellClickHandler}
       slots={{
-        loadingOverlay: LoadingOverlay,
+        loadingOverlay: isFetching ? LinearProgress : LoadingOverlay,
       }}
     />
   );
