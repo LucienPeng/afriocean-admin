@@ -6,15 +6,8 @@ import { MaterialModel } from '../../../model/material.model';
 import { useParams } from 'react-router';
 import { MaterialItemDetailCalculator } from './MaterialItemDetailCalculator';
 import { MaterialItemDetailRecordTable } from './MaterialItemDetailRecordTable';
-import InventoryIcon from '@mui/icons-material/Inventory';
 import { MaterialItemDetailForm } from './MaterialItemDetailForm';
-
-// interface MaterialItemQuery {
-//   readonly refetch: () => void;
-//   readonly fetcheItemDetail: MaterialModel | undefined;
-//   readonly isLoading: boolean;
-//   readonly isFetching: boolean;
-// }
+import InventoryIcon from '@mui/icons-material/Inventory';
 
 const useMaterialItemDetail = (id: string | undefined) => {
   const { getFirebaseDocumentData } = useFirebaseDB();

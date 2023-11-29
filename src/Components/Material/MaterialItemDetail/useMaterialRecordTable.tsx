@@ -21,6 +21,7 @@ const mapRows = (data: MaterialModel) => {
       calculation: s.calculation,
       operation: s.operation,
       quantityToBeProcessed: s.quantityToBeProcessed,
+      note: s.note,
       subtotalQuantity: s.subtotalQuantity,
     };
   });
@@ -84,6 +85,15 @@ export const useMaterialRecordTable = (props: MaterialRecordTableProps) => {
       flex: 1,
       editable: role === Roles.ADMIN,
       type: 'number',
+    },
+    {
+      field: 'note',
+      headerName: 'Note',
+      headerAlign: 'center',
+      align: 'center',
+      flex: 1,
+      editable: role === Roles.ADMIN,
+      type: 'text',
     },
     {
       field: 'subtotalQuantity',

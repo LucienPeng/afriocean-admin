@@ -27,6 +27,7 @@ const DEFAULT_VALUES = {
   operation: Operation.INANDOUT,
   calculation: Calculation.OUT,
   quantityToBeProcessed: '',
+  note: '',
 };
 
 interface ItemDetailCalculatorProps {
@@ -44,7 +45,7 @@ export const MaterialItemDetailCalculator = (props: ItemDetailCalculatorProps) =
     defaultValues: DEFAULT_VALUES,
   });
 
-  const { calculation, operation } = getValues();
+  const { calculation, operation, note } = getValues();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const regex = /^[0-9\b]+$/;
@@ -71,10 +72,10 @@ export const MaterialItemDetailCalculator = (props: ItemDetailCalculatorProps) =
     }
 
     newData.totalQuantity = updatedTotalQuantity;
-
     newData.record = [
       ...(newData.record || []),
       {
+        note,
         initiateur: profile?.firstName ?? '',
         operationDate: moment().format(DATE_TIME_FORMAT),
         operation,
@@ -88,21 +89,22 @@ export const MaterialItemDetailCalculator = (props: ItemDetailCalculatorProps) =
     refetch();
     reset(DEFAULT_VALUES);
   }, [
+    note,
     calculation,
     fetcheItemDetail,
     operation,
     profile?.firstName,
     quantityToBeProcessed,
+    totalQuantity,
     refetch,
     reset,
     setFirebaseData,
-    totalQuantity,
   ]);
 
   return (
     <PageSection>
       <Stack width="100%" direction="column" justifyContent="center" alignItems="center" spacing={3}>
-        <Grid container spacing={3}>
+        <Grid container alignItems="center" spacing={3}>
           <Grid item xs={7}>
             <Stack width="100%" direction="column" justifyContent="space-between" justifyItems="center" spacing={3}>
               <Stack spacing={2} direction="row" width="100%" justifyContent="space-between">
@@ -209,17 +211,40 @@ export const MaterialItemDetailCalculator = (props: ItemDetailCalculatorProps) =
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value } }) => (
-                  <StyledTextField
-                    value={value}
-                    type="text"
-                    fullWidth
-                    onChange={handleChange}
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    id="quantityToBeProcessed"
-                    label="Quantité"
-                  />
+                  <FormControl fullWidth margin="none">
+                    <StyledTextField
+                      value={value}
+                      type="text"
+                      fullWidth
+                      onChange={handleChange}
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      id="quantityToBeProcessed"
+                      label="Quantité"
+                    />
+                  </FormControl>
+                )}
+              />
+              <Controller
+                name="note"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <FormControl fullWidth margin="none">
+                    <StyledTextField
+                      value={value}
+                      type="text"
+                      fullWidth
+                      onChange={onChange}
+                      multiline
+                      rows={3}
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      id="note"
+                      label="Note"
+                    />
+                  </FormControl>
                 )}
               />
             </Stack>

@@ -54,6 +54,7 @@ export interface MaterialTableRow {
 
 export interface MaterialQuantityFlow {
   readonly initiateur: string;
+  readonly note: string;
   readonly calculation: Calculation;
   readonly operation: Operation;
   readonly operationDate: string;
