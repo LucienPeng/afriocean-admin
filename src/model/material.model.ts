@@ -15,6 +15,7 @@ export enum Currency {
 export enum Operation {
   INANDOUT = 'Entrée-sortie',
   INVENTORY = 'Inventaire',
+  CREATE = 'Matériel en création'
 }
 
 export enum Calculation {

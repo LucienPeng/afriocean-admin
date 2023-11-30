@@ -14,7 +14,7 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { StyledTextField } from '../Common/StyledUI/StyledTextField';
 import { DATE_TIME_FORMAT } from '../../model/application.model';
-import { Currency, MaterialItemFormMode, MaterialModel } from '../../model/material.model';
+import { Calculation, Currency, MaterialItemFormMode, MaterialModel, Operation } from '../../model/material.model';
 import { Collections, useFirebaseDB } from '../../Utils/Firebase/useFirebaseDB';
 import { useUserRedux } from '../../useUserRedux';
 import { useNavigate } from 'react-router-dom';
@@ -53,7 +53,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
   const [previewURL, setPreviewURL] = useState(fetcheItemDetail?.photo ? fetcheItemDetail.photo : '');
   const [serialId, setSerialId] = useState<string | number>(fetcheItemDetail?.id ? fetcheItemDetail.id : 'Loading...');
 
-  const { isLoading: isFetchingIndex, refetch } = useQuery({
+  const { isLoading: isFetchingIndex } = useQuery({
     queryKey: ['MaterialIncrementalId'],
     queryFn: () => getFirebaseDocumentData(Collections.IncrementalIndex, 'Material'),
     onSuccess: (res) => setSerialId(res?.index + 1),
@@ -66,6 +66,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
     firstName,
     department,
     createDate,
+    itemId: '',
     erpId: '',
     materialName: '',
     materialZhName: '',
@@ -88,7 +89,6 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
 
   const createMaterialItemRequest = async () => {
     const photoPath = await uploadImage(file, file?.name);
-
     await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: serialId });
     await setFirebaseData(Collections.Material, String(serialId), {
       ...getValues(),
@@ -96,9 +96,19 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
       id: serialId,
       date: createDate,
       totalQuantity: getValues('defaultQuantity'),
+      record: [
+        {
+          initiateur: firstName,
+          note: '',
+          calculation: Calculation.IN,
+          operation: Operation.CREATE,
+          operationDate: createDate,
+          quantityToBeProcessed: getValues('defaultQuantity'),
+          subtotalQuantity: getValues('defaultQuantity'),
+        },
+      ],
     });
 
-    refetch();
     reset(createModeValues);
     setFile(null);
   };
@@ -112,7 +122,6 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
         photo: previewURL !== getValues('photo') ? photoPath : getValues('photo'),
       });
 
-      refetch();
       setFile(null);
     }
   };
@@ -131,7 +140,8 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
 
   const { mutate: deleteMaterialitemRequest, isLoading: isDeleting } = useMutation(deleteMaterialItemRequest, {
     onSuccess: async () => {
-      await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: Number(serialId) - 1 });
+      const newSerialId = await getFirebaseDocumentData(Collections.IncrementalIndex, 'Material');
+      await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: Number(newSerialId?.index) - 1 });
       navigate('/material');
     },
   });
@@ -174,21 +184,23 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
                 alignItems="center"
                 gap={2}
               >
-                N° Index : {isFetchingIndex ? <CircularProgress size={15} /> : serialId}
+                N° Index : {isFetchingIndex ? <CircularProgress size={20} /> : serialId}
               </Typography>
             </Grid>
             <Grid item xs={6} display="flex" width="100%" justifyContent="center" alignItems="center">
-              {isDeleting && <CircularProgress color="secondary" />}
-              {isEditMode && (
-                <Button
-                  variant="contained"
-                  color="error"
-                  sx={{ alignSelf: 'flex-end' }}
-                  onClick={() => deleteMaterialitemRequest()}
-                >
-                  Delete
-                </Button>
-              )}
+              <Stack width="100%" direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
+                {isDeleting && <CircularProgress color="secondary" size={20} />}
+                {isEditMode && (
+                  <Button
+                    variant="contained"
+                    color="error"
+                    sx={{ alignSelf: 'flex-end' }}
+                    onClick={() => deleteMaterialitemRequest()}
+                  >
+                    Delete
+                  </Button>
+                )}
+              </Stack>
             </Grid>
           </Grid>
         </Grid>
