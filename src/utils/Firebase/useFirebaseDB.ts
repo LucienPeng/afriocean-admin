@@ -2,6 +2,7 @@ import {
   WhereFilterOp,
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -41,6 +42,10 @@ type AdditionalCondition = {
 
 export const useFirebaseDB = () => {
   const db = getFirestore();
+
+  const deletFirebaseDocument = async (collectionPath: string, documentId: string) => {
+    await deleteDoc(doc(db, collectionPath, documentId));
+  };
 
   const getFirebaseCollectionData = async (collectionPath: string) => {
     const querySnapshot = await getDocs(collection(db, collectionPath));
@@ -114,5 +119,6 @@ export const useFirebaseDB = () => {
     setFirebaseData,
     getFirebaseMultiConditionQueryData,
     updateFirebaseData,
+    deletFirebaseDocument,
   };
 };

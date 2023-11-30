@@ -28,6 +28,7 @@ import QRCode from 'react-qr-code';
 import Barcode from 'react-barcode';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { Roles } from '../../model/company.model';
 interface MaterialItemFormFormProps {
   readonly formMode?: MaterialItemFormMode;
   readonly fetcheItemDetail?: MaterialModel;
@@ -37,25 +38,29 @@ const CURRENCY_VALUE = Object.values(Currency).filter((currency) => isNaN(Number
 
 export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
   const { formMode, fetcheItemDetail } = props;
+  const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
+    useHandleActionResultAlert();
+  const { setFirebaseData, getFirebaseDocumentData, deletFirebaseDocument } = useFirebaseDB();
+  const { uploadImage } = useFirebaseStorage();
+  const { profile, role } = useUserRedux();
+
+  const isEditMode = formMode === MaterialItemFormMode.EDIT;
+  const firstName = profile?.firstName;
+  const department = profile?.department;
+  const createDate = moment().format(DATE_TIME_FORMAT);
+
   const [file, setFile] = useState<File | null>(null);
   const [previewURL, setPreviewURL] = useState(fetcheItemDetail?.photo ? fetcheItemDetail.photo : '');
   const [serialId, setSerialId] = useState<string | number>(fetcheItemDetail?.id ? fetcheItemDetail.id : 'Loading...');
-  const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
-    useHandleActionResultAlert();
-  const { setFirebaseData, getFirebaseDocumentData } = useFirebaseDB();
-  const { uploadImage } = useFirebaseStorage();
-  const { profile } = useUserRedux();
 
   const { isLoading: isFetchingIndex, refetch } = useQuery({
     queryKey: ['MaterialIncrementalId'],
     queryFn: () => getFirebaseDocumentData(Collections.IncrementalIndex, 'Material'),
     onSuccess: (res) => setSerialId(res?.index + 1),
-    enabled: formMode === MaterialItemFormMode.CREATE,
+    enabled: !isEditMode,
   });
 
-  const firstName = profile?.firstName;
-  const department = profile?.department;
-  const createDate = moment().format(DATE_TIME_FORMAT);
+  const disabled = isEditMode ? (role === Roles.ADMIN ? false : true) : false;
 
   const createModeValues = {
     firstName,
@@ -74,10 +79,11 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
   };
 
   const editModeValues = fetcheItemDetail;
+  const navigate = useNavigate();
 
   const { getValues, handleSubmit, reset, watch, control } = useForm<MaterialModel>({
     mode: 'onSubmit',
-    defaultValues: formMode === MaterialItemFormMode.CREATE ? createModeValues : editModeValues,
+    defaultValues: !isEditMode ? createModeValues : editModeValues,
   });
 
   const createMaterialItemRequest = async () => {
@@ -97,13 +103,38 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
     setFile(null);
   };
 
-  const { mutate, isLoading } = useMutation(createMaterialItemRequest, {
-    onSuccess: () => setSuccessMessage('Object a été bien crée'),
-    onError: () => setErrorMessage('Quelque chose ne fonntionne correctement pas '),
-  });
+  const editMaterialItemRequest = async () => {
+    if (role === Roles.ADMIN) {
+      const photoPath = await uploadImage(file, file?.name);
 
-  const navigate = useNavigate();
-  const submitCreateMaterialItemRequest = async () => mutate();
+      await setFirebaseData(Collections.Material, String(serialId), {
+        ...getValues(),
+        photo: previewURL !== getValues('photo') ? photoPath : getValues('photo'),
+      });
+
+      refetch();
+      setFile(null);
+    }
+  };
+
+  const { mutate: submitCreateMaterialItemRequest, isLoading } = useMutation(
+    !isEditMode ? createMaterialItemRequest : editMaterialItemRequest,
+    {
+      onSuccess: () => setSuccessMessage(isEditMode ? 'Object a été bien mis à jour' : 'Object a été bien crée'),
+      onError: () => setErrorMessage('Quelque chose ne fonntionne pas'),
+    },
+  );
+
+  const deleteMaterialItemRequest = async () => {
+    return await deletFirebaseDocument(Collections.Material, String(serialId));
+  };
+
+  const { mutate: deleteMaterialitemRequest, isLoading: isDeleting } = useMutation(deleteMaterialItemRequest, {
+    onSuccess: async () => {
+      await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: Number(serialId) - 1 });
+      navigate('/material');
+    },
+  });
 
   const handleFileChange = (newValue: File | null) => {
     const file = newValue;
@@ -124,29 +155,52 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
     setPreviewURL('');
   };
 
+  const handleCancel = () => {
+    if (!isEditMode) navigate('/material');
+    reset(createModeValues);
+  };
+
   return (
-    <Grid container rowSpacing={3} columnSpacing={1}>
+    <Grid container rowSpacing={3} columnSpacing={12}>
       <Grid item xs={12}>
-        <Grid container columnSpacing={3} alignItems="center">
-          <Grid item xs={2}>
-            <Typography
-              fontWeight={700}
-              color="text.primary"
-              display="flex"
-              flexDirection="row"
-              alignItems="center"
-              gap={2}
-            >
-              N° Index : {isFetchingIndex ? <CircularProgress size={15} /> : serialId}
-            </Typography>
+        <Grid item xs={12}>
+          <Grid container spacing={1}>
+            <Grid item xs={6}>
+              <Typography
+                fontWeight={700}
+                color="text.primary"
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                gap={2}
+              >
+                N° Index : {isFetchingIndex ? <CircularProgress size={15} /> : serialId}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} display="flex" width="100%" justifyContent="center" alignItems="center">
+              {isDeleting && <CircularProgress color="secondary" />}
+              {isEditMode && (
+                <Button
+                  variant="contained"
+                  color="error"
+                  sx={{ alignSelf: 'flex-end' }}
+                  onClick={() => deleteMaterialitemRequest()}
+                >
+                  Delete
+                </Button>
+              )}
+            </Grid>
           </Grid>
-          <Grid item xs={5}>
+        </Grid>
+        <Grid container columnSpacing={3} alignItems="center">
+          <Grid item xs={6}>
             <Controller
               name="itemId"
               control={control}
               render={({ field: { onChange, value } }) => (
                 <StyledTextField
                   fullWidth
+                  disabled={disabled}
                   onChange={onChange}
                   variant="standard"
                   margin="normal"
@@ -158,13 +212,14 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
               )}
             />
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={6}>
             <Controller
               name="erpId"
               control={control}
               render={({ field: { onChange, value } }) => (
                 <StyledTextField
                   fullWidth
+                  disabled={disabled}
                   onChange={onChange}
                   variant="standard"
                   margin="normal"
@@ -199,6 +254,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
           render={({ field: { onChange, value } }) => (
             <StyledTextField
               fullWidth
+              disabled={disabled}
               onChange={onChange}
               variant="outlined"
               margin="normal"
@@ -217,6 +273,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
           render={({ field: { onChange, value } }) => (
             <StyledTextField
               fullWidth
+              disabled={disabled}
               onChange={onChange}
               variant="outlined"
               margin="normal"
@@ -236,6 +293,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
           render={({ field: { onChange, value } }) => (
             <StyledTextField
               fullWidth
+              disabled={disabled}
               onChange={onChange}
               variant="outlined"
               margin="normal"
@@ -258,6 +316,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
               render={({ field: { onChange, value } }) => (
                 <StyledTextField
                   fullWidth
+                  disabled={disabled}
                   onChange={onChange}
                   variant="outlined"
                   margin="normal"
@@ -277,6 +336,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
               render={({ field: { onChange, value } }) => (
                 <StyledTextField
                   fullWidth
+                  disabled={disabled}
                   onChange={onChange}
                   variant="outlined"
                   margin="normal"
@@ -297,6 +357,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
                 <FormControl fullWidth margin="none">
                   <InputLabel id="role-label">Devise</InputLabel>
                   <Select
+                    disabled={disabled}
                     variant="outlined"
                     fullWidth
                     labelId="currency"
@@ -322,6 +383,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
               render={({ field: { onChange, value } }) => (
                 <StyledTextField
                   fullWidth
+                  disabled={disabled}
                   onChange={onChange}
                   variant="outlined"
                   margin="normal"
@@ -347,6 +409,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
                 defaultValue={''}
                 render={() => (
                   <MuiFileInput
+                    disabled={disabled}
                     fullWidth
                     size="small"
                     variant="outlined"
@@ -357,7 +420,7 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
                       },
                       startAdornment: <AttachFileIcon />,
                       endAdornment: (
-                        <IconButton onClick={handleRemoveFile}>
+                        <IconButton onClick={handleRemoveFile} disabled={disabled}>
                           <CancelIcon />
                         </IconButton>
                       ),
@@ -403,25 +466,14 @@ export const MaterialItemForm = (props: MaterialItemFormFormProps) => {
           ) : errorMessage.length !== 0 ? (
             <ErrorMessageAlert />
           ) : null}
-          {formMode === MaterialItemFormMode.CREATE ? (
-            <Stack direction="row" spacing={1} py={1}>
-              <Button variant="contained" color="error" onClick={() => navigate('/material')}>
-                Anuler
-              </Button>
-              <Button variant="contained" onClick={handleSubmit(submitCreateMaterialItemRequest)}>
-                Ajouter
-              </Button>
-            </Stack>
-          ) : (
-            <>
-              <Button variant="contained" color="error" onClick={() => navigate('/material')}>
-                Anuler
-              </Button>
-              <Button variant="contained" onClick={handleSubmit(submitCreateMaterialItemRequest)}>
-                Save
-              </Button>
-            </>
-          )}
+          <Stack direction="row" spacing={1} py={1}>
+            <Button variant="contained" color="error" onClick={handleCancel}>
+              Anuler
+            </Button>
+            <Button variant="contained" onClick={handleSubmit(() => submitCreateMaterialItemRequest())}>
+              {!isEditMode ? 'Créer' : 'Save'}
+            </Button>
+          </Stack>
         </Stack>
       </Grid>
     </Grid>
