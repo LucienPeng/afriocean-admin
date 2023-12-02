@@ -7,12 +7,13 @@ import { PageWrapper } from '../Common/PageWrapper';
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';
 import { materialActions } from '../../Store/Material/material-slice';
 import { MaterialModel, MaterialTableRow } from '../../model/material.model';
-import { Button, Stack } from '@mui/material';
+import { Button, CircularProgress, Stack, Typography } from '@mui/material';
 import { DataGridComponent } from '../Common/StyledUI/StyledDataGrid';
 import { PageSection } from '../Common/PageSection';
 import { useSearchKeywords } from '../../Utils/useSearchKeywords';
 import { StyledSearchTextField } from '../Common/StyledUI/StyledSearchTextField';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import { useHandleLoading } from '../../Utils/useHandleLoading';
 
 const materialItemColumns: GridColDef[] = [
   { field: 'id', headerName: 'N° Index', flex: 1 },
@@ -43,6 +44,7 @@ const mapMaterialItemRows = (data: MaterialModel[]): MaterialTableRow[] => {
 export const MaterialPortal = () => {
   const rawData = useRef<MaterialTableRow[]>([]);
   const [rows, setRows] = useState<MaterialTableRow[]>(rawData.current);
+  const { isLoading: isFiltering, setIsLoading: setIsFiltering } = useHandleLoading();
   const { dispatch } = useMaterialRedux();
   const { getFirebaseCollectionData } = useFirebaseDB();
   const { keywords, setKeywords, throttledValue } = useSearchKeywords();
@@ -65,55 +67,77 @@ export const MaterialPortal = () => {
     [dispatch, navigate],
   );
 
-  const handleCreateNewMaterial = useCallback(() => navigate('/material/create'), [navigate]);
+  const handleCreateNewMaterial = useCallback(
+    () => navigate(`/material/create/${throttledValue}`),
+    [navigate, throttledValue],
+  );
 
   const onKeyDownHandler = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
         const existedRow = rawData.current.find((row) => row.itemId.toLowerCase() === throttledValue.toLowerCase());
-        if (existedRow) {
+        if (existedRow && isFiltering) {
           handleRedirect(existedRow);
         } else if (throttledValue !== '') {
           handleCreateNewMaterial();
         }
       }
     },
-    [handleRedirect, handleCreateNewMaterial, throttledValue],
+    [handleRedirect, handleCreateNewMaterial, throttledValue, isFiltering],
   );
+
+  const LoadingOverlay = () => {
+    return (
+      <Stack direction="column" justifyContent="center" alignItems="center" my={10}>
+        <CircularProgress color="secondary" />
+      </Stack>
+    );
+  };
+
+  const NoRowsOverlay = () => {
+    return (
+      <Stack spacing={2} direction="column" justifyContent="center" alignItems="center" my={5}>
+        <Typography>Désolé, pas de résultat trouvé.</Typography>
+        <Button variant="outlined" onClick={handleCreateNewMaterial}>
+          Créer un nouveau
+        </Button>
+      </Stack>
+    );
+  };
 
   useEffect(() => {
     if (throttledValue !== '') {
+      setIsFiltering(true);
       const filteredRows = rawData.current.filter((row) => {
         return row.itemId.toLowerCase().includes(throttledValue.toLowerCase());
       });
       setRows(filteredRows);
+      setIsFiltering(false);
     } else {
       setRows(rawData.current);
     }
-  }, [throttledValue, handleRedirect]);
+  }, [throttledValue, handleRedirect, setIsFiltering]);
 
   return (
     <PageWrapper componentName="Matériaux" icon={<InventoryIcon />} containerMaxWidth="lg">
       <PageSection>
         <Stack width="100%" direction="column" spacing={5}>
-          <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-            <StyledSearchTextField
-              id="material-search-bar"
-              keywords={keywords}
-              setKeywords={setKeywords}
-              placeholder="Cherchez ou créez un material par numéro d'article"
-              onKeyDownHandler={onKeyDownHandler}
-            />
-            <Button variant="outlined" onClick={handleCreateNewMaterial}>
-              Ajouter objets
-            </Button>
-          </Stack>
+          <StyledSearchTextField
+            id="material-search-bar"
+            keywords={keywords}
+            setKeywords={setKeywords}
+            placeholder="Cherchez ou créez un material par numéro d'article"
+            onKeyDownHandler={onKeyDownHandler}
+          />
 
           <DataGridComponent
             isLoading={isLoading || isFetching}
             rows={rows}
             columns={materialItemColumns}
             onCellClickHandler={(params: GridCellParams) => handleRedirect(params.row)}
+            // noRowsOverlayHandler={handleRedirect}
+            LoadingOverlay={LoadingOverlay}
+            NoRowsOverlay={NoRowsOverlay}
           />
         </Stack>
       </PageSection>

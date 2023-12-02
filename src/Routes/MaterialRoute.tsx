@@ -13,7 +13,7 @@ export const MaterialRoute = () => {
       element={<ProtectedRoute component={MaterialPage} permission={[Roles.ADMIN, Roles.USER]} />}
     >
       <Route path="/material" element={<MaterialPortal />} />
-      <Route path="/material/create" element={<MaterialItemFormViewWrapper />} />
+      <Route path="/material/create/:id" element={<MaterialItemFormViewWrapper />} />
       <Route path="/material/:id" element={<MaterialItemDetail />} />
     </Route>
   );

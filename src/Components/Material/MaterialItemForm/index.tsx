@@ -12,12 +12,13 @@ import { MaterialItemFormTitleControllers } from './MaterialItemFormTitleControl
 import { MaterialItemFormDetailControllers } from './MaterialItemFormDetailControllers';
 import { MaterialItemFormPhotoController } from './MaterialItemFormPhotoController';
 import { MaterialItemFormbarcodeControllers } from './MaterialItemFormbarcodeControllers';
-import { MaterialItemFormActionButtonsProps } from './MaterialItemFormActionButtons';
+import { MaterialItemFormActionButtons } from './MaterialItemFormActionButtons';
 import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { useUserRedux } from '../../../useUserRedux';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
 import moment from 'moment';
+import { useParams } from 'react-router-dom';
 
 interface MaterialItemFormProps {
   readonly formMode?: MaterialItemFormMode;
@@ -43,6 +44,7 @@ export const createModeValues = {
 
 export const MaterialItemForm = (props: MaterialItemFormProps) => {
   const { formMode, fetcheItemDetail } = props;
+  const { id } = useParams();
   const { role } = useUserRedux();
   const { getFirebaseDocumentData } = useFirebaseDB();
   const [file, setFile] = useState<File | null>(null);
@@ -79,7 +81,7 @@ export const MaterialItemForm = (props: MaterialItemFormProps) => {
 
   const MaterialItemForm = useForm<MaterialModel>({
     mode: 'onSubmit',
-    defaultValues: !isEditMode ? createModeValues : editModeValues,
+    defaultValues: !isEditMode ? { ...createModeValues, itemId: id } : editModeValues,
     resolver: yupResolver(schema),
   });
 
@@ -99,7 +101,8 @@ export const MaterialItemForm = (props: MaterialItemFormProps) => {
           setFile={setFile}
         />
         <MaterialItemFormbarcodeControllers />
-        <MaterialItemFormActionButtonsProps
+        <MaterialItemFormActionButtons
+          isEditMode={isEditMode}
           getSerialId={getSerialId}
           previewURL={previewURL}
           file={file}

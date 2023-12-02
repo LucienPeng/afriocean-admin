@@ -1,7 +1,6 @@
-import { CircularProgress, styled } from '@mui/material';
-import { Stack } from '@mui/system';
+import { LinearProgress, styled } from '@mui/material';
 import { DataGrid, GridCellParams, GridColDef, GridRowModel, GridRowsProp } from '@mui/x-data-grid';
-import LinearProgress from '@mui/material/LinearProgress';
+import { JSXElementConstructor, ReactNode } from 'react';
 
 const StyledDataGrid = styled(DataGrid)((themeOptions) => ({
   width: '100%',
@@ -25,10 +24,12 @@ interface DataGridProps {
   readonly rows: GridRowsProp;
   readonly columns: GridColDef[];
   readonly onCellClickHandler?: (param: GridCellParams) => void;
+  readonly LoadingOverlay?: JSXElementConstructor<ReactNode>;
+  readonly NoRowsOverlay?: JSXElementConstructor<ReactNode>;
 }
 
 export const DataGridComponent = (props: DataGridProps) => {
-  const { isLoading, isFetching, rows, columns, onCellClickHandler } = props;
+  const { isLoading, isFetching, rows, columns, NoRowsOverlay, LoadingOverlay, onCellClickHandler } = props;
   const processRowUpdate = (newRow: GridRowModel) => newRow;
 
   return (
@@ -47,21 +48,5 @@ export const DataGridComponent = (props: DataGridProps) => {
         noRowsOverlay: NoRowsOverlay,
       }}
     />
-  );
-};
-
-const LoadingOverlay = () => {
-  return (
-    <Stack direction="column" justifyContent="center" alignItems="center" my={10}>
-      <CircularProgress color="secondary" />
-    </Stack>
-  );
-};
-
-const NoRowsOverlay = () => {
-  return (
-    <Stack direction="column" justifyContent="center" alignItems="center" my={10}>
-      Désolé, pas de résultat trouvé.
-    </Stack>
   );
 };

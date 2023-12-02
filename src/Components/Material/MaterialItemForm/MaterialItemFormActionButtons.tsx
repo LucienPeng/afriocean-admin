@@ -1,6 +1,6 @@
 import { Button, CircularProgress, Grid, Stack, Typography } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
-import { Calculation, MaterialItemFormMode, MaterialModel, Operation } from '../../../model/material.model';
+import { Calculation, MaterialModel, Operation } from '../../../model/material.model';
 import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { useUserRedux } from '../../../useUserRedux';
 import { useNavigate } from 'react-router-dom';
@@ -14,20 +14,19 @@ interface MMaterialItemFormActionButtonsProps {
   readonly file: File | null;
   readonly serialId: string | number;
   readonly previewURL: string;
-  readonly formMode?: MaterialItemFormMode;
+  readonly isEditMode: boolean;
   readonly getSerialId: () => void;
   readonly setFile: (file: File | null) => void;
 }
 
-export const MaterialItemFormActionButtonsProps = (props: MMaterialItemFormActionButtonsProps) => {
-  const { file, serialId, previewURL, formMode, getSerialId, setFile } = props;
+export const MaterialItemFormActionButtons = (props: MMaterialItemFormActionButtonsProps) => {
+  const { file, serialId, previewURL, isEditMode, getSerialId, setFile } = props;
   const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
     useHandleActionResultAlert();
   const { setFirebaseData } = useFirebaseDB();
   const { uploadImage } = useFirebaseStorage();
   const { role } = useUserRedux();
   const { formState, getValues, handleSubmit, reset } = useFormContext<MaterialModel>();
-  const isEditMode = formMode === MaterialItemFormMode.EDIT;
 
   const navigate = useNavigate();
 
