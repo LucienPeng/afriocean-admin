@@ -7,9 +7,9 @@ import { useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { useHandleActionResultAlert } from '../../../Utils/useHandleActionResultAlert';
 import { useHandleLoading } from '../../../Utils/useHandleLoading';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { PageWrapper } from '../../Common/PageWrapper';
 import { PageSection } from '../../Common/PageSection';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 interface CreateUserFormModel extends Profile {
   readonly defaultPassword: string;
@@ -27,15 +27,8 @@ const DEFAULT_FORM_VALUES = {
 };
 
 const roles = ['User', 'Administrator'] as Roles[];
-const departments = [
-  'General Management',
-  'Services Généraux',
-  'Administration',
-  'Comptabilité',
-  'Commercial',
-  'Maintenance',
-  'Production',
-] as Department[];
+
+const DEPARTMENT_VALUE = Object.values(Department).filter((operation) => isNaN(Number(operation)));
 
 export const CreateUserComponent = () => {
   const { db } = useFirebaseDB();
@@ -193,7 +186,7 @@ export const CreateUserComponent = () => {
                     value={value}
                     label="Department"
                   >
-                    {departments.map((department) => (
+                    {DEPARTMENT_VALUE.map((department) => (
                       <MenuItem key={department} value={department}>
                         {department}
                       </MenuItem>

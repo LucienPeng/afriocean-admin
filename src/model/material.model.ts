@@ -27,19 +27,18 @@ export interface MaterialModel {
   readonly id?: string;
   readonly itemId: string;
   readonly erpId: string;
-  readonly firstName: string;
+  readonly initiateur: string;
   readonly department: string;
-  readonly requestDate: Moment | string;
+  readonly createDate: Moment | string;
   readonly materialName: string;
   readonly materialZhName: string;
   readonly spec: string;
-  readonly price: string;
+  readonly price: number;
   readonly currency: Currency;
   readonly brand: string;
   readonly defaultQuantity: number;
   readonly totalQuantity: number;
   readonly photo: string;
-  readonly date: string;
   readonly record: MaterialQuantityFlow[];
 }
 

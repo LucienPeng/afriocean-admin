@@ -33,7 +33,7 @@ const mapMaterialItemRows = (data: MaterialModel[]): MaterialTableRow[] => {
       erpId: d.erpId,
       materialName: d.materialName,
       materialZhName: d.materialZhName,
-      initiateur: d.firstName,
+      initiateur: d.initiateur,
       spec: d.spec,
       totalQuantity: d.totalQuantity,
     };
