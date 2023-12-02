@@ -44,6 +44,7 @@ export const DataGridComponent = (props: DataGridProps) => {
       onCellClick={onCellClickHandler}
       slots={{
         loadingOverlay: isFetching ? LinearProgress : LoadingOverlay,
+        noRowsOverlay: NoRowsOverlay,
       }}
     />
   );
@@ -53,6 +54,14 @@ const LoadingOverlay = () => {
   return (
     <Stack direction="column" justifyContent="center" alignItems="center" my={10}>
       <CircularProgress color="secondary" />
+    </Stack>
+  );
+};
+
+const NoRowsOverlay = () => {
+  return (
+    <Stack direction="column" justifyContent="center" alignItems="center" my={10}>
+      Désolé, pas de résultat trouvé.
     </Stack>
   );
 };

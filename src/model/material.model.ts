@@ -15,7 +15,7 @@ export enum Currency {
 export enum Operation {
   INANDOUT = 'Entrée-sortie',
   INVENTORY = 'Inventaire',
-  CREATE = 'Matériel en création'
+  CREATE = 'Matériel en création',
 }
 
 export enum Calculation {
@@ -45,12 +45,12 @@ export interface MaterialModel {
 
 export interface MaterialTableRow {
   readonly id: string;
+  readonly itemId: string;
   readonly erpId: string;
   readonly materialName: string;
   readonly materialZhName: string;
   readonly spec: string;
   readonly totalQuantity: number;
-  readonly photo: string;
 }
 
 export interface MaterialQuantityFlow {
