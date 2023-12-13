@@ -3,7 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { DATE_TIME_FORMAT } from '../../../model/application.model';
-import { Currency, MaterialItemFormMode, MaterialModel } from '../../../model/material.model';
+import { Currency, MaterialItemFormMode, MaterialModel, Warehouse } from '../../../model/material.model';
 import { Roles } from '../../../model/company.model';
 import { MaterialItemFormGeneralInfo } from './MaterialItemFormGeneralInfo';
 import { MaterialItemFormIdControllers } from './MaterialItemFormIdControllers';
@@ -38,7 +38,10 @@ export const createModeValues = {
   currency: Currency.CFA,
   brand: '',
   defaultQuantity: 1,
+  defaultWarehouse: Warehouse.SN,
   totalQuantity: 0,
+  totalSnQuantity: 0,
+  totalTwQuantity: 0,
   photo: '',
 };
 
@@ -76,6 +79,7 @@ export const MaterialItemForm = (props: MaterialItemFormProps) => {
     currency: yup.string().required(),
     brand: yup.string().required(),
     defaultQuantity: yup.number().required(),
+    defaultWarehouse: yup.string().required(),
     totalQuantity: yup.number().required(),
   });
 

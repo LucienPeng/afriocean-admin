@@ -1,6 +1,6 @@
 import { Button, CircularProgress, Grid, Stack, Typography } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
-import { Calculation, MaterialModel, Operation } from '../../../model/material.model';
+import { Calculation, MaterialModel, Operation, Warehouse } from '../../../model/material.model';
 import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { useUserRedux } from '../../../useUserRedux';
 import { useNavigate } from 'react-router-dom';
@@ -32,12 +32,15 @@ export const MaterialItemFormActionButtons = (props: MMaterialItemFormActionButt
 
   const createMaterialItemRequest = async () => {
     const photoPath = await uploadImage(file, file?.name);
+    const isSnWarehouse = getValues('defaultWarehouse') === Warehouse.SN;
     await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: serialId });
     await setFirebaseData(Collections.Material, String(serialId), {
       ...getValues(),
       photo: photoPath,
       id: serialId,
       totalQuantity: getValues('defaultQuantity'),
+      totalTwQuantity: isSnWarehouse ? 0 : getValues('defaultQuantity'),
+      totalSnQuantity: isSnWarehouse ? getValues('defaultQuantity') : 0,
       record: [
         {
           initiateur: getValues('initiateur'),

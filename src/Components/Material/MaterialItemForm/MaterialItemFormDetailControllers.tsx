@@ -1,13 +1,14 @@
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
-import { Currency, MaterialModel } from '../../../model/material.model';
+import { Currency, MaterialModel, Warehouse } from '../../../model/material.model';
 
 interface MaterialItemFormDetailControllersProps {
   readonly disabled: boolean;
 }
 
 const CURRENCY_VALUE = Object.values(Currency).filter((currency) => isNaN(Number(currency)));
+const WAREHOUSE_VALUE = Object.values(Warehouse).filter((warehouse) => isNaN(Number(warehouse)));
 
 export const MaterialItemFormDetailControllers = (props: MaterialItemFormDetailControllersProps) => {
   const { disabled } = props;
@@ -20,25 +21,57 @@ export const MaterialItemFormDetailControllers = (props: MaterialItemFormDetailC
     <Grid item xs={12}>
       <Grid container rowSpacing={3}>
         <Grid item xs={12}>
-          <Controller
-            name="spec"
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <StyledTextField
-                fullWidth
-                error={!!errors.spec}
-                disabled={disabled}
-                onChange={onChange}
-                variant="outlined"
-                margin="normal"
-                required
-                id="spec"
-                label="Spécification"
-                value={value}
+          <Grid container spacing={1}>
+            <Grid item xs={8}>
+              <Controller
+                name="spec"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <StyledTextField
+                    fullWidth
+                    error={!!errors.spec}
+                    disabled={disabled}
+                    onChange={onChange}
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    id="spec"
+                    label="Spécification"
+                    value={value}
+                  />
+                )}
               />
-            )}
-          />
+            </Grid>
+            <Grid item xs={4}>
+              <Controller
+                name="defaultWarehouse"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <FormControl fullWidth margin="none">
+                    <InputLabel id="role-label">Magasin</InputLabel>
+                    <Select
+                      error={!!errors.defaultWarehouse}
+                      disabled={disabled}
+                      variant="outlined"
+                      fullWidth
+                      labelId="warehouse"
+                      id="warehouse"
+                      onChange={onChange}
+                      value={value}
+                    >
+                      {WAREHOUSE_VALUE.map((warehouse) => (
+                        <MenuItem key={warehouse} value={warehouse}>
+                          {warehouse}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              />
+            </Grid>
+          </Grid>
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={1}>

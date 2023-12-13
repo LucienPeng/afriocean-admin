@@ -5,25 +5,38 @@ import {
   CircularProgress,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   Stack,
+  Tab,
+  Tabs,
   Typography,
 } from '@mui/material';
-import { Calculation, MaterialModel, MaterialQuantityFlow, Operation } from '../../../model/material.model';
+import {
+  Calculation,
+  MaterialModel,
+  MaterialQuantityFlow,
+  Operation,
+  Transfering,
+  Warehouse,
+} from '../../../model/material.model';
 import { Controller, useForm } from 'react-hook-form';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
 import { StyledPaper } from '../../Common/StyledUI/StyledPaper';
 import { DATE_TIME_FORMAT } from '../../../model/application.model';
-import { ChangeEvent, useCallback } from 'react';
+import { ChangeEvent, SyntheticEvent, useCallback, useState } from 'react';
 import { useUserRedux } from '../../../useUserRedux';
 import moment from 'moment';
+import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 const OPERATION_VALUE = Object.values(Operation).filter((operation) => isNaN(Number(operation)));
 const CALCULATION_VALUE = Object.values(Calculation).filter((operation) => isNaN(Number(operation)));
 
 const DEFAULT_VALUES = {
+  warehouse: Warehouse.SN,
   operation: Operation.INANDOUT,
   calculation: Calculation.OUT,
   quantityToBeProcessed: '',
@@ -45,7 +58,23 @@ export const MaterialItemDetailCalculator = (props: ItemDetailCalculatorProps) =
     defaultValues: DEFAULT_VALUES,
   });
 
-  const { calculation, operation, note } = getValues();
+  const { calculation, operation, note, warehouse } = getValues();
+
+  const [transfering, setTransfering] = useState<Transfering>(Transfering.TOSN);
+
+  const handleChangeWarehouse = (_event: SyntheticEvent, warehouse: Warehouse) => {
+    setValue('warehouse', warehouse);
+  };
+
+  const handleTransferingExchange = () => {
+    setTransfering((prevValue) => {
+      if (prevValue === Transfering.TOSN) {
+        return Transfering.TOTW;
+      } else {
+        return Transfering.TOSN;
+      }
+    });
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const regex = /^[0-9\b]+$/;
@@ -81,6 +110,7 @@ export const MaterialItemDetailCalculator = (props: ItemDetailCalculatorProps) =
         operation,
         calculation,
         quantityToBeProcessed,
+        warehouse,
         subtotalQuantity: updatedTotalQuantity,
       },
     ];
@@ -89,16 +119,17 @@ export const MaterialItemDetailCalculator = (props: ItemDetailCalculatorProps) =
     refetch();
     reset(DEFAULT_VALUES);
   }, [
-    note,
-    calculation,
     fetcheItemDetail,
-    operation,
+    calculation,
+    note,
     profile?.firstName,
+    operation,
     quantityToBeProcessed,
-    totalQuantity,
+    warehouse,
+    setFirebaseData,
     refetch,
     reset,
-    setFirebaseData,
+    totalQuantity,
   ]);
 
   return (
@@ -158,6 +189,19 @@ export const MaterialItemDetailCalculator = (props: ItemDetailCalculatorProps) =
           </Grid>
           <Grid item xs={5} pr={3}>
             <Stack width="100%" direction="column" justifyContent="center" alignItems="center" spacing={3}>
+              <Stack width="100%">
+                <Tabs
+                  textColor="secondary"
+                  indicatorColor="secondary"
+                  value={watch('warehouse')}
+                  onChange={handleChangeWarehouse}
+                  variant="fullWidth"
+                  aria-label="warehouse-tab"
+                >
+                  <Tab label="Magasin SN" value={Warehouse.SN} />
+                  <Tab label="Magasin TW" value={Warehouse.TW} />
+                </Tabs>
+              </Stack>
               <Controller
                 name="operation"
                 control={control}
@@ -182,6 +226,29 @@ export const MaterialItemDetailCalculator = (props: ItemDetailCalculatorProps) =
                   </FormControl>
                 )}
               />
+              {watch('operation') === Operation.TRANSFER && (
+                <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={2} width="100%">
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} width="100%">
+                    <Typography>
+                      <Typography component="span" fontWeight={700} pr={1}>
+                        De:{' '}
+                      </Typography>
+                      {transfering === Transfering.TOTW ? Warehouse.SN : Warehouse.TW}
+                    </Typography>
+                    <DoubleArrowIcon />
+                    <Typography>
+                      <Typography component="span" fontWeight={700} pr={1}>
+                        À:{' '}
+                      </Typography>
+                      {transfering === Transfering.TOTW ? Warehouse.TW : Warehouse.SN}
+                    </Typography>
+                  </Stack>
+                  <IconButton aria-label="switch-warehouse" onClick={handleTransferingExchange}>
+                    <AutorenewIcon />
+                  </IconButton>
+                </Stack>
+              )}
+
               <Controller
                 name="calculation"
                 control={control}

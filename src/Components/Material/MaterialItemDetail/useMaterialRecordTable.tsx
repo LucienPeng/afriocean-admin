@@ -1,5 +1,5 @@
 import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
-import { Calculation, MaterialModel, MaterialQuantityFlow, Operation } from '../../../model/material.model';
+import { Calculation, MaterialModel, MaterialQuantityFlow, Operation, Warehouse } from '../../../model/material.model';
 import { GridActionsCellItem, GridColDef, GridRowId, GridValidRowModel } from '@mui/x-data-grid';
 import { DATE_FORMAT, DATE_TIME_FORMAT } from '../../../model/application.model';
 import Tooltip from '@mui/material/Tooltip';
@@ -8,9 +8,11 @@ import CancelIcon from '@mui/icons-material/Close';
 import moment from 'moment';
 import { useUserRedux } from '../../../useUserRedux';
 import { Roles } from '../../../model/company.model';
+import { useState } from 'react';
 
 const OPERATION_VALUE = Object.values(Operation).filter((operation) => isNaN(Number(operation)));
-const CALCULATION_VALUE = Object.values(Calculation).filter((operation) => isNaN(Number(operation)));
+const CALCULATION_VALUE = Object.values(Calculation).filter((calculation) => isNaN(Number(calculation)));
+const WAREHOUSE_VALUE = Object.values(Warehouse).filter((warehouse) => isNaN(Number(warehouse)));
 
 const mapRows = (data: MaterialModel) => {
   return data.record?.map((s, index) => {
@@ -22,6 +24,7 @@ const mapRows = (data: MaterialModel) => {
       operation: s.operation,
       quantityToBeProcessed: s.quantityToBeProcessed,
       note: s.note,
+      warehouse: s.warehouse,
       subtotalQuantity: s.subtotalQuantity,
     };
   });
@@ -36,8 +39,10 @@ export const useMaterialRecordTable = (props: MaterialRecordTableProps) => {
   const { role } = useUserRedux();
   const { fetcheItemDetail, refetch } = props;
   const { setFirebaseData } = useFirebaseDB();
+  const [warehouse, setWarehouse] = useState<Warehouse>(Warehouse.SN);
 
   const rows = mapRows(fetcheItemDetail as MaterialModel) ?? [];
+  
   const columns: GridColDef[] = [
     {
       field: 'date',
@@ -96,6 +101,16 @@ export const useMaterialRecordTable = (props: MaterialRecordTableProps) => {
       type: 'text',
     },
     {
+      field: 'warehouse',
+      headerName: 'Magasin',
+      headerAlign: 'center',
+      align: 'center',
+      flex: 1,
+      editable: role === Roles.ADMIN,
+      type: 'singleSelect',
+      valueOptions: WAREHOUSE_VALUE,
+    },
+    {
       field: 'subtotalQuantity',
       headerName: 'Sous-total',
       headerAlign: 'center',
@@ -150,7 +165,6 @@ export const useMaterialRecordTable = (props: MaterialRecordTableProps) => {
     if (fetcheItemDetail) {
       const newData = { ...fetcheItemDetail };
       newData.record[id as number] = row as MaterialQuantityFlow;
-
       await setFirebaseData(Collections.Material, String(fetcheItemDetail?.id), newData);
       refetch();
     }
@@ -166,5 +180,5 @@ export const useMaterialRecordTable = (props: MaterialRecordTableProps) => {
       refetch();
     }
   };
-  return { columns, rows };
+  return { columns, rows, warehouse, setWarehouse };
 };
