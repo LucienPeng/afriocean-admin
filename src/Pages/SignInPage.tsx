@@ -121,6 +121,7 @@ export default function SignInPage() {
               rules={{ required: true }}
               render={({ field: { onChange } }) => (
                 <TextField
+                  variant="outlined"
                   onChange={onChange}
                   margin="normal"
                   required
@@ -129,6 +130,11 @@ export default function SignInPage() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  sx={{
+                    '.MuiInputBase-input': {
+                      backgroundColor: '#fff',
+                    },
+                  }}
                 />
               )}
             />
@@ -147,6 +153,11 @@ export default function SignInPage() {
                   type="password"
                   id="password"
                   autoComplete="current-password"
+                  sx={{
+                    '.MuiInputBase-input': {
+                      backgroundColor: '#fff',
+                    },
+                  }}
                 />
               )}
             />

@@ -38,19 +38,16 @@ export const defaultTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: "'Kanit', 'Oxygen', 'Roboto'",
+    fontFamily: " 'Oxygen', 'Kanit', 'Roboto' ",
     h1: {
-      fontFamily: "'Vollkorn SC', 'normal'",
       fontSize: '120px',
       fontWeight: 500,
     },
     h2: {
-      fontFamily: "'Vollkorn SC', 'normal'",
       fontSize: '26px',
       letterSpacing: 3,
     },
     h3: {
-      fontFamily: "'Vollkorn SC', 'normal'",
       fontSize: '24px',
     },
     h4: {

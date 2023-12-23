@@ -11,7 +11,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import InventoryIcon from '@mui/icons-material/Inventory';
-
+import SetMealIcon from '@mui/icons-material/SetMeal';
 export interface SingleNavItem {
   readonly navTitle: string;
   readonly path: string;
@@ -32,6 +32,7 @@ const DEMANDES = { navTitle: 'Demandes', path: '#', icon: <AssignmentIcon />, su
 const DASHBOARD = { navTitle: 'Tableau de bord', path: '/', icon: <DashboardIcon /> };
 const CAISSE = { navTitle: 'Caisse', path: '#', icon: <LocalAtmIcon /> };
 const MATERIAUX = { navTitle: 'Matériaux', path: '/material', icon: <InventoryIcon /> };
+const FISH_POWDER = { navTitle: 'Poudre de poisson', path: '/fish-powder', icon: <SetMealIcon /> };
 
 const CREATE_USER = { navTitle: 'Create user', path: '/admin/create-user', icon: <PersonAddIcon /> };
 
@@ -48,8 +49,9 @@ export const useGetNavItems = () => {
     <List component="nav">
       <SingleListItem navItem={DASHBOARD} />
       <NestedLisItem navItem={DEMANDES} />
-      <SingleListItem navItem={CAISSE} />
+      <SingleListItem navItem={CAISSE} isDisabled={true} />
       <SingleListItem navItem={MATERIAUX} />
+      <SingleListItem navItem={FISH_POWDER} />
       <Divider sx={{ my: 1 }} />
       <SingleListItem navItem={CREATE_USER} />
       <SingleListItem navItem={ADMIN_APPLICATION_PORTAL} />
@@ -60,7 +62,7 @@ export const useGetNavItems = () => {
     <List component="nav">
       <SingleListItem navItem={DASHBOARD} />
       <NestedLisItem navItem={DEMANDES} />
-      <SingleListItem navItem={CAISSE} />
+      <SingleListItem navItem={CAISSE} isDisabled={true} />
       <SingleListItem navItem={MATERIAUX} />
       <Divider sx={{ my: 1 }} />
       <SingleListItem navItem={USER_APPLICATION_PORTAL} />

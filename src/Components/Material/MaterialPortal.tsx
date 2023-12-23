@@ -47,7 +47,7 @@ export const MaterialPortal = () => {
   const { isLoading: isFiltering, setIsLoading: setIsFiltering } = useHandleLoading();
   const { dispatch } = useMaterialRedux();
   const { getFirebaseCollectionData } = useFirebaseDB();
-  const { keywords, setKeywords, throttledValue } = useSearchKeywords();
+  const { keywords, setKeywords } = useSearchKeywords();
 
   const { isLoading, isFetching } = useQuery({
     queryKey: 'materialList',
@@ -67,23 +67,22 @@ export const MaterialPortal = () => {
     [dispatch, navigate],
   );
 
-  const handleCreateNewMaterial = useCallback(
-    () => navigate(`/material/create/${throttledValue}`),
-    [navigate, throttledValue],
-  );
+  const handleCreateNewMaterial = useCallback(() => navigate(`/material/create/${keywords}`), [navigate, keywords]);
 
   const onKeyDownHandler = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
-        const existedRow = rawData.current.find((row) => row.itemId.toLowerCase() === throttledValue.toLowerCase());
-        if (existedRow && isFiltering) {
+        const existedRow = rawData.current.find((row) => row.itemId.toLowerCase() === keywords.toLowerCase());
+        console.log('existedRow', existedRow);
+        if (existedRow) {
+          console.log('TRIGGERED');
           handleRedirect(existedRow);
-        } else if (throttledValue !== '') {
+        } else if (keywords !== '' && !existedRow) {
           handleCreateNewMaterial();
         }
       }
     },
-    [handleRedirect, handleCreateNewMaterial, throttledValue, isFiltering],
+    [handleRedirect, handleCreateNewMaterial, keywords],
   );
 
   const LoadingOverlay = () => {
@@ -106,17 +105,17 @@ export const MaterialPortal = () => {
   };
 
   useEffect(() => {
-    if (throttledValue !== '') {
+    if (keywords !== '') {
       setIsFiltering(true);
       const filteredRows = rawData.current.filter((row) => {
-        return row.itemId.toLowerCase().includes(throttledValue.toLowerCase());
+        return row.itemId.toLowerCase().includes(keywords.toLowerCase());
       });
       setRows(filteredRows);
       setIsFiltering(false);
     } else {
       setRows(rawData.current);
     }
-  }, [throttledValue, handleRedirect, setIsFiltering]);
+  }, [keywords, handleRedirect, setIsFiltering]);
 
   return (
     <PageWrapper componentName="Matériaux" icon={<InventoryIcon />} containerMaxWidth="lg">
