@@ -11,11 +11,11 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import InventoryIcon from '@mui/icons-material/Inventory';
-import SetMealIcon from '@mui/icons-material/SetMeal';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 export interface SingleNavItem {
   readonly navTitle: string;
   readonly path: string;
-  readonly icon: ReactNode;
+  readonly icon?: ReactNode;
 }
 
 export interface NestedNavItem extends SingleNavItem {
@@ -23,18 +23,15 @@ export interface NestedNavItem extends SingleNavItem {
 }
 
 const DEMANDES_SUB_NAV_ITEMS: SingleNavItem[] = [
-  { navTitle: 'Déplacement', path: '/application/deplacement', icon: <TimeToLeaveIcon /> },
-  { navTitle: 'Absence / Congé', path: '/application/absence-conge', icon: <LocalCafeIcon /> },
-  { navTitle: 'Heures supplémentaires', path: '/application/heures-supplémentaires', icon: <AccessTimeFilledIcon /> },
+  { navTitle: 'Déplacement', path: '/application/deplacement' },
+  { navTitle: 'Absence / Congé', path: '/application/absence-conge' },
+  { navTitle: 'Heures supplémentaires', path: '/application/heures-supplémentaires' },
 ];
 
-const DEMANDES = { navTitle: 'Demandes', path: '#', icon: <AssignmentIcon />, subNavItem: DEMANDES_SUB_NAV_ITEMS };
-const DASHBOARD = { navTitle: 'Tableau de bord', path: '/', icon: <DashboardIcon /> };
-const CAISSE = { navTitle: 'Caisse', path: '#', icon: <LocalAtmIcon /> };
-const MATERIAUX = { navTitle: 'Matériaux', path: '/material', icon: <InventoryIcon /> };
-const FISH_POWDER = { navTitle: 'Poudre de poisson', path: '/fish-powder', icon: <SetMealIcon /> };
-
-const CREATE_USER = { navTitle: 'Create user', path: '/admin/create-user', icon: <PersonAddIcon /> };
+const LOCAL_SALES_SUB_NAV_ITEMS = [
+  { navTitle: 'Clients', path: '/local-sales/customers' },
+  { navTitle: 'Commandes', path: '/local-sales/orders' },
+];
 
 const ADMIN_APPLICATION_PORTAL = {
   navTitle: 'Demande Contrôl',
@@ -42,16 +39,30 @@ const ADMIN_APPLICATION_PORTAL = {
   icon: <RemoveRedEyeIcon />,
 };
 
+const LOCAL_SALES = {
+  navTitle: 'Ventes locales',
+  path: '#',
+  icon: <PointOfSaleIcon />,
+  subNavItem: LOCAL_SALES_SUB_NAV_ITEMS,
+};
+
+const DEMANDES = { navTitle: 'Demandes', path: '#', icon: <AssignmentIcon />, subNavItem: DEMANDES_SUB_NAV_ITEMS };
+const DASHBOARD = { navTitle: 'Tableau de bord', path: '/', icon: <DashboardIcon /> };
+const CAISSE = { navTitle: 'Caisse', path: '#', icon: <LocalAtmIcon /> };
+const MATERIAUX = { navTitle: 'Matériaux', path: '/material', icon: <InventoryIcon /> };
+const CREATE_USER = { navTitle: 'Create user', path: '/admin/create-user', icon: <PersonAddIcon /> };
 const USER_APPLICATION_PORTAL = { navTitle: 'Mes Demandes', path: '/application', icon: <RemoveRedEyeIcon /> };
 
 export const useGetNavItems = () => {
   const adminListItems = (
     <List component="nav">
       <SingleListItem navItem={DASHBOARD} />
-      <NestedLisItem navItem={DEMANDES} />
+      <NestedLisItem navItem={DEMANDES} isDisabled={true} />
+      <NestedLisItem navItem={LOCAL_SALES} />
+
       <SingleListItem navItem={CAISSE} isDisabled={true} />
-      <SingleListItem navItem={MATERIAUX} />
-      <SingleListItem navItem={FISH_POWDER} />
+      <SingleListItem navItem={MATERIAUX} isDisabled={true} />
+
       <Divider sx={{ my: 1 }} />
       <SingleListItem navItem={CREATE_USER} />
       <SingleListItem navItem={ADMIN_APPLICATION_PORTAL} />

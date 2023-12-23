@@ -12,7 +12,7 @@ import { Stack } from '@mui/material';
 import { PageSection } from '../Common/PageSection';
 //import { useSearchKeywords } from '../../Utils/useSearchKeywords';
 //import { StyledSearchTextField } from '../Common/StyledUI/StyledSearchTextField';
-import SetMealIcon from '@mui/icons-material/SetMeal';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 //import { useHandleLoading } from '../../Utils/useHandleLoading';
 
 // const materialItemColumns: GridColDef[] = [
@@ -41,7 +41,7 @@ import SetMealIcon from '@mui/icons-material/SetMeal';
 //   });
 // };
 
-export const FishPowderPortal = () => {
+export const LocalSalesPortal = () => {
   // const rawData = useRef<MaterialTableRow[]>([]);
   // // const [rows, setRows] = useState<MaterialTableRow[]>(rawData.current);
   // const { isLoading: isFiltering, setIsLoading: setIsFiltering } = useHandleLoading();
@@ -120,9 +120,10 @@ export const FishPowderPortal = () => {
   // }, [throttledValue, handleRedirect, setIsFiltering]);
 
   return (
-    <PageWrapper componentName="Poudre de poisson" icon={<SetMealIcon />} containerMaxWidth="lg">
+    <PageWrapper componentName="Poudre de poisson" icon={<PointOfSaleIcon />} containerMaxWidth="lg">
       <PageSection>
         <Stack width="100%" direction="column" spacing={5}>
+          123
           {/* <StyledSearchTextField
             id="material-search-bar"
             keywords={keywords}

@@ -17,7 +17,7 @@ import { AdminDeplacementList } from './Components/WorkSpace/AdminWorkSpace/Admi
 import { UserDeplacementList } from './Components/WorkSpace/UserWorkSpace/UserDeplacementList';
 import { ApplicationsPortal } from './Components/Application/ApplicationsPortal';
 import { MaterialRoute } from './Routes/MaterialRoute';
-import { FishPowderRoute } from './Routes/FishPowderRoute';
+import { LocalSalesRoute } from './Routes/LocalSalesRoute';
 import { ApplicationRoute } from './Routes/ApplicationRoute';
 import moment from 'moment';
 
@@ -71,9 +71,9 @@ const App = () => {
           <Route path="/user/application/deplacement" element={<UserDeplacementList />} />
         </Route>
 
-        {FishPowderRoute()}
         {MaterialRoute()}
         {ApplicationRoute()}
+        {LocalSalesRoute()}
 
         <Route path="/login" element={<SignInPage />} />
       </Routes>
