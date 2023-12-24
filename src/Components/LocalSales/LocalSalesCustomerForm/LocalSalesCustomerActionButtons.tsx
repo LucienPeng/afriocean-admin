@@ -3,8 +3,11 @@ import { LocalSalesCustomer } from '../../../model/localSales.model';
 import { Button, Grid, Stack } from '@mui/material';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
 
-export const LocalSalesCustomerActionButtons = (props: { handleReset: () => void }) => {
-  const { handleReset } = props;
+export const LocalSalesCustomerActionButtons = (props: {
+  handleReset: () => void;
+  handleCreateCustomer: () => void;
+}) => {
+  const { handleReset, handleCreateCustomer } = props;
   const {
     control,
     formState: { errors },
@@ -16,7 +19,7 @@ export const LocalSalesCustomerActionButtons = (props: { handleReset: () => void
         <Button variant="contained" color="error" onClick={handleReset}>
           Anuler
         </Button>
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" onClick={handleCreateCustomer}>
           Créer
         </Button>
       </Stack>

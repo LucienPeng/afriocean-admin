@@ -7,19 +7,27 @@ import { LocalSalesCustomerPhoneControllers } from './LocalSalesCustomerPhoneCon
 import { LocalSalesCustomerPersonalInfoControllers } from './LocalSalesCustomerPersonalInfoControllers';
 import { LocalSalesCustomerActionButtons } from './LocalSalesCustomerActionButtons';
 import { useNavigate } from 'react-router-dom';
+import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 
 export const LocalSalesCustomerForm = () => {
+  const navigate = useNavigate();
+
   const LocalSalesCustomerForm = useForm<LocalSalesCustomer>({
     mode: 'onSubmit',
     //defaultValues: !isEditMode ? { ...createModeValues, itemId: id } : editModeValues,
     //resolver: yupResolver(schema),
   });
-  const navigate = useNavigate();
-  const { reset } = LocalSalesCustomerForm;
+  const { reset, getValues, handleSubmit } = LocalSalesCustomerForm;
+
+  const { setFirebaseData } = useFirebaseDB();
 
   const handleReset = () => {
     reset();
     navigate('/local-sales/customers');
+  };
+
+  const handleCreateCustomer = () => {
+    setFirebaseData(Collections.LocalSalesCustomer, '000001', getValues());
   };
 
   return (
@@ -29,7 +37,10 @@ export const LocalSalesCustomerForm = () => {
         <LocalSalesCustomerPersonalInfoControllers />
         <LocalSalesCustomerPhoneControllers />
         <LocalSalesCustomerAddressController />
-        <LocalSalesCustomerActionButtons handleReset={handleReset} />
+        <LocalSalesCustomerActionButtons
+          handleReset={handleReset}
+          handleCreateCustomer={handleSubmit(handleCreateCustomer)}
+        />
       </Grid>
     </FormProvider>
   );
