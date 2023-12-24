@@ -1,7 +1,6 @@
 import { Applications, DATE_TIME_FORMAT } from '../../../model/application.model';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CircularProgress, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { useQuery } from 'react-query';
 import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { DeplacementFormModel } from '../../Application/Form/DeplacementForm';
 import { useUserRedux } from '../../../useUserRedux';
@@ -13,6 +12,7 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import { PageWrapper } from '../../Common/PageWrapper';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { PageSection } from '../../Common/PageSection';
+import { useQuery } from '@tanstack/react-query';
 
 interface DemandeDeplacement extends DeplacementFormModel {
   readonly id: string;
@@ -31,18 +31,24 @@ export const UserDeplacementList = () => {
   const { profile } = useUserRedux();
   const { getFirebaseMultiConditionQueryData } = useFirebaseDB();
 
-  const { isLoading } = useQuery({
-    queryKey: 'userDeplacementList',
+  const { data, isLoading, status } = useQuery({
+    queryKey: ['userDeplacementList'],
     queryFn: () =>
       getFirebaseMultiConditionQueryData(
         Collections.Application,
         { firstKey: 'uid', firstOperator: '==', firstValue: profile?.uid },
         { secondKey: 'applicationType', secondOperator: '==', secondValue: Applications.Deplacement },
       ),
-    onSuccess: (res) => setDeplacementRecord(res as DemandeDeplacement[]),
+    //onSuccess: (res) => setDeplacementRecord(res as DemandeDeplacement[]),
   });
 
   const getDuration = (endDateTime: Moment, startDateTime: Moment) => moment.duration(endDateTime.diff(startDateTime));
+
+  useEffect(() => {
+    if (status === 'success') {
+      setDeplacementRecord(data as DemandeDeplacement[]);
+    }
+  }, []);
 
   return (
     <PageWrapper icon={<DriveEtaIcon />} componentName="Histoire des demandes de deplacement" containerMaxWidth="lg">

@@ -15,7 +15,7 @@ export const LocalSalesCustomerActionButtons = (props: {
 
   return (
     <Grid item xs={12} display="flex" justifyContent="center">
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing={1}>
         <Button variant="contained" color="error" onClick={handleReset}>
           Anuler
         </Button>

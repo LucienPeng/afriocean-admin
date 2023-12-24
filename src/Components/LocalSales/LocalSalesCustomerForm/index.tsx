@@ -13,7 +13,7 @@ import { useEffect } from 'react';
 
 export const LocalSalesCustomerForm = () => {
   const navigate = useNavigate();
-  const { getData } = useFirebaseFUnctions();
+  const { getCustomerIncrementalId } = useFirebaseFUnctions();
 
   const LocalSalesCustomerForm = useForm<LocalSalesCustomer>({
     mode: 'onSubmit',
@@ -32,12 +32,6 @@ export const LocalSalesCustomerForm = () => {
   const handleCreateCustomer = () => {
     setFirebaseData(Collections.LocalSalesCustomer, '000001', getValues());
   };
-
-  useEffect(() => {
-    getData()
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
-  }, [getData]);
 
   return (
     <FormProvider {...LocalSalesCustomerForm}>

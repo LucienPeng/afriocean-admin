@@ -3,7 +3,7 @@ import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseD
 import { DATE_TIME_FORMAT } from '../../../model/application.model';
 import { MaterialItemFormMode, MaterialModel } from '../../../model/material.model';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import moment from 'moment';
 
@@ -26,17 +26,17 @@ export const MaterialItemFormGeneralInfo = (props: MaterialItemFormGeneralInfoPr
 
   const navigate = useNavigate();
 
-  const deleteMaterialItemRequest = async () => {
-    return await deletFirebaseDocument(Collections.Material, String(serialId));
-  };
+  // const deleteMaterialItemRequest = async () => {
+  //   return await deletFirebaseDocument(Collections.Material, String(serialId));
+  // };
 
-  const { mutate: deleteMaterialitemRequest, isLoading: isDeleting } = useMutation(deleteMaterialItemRequest, {
-    onSuccess: async () => {
-      const newSerialId = await getFirebaseDocumentData(Collections.IncrementalIndex, 'Material');
-      await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: Number(newSerialId?.index) - 1 });
-      navigate('/material');
-    },
-  });
+  // const { mutate: deleteMaterialitemRequest, isPending: isDeleting } = useMutation(deleteMaterialItemRequest, {
+  //   onSuccess: async () => {
+  //     const newSerialId = await getFirebaseDocumentData(Collections.IncrementalIndex, 'Material');
+  //     await setFirebaseData(Collections.IncrementalIndex, 'Material', { index: Number(newSerialId?.index) - 1 });
+  //     navigate('/material');
+  //   },
+  // });
 
   return (
     <Grid item xs={12}>
@@ -60,7 +60,7 @@ export const MaterialItemFormGeneralInfo = (props: MaterialItemFormGeneralInfoPr
 
         <Grid item xs={6} display="flex" width="100%" justifyContent="center" alignItems="center">
           <Stack width="100%" direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
-            {isDeleting && <CircularProgress color="secondary" size={20} />}
+            {/* {isDeleting && <CircularProgress color="secondary" size={20} />}
             {isEditMode && (
               <Button
                 variant="contained"
@@ -70,7 +70,7 @@ export const MaterialItemFormGeneralInfo = (props: MaterialItemFormGeneralInfoPr
               >
                 Delete
               </Button>
-            )}
+            )} */}
           </Stack>
         </Grid>
       </Grid>

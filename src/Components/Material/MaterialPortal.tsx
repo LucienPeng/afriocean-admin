@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMaterialRedux } from '../../useMaterialRedux';
@@ -50,12 +50,12 @@ export const MaterialPortal = () => {
   const { keywords, setKeywords } = useSearchKeywords();
 
   const { isLoading, isFetching } = useQuery({
-    queryKey: 'materialList',
+    queryKey: ['materialList'],
     queryFn: () => getFirebaseCollectionData('Material'),
-    onSuccess: (fetchedData) => {
-      setRows(mapMaterialItemRows(fetchedData as MaterialModel[]));
-      rawData.current = mapMaterialItemRows(fetchedData as MaterialModel[]);
-    },
+    // onSuccess: (fetchedData) => {
+    //   setRows(mapMaterialItemRows(fetchedData as MaterialModel[]));
+    //   rawData.current = mapMaterialItemRows(fetchedData as MaterialModel[]);
+    // },
   });
   const navigate = useNavigate();
 

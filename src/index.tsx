@@ -8,7 +8,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { initializeApp } from 'firebase/app';
 import App from './App';
 import { DeviceMetadataProvider } from './Components/Common/DeviceMetadataProvider';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCJ60NHH41ezonKasX_lTaF2Otfj1NTons',
@@ -22,13 +22,7 @@ const firebaseConfig = {
 
 export const firebase = initializeApp(firebaseConfig);
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(

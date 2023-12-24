@@ -23,7 +23,7 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "react", "promise"],
+  "plugins": ["@typescript-eslint", "@tanstack/eslint-plugin-query", "react", "promise"],
   "rules": {
     "testing-library/no-debugging-utils": [
       "error",

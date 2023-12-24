@@ -16,7 +16,7 @@ import { MaterialItemFormActionButtons } from './MaterialItemFormActionButtons';
 import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { useUserRedux } from '../../../useUserRedux';
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
 
@@ -61,7 +61,7 @@ export const MaterialItemForm = (props: MaterialItemFormProps) => {
   } = useQuery({
     queryKey: ['MaterialIncrementalId'],
     queryFn: () => getFirebaseDocumentData(Collections.IncrementalIndex, 'Material'),
-    onSuccess: (res) => setSerialId(res?.index + 1),
+    //onSuccess: (res) => setSerialId(res?.index + 1),
     enabled: !isEditMode,
   });
 

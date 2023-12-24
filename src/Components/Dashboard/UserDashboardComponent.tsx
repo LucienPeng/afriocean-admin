@@ -17,7 +17,7 @@ import { StyledPaper } from '../Common/StyledUI/StyledPaper';
 import { StyledTitle } from '../Common/StyledUI/StyledTitle';
 import { useNavigate } from 'react-router-dom';
 import { useUserRedux } from '../../useUserRedux';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -39,7 +39,7 @@ export const UserDashboardComponent = () => {
   const { profile } = useUserRedux();
   const { getFirebaseMultiConditionQueryData } = useFirebaseDB();
   const { data: pendingApplications, isLoading } = useQuery({
-    queryKey: 'pendingApplications',
+    queryKey: ['pendingApplications'],
     queryFn: () =>
       getFirebaseMultiConditionQueryData(
         Collections.Application,

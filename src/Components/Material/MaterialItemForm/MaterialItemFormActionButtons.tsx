@@ -4,7 +4,7 @@ import { Calculation, MaterialModel, Operation } from '../../../model/material.m
 import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { useUserRedux } from '../../../useUserRedux';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useHandleActionResultAlert } from '../../../Utils/useHandleActionResultAlert';
 import { useFirebaseStorage } from '../../../Utils/Firebase/useFirebaseStorage';
 import { Roles } from '../../../model/company.model';
@@ -69,13 +69,13 @@ export const MaterialItemFormActionButtons = (props: MMaterialItemFormActionButt
     }
   };
 
-  const { mutate: submitCreateMaterialItemRequest, isLoading } = useMutation(
-    !isEditMode ? createMaterialItemRequest : editMaterialItemRequest,
-    {
-      onSuccess: () => setSuccessMessage(isEditMode ? 'Object a été bien mis à jour' : 'Object a été bien crée'),
-      onError: () => setErrorMessage('Quelque chose ne fonntionne pas'),
-    },
-  );
+  // const { mutate: submitCreateMaterialItemRequest, isLoading } = useMutation(
+  //   !isEditMode ? createMaterialItemRequest : editMaterialItemRequest,
+  //   {
+  //     onSuccess: () => setSuccessMessage(isEditMode ? 'Object a été bien mis à jour' : 'Object a été bien crée'),
+  //     onError: () => setErrorMessage('Quelque chose ne fonntionne pas'),
+  //   },
+  // );
 
   const handleCancel = () => {
     if (!isEditMode) navigate('/material');
@@ -85,26 +85,26 @@ export const MaterialItemFormActionButtons = (props: MMaterialItemFormActionButt
   return (
     <Grid item xs={12}>
       <Stack width="100%" direction="row" justifyContent="center" alignItems="center" spacing={2}>
-        {isLoading ? (
+        {/* {isLoading ? (
           <CircularProgress color="secondary" size={20} />
         ) : successMessage.length !== 0 ? (
           <ActionSuccessAlert />
         ) : errorMessage.length !== 0 ? (
           <ErrorMessageAlert />
-        ) : null}
+        ) : null} */}
 
         <Typography></Typography>
         <Stack direction="row" spacing={1} py={1}>
           <Button variant="contained" color="error" onClick={handleCancel}>
             Anuler
           </Button>
-          <Button
+          {/* <Button
             disabled={!!Object.keys(formState.errors)[0]}
             variant="contained"
             onClick={handleSubmit(() => submitCreateMaterialItemRequest())}
           >
             {!isEditMode ? 'Créer' : 'Save'}
-          </Button>
+          </Button> */}
         </Stack>
       </Stack>
     </Grid>

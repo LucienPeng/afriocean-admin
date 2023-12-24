@@ -1,5 +1,5 @@
 import { PageWrapper } from '../../Common/PageWrapper';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { MaterialModel } from '../../../model/material.model';

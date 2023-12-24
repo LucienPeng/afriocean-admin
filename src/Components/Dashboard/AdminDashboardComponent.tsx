@@ -12,7 +12,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { useFirebaseDB } from '../../Utils/Firebase/useFirebaseDB';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../model/application.model';
 import { StyledPaper } from '../Common/StyledUI/StyledPaper';
 import { StyledTitle } from '../Common/StyledUI/StyledTitle';
@@ -37,7 +37,7 @@ const mapApplicationLink = (applicationType: Applications) => {
 export const AdminDashboardComponent = () => {
   const { getFirebaseConditionQueryData } = useFirebaseDB();
   const { data: pendingApplications, isLoading } = useQuery({
-    queryKey: 'pendingApplications',
+    queryKey: ['pendingApplications'],
     queryFn: () => getFirebaseConditionQueryData('Application', 'isProcessed', '==', false),
   });
 

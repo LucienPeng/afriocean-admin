@@ -19,7 +19,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
 import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../../model/application.model';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { EmailTemplate, useEmailNotification } from '../../../Utils/useEmailNotification';
 import { PageWrapper } from '../../Common/PageWrapper';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
@@ -60,35 +60,35 @@ export const DeplacementForm = () => {
 
   const createNewUser = (newData: unknown) => createFirebaseData('Application', newData);
 
-  const { mutate, isLoading: isSending } = useMutation(sendEmail);
-  const { mutateAsync, isLoading } = useMutation(createNewUser);
+  // const { mutate, isLoading: isSending } = useMutation(sendEmail);
+  // const { mutateAsync, isLoading } = useMutation(createNewUser);
 
   const cancelHandler = () => reset(DEFAULT_FORM_VALUES);
 
   const createUserHandler = async () => {
     const { requestDate, absenceEndTime, absenceStartTime, motif, destination, applicationType } = getValues();
     try {
-      await mutateAsync({
-        uid: profile?.uid,
-        isProcessed: false,
-        isApproved: null,
-        applicationType,
-        firstName: profile?.firstName,
-        email: profile?.email,
-        department: profile?.department,
-        requestDate: String(requestDate),
-        absenceEndTime: String(absenceEndTime),
-        absenceStartTime: String(absenceStartTime),
-        destination,
-        motif,
-        comment: '',
-      });
-      mutate({
-        firstName: profile?.firstName,
-        lastName: profile?.lastName,
-        applicationType: Applications.Deplacement,
-        submitTime: moment().format(DATE_TIME_FORMAT),
-      });
+      // await mutateAsync({
+      //   uid: profile?.uid,
+      //   isProcessed: false,
+      //   isApproved: null,
+      //   applicationType,
+      //   firstName: profile?.firstName,
+      //   email: profile?.email,
+      //   department: profile?.department,
+      //   requestDate: String(requestDate),
+      //   absenceEndTime: String(absenceEndTime),
+      //   absenceStartTime: String(absenceStartTime),
+      //   destination,
+      //   motif,
+      //   comment: '',
+      // });
+      // mutate({
+      //   firstName: profile?.firstName,
+      //   lastName: profile?.lastName,
+      //   applicationType: Applications.Deplacement,
+      //   submitTime: moment().format(DATE_TIME_FORMAT),
+      // });
       reset(DEFAULT_FORM_VALUES);
       setErrorMessage('');
       setSuccessMessage('Demande envoyée');
@@ -214,13 +214,13 @@ export const DeplacementForm = () => {
             </Typography>
           </Grid>
         </Grid>
-        {isLoading || isSending ? (
+        {/* {isLoading || isSending ? (
           <CircularProgress color="secondary" />
         ) : successMessage.length !== 0 ? (
           <ActionSuccessAlert />
         ) : errorMessage.length !== 0 ? (
           <ErrorMessageAlert />
-        ) : null}
+        ) : null} */}
         <Stack direction="row" spacing={1} mt={2}>
           <Button variant="contained" onClick={cancelHandler} color="error">
             cancel

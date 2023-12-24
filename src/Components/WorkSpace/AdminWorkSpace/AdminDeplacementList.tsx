@@ -1,5 +1,5 @@
 import { DATE_TIME_FORMAT } from '../../../model/application.model';
-import { ChangeEvent, ReactNode, useState } from 'react';
+import { ChangeEvent, ReactNode, useEffect, useState } from 'react';
 import {
   Button,
   CircularProgress,
@@ -14,8 +14,8 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { useMutation, useQuery } from 'react-query';
-import { Collections, MutationFunction, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
+import { useQuery } from '@tanstack/react-query';
+import { MutationFunction, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
 import { DeplacementFormModel } from '../../Application/Form/DeplacementForm';
 import { StyledPaper } from '../../Common/StyledUI/StyledPaper';
@@ -24,9 +24,9 @@ import { StyledTableRow } from '../../Common/StyledUI/StyledTable';
 import moment, { Moment } from 'moment';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
+// import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+// import CancelIcon from '@mui/icons-material/Cancel';
+// import PendingActionsIcon from '@mui/icons-material/PendingActions';
 
 interface DemandeDeplacement extends DeplacementFormModel {
   readonly id: string;
@@ -49,47 +49,53 @@ export const AdminDeplacementList = () => {
     await updateFirebaseData(collection, id, newData);
   };
 
-  const { mutate, isLoading: isUpdating } = useMutation(setApplicationResult);
+  // const { mutate, isLoading: isUpdating } = useMutation(setApplicationResult);
 
-  const { refetch, isLoading } = useQuery({
-    queryKey: 'deplacementList',
+  const { data, refetch, isLoading, status } = useQuery({
+    queryKey: ['deplacementList'],
     queryFn: () => getFirebaseCollectionData('Application'),
-    onSuccess: (fetchedData) => setDeplacementApplications(fetchedData as DemandeDeplacement[]),
+    //onSuccess: (fetchedData:any) => setDeplacementApplications(fetchedData as DemandeDeplacement[]),
   });
+
+  useEffect(() => {
+    if (status === 'success') {
+      setDeplacementApplications(data as DemandeDeplacement[]);
+    }
+  }, []);
 
   const getDuration = (endDateTime: Moment, startDateTime: Moment) => moment.duration(endDateTime.diff(startDateTime));
 
   const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => setComment(event.target.value);
 
-  const approveHander = async (application: DemandeDeplacement) => {
-    mutate({
-      collection: Collections.Application,
-      id: application.id,
-      newData: {
-        ...application,
-        isApproved: true,
-        isProcessed: true,
-        comment,
-      },
-    });
-    refetch();
-    setComment('');
-  };
+  // const approveHander = async (application: DemandeDeplacement) => {
+  //   mutate({
+  //     collection: Collections.Application,
+  //     id: application.id,
+  //     newData: {
+  //       ...application,
+  //       isApproved: true,
+  //       isProcessed: true,
+  //       comment,
+  //     },
+  //   });
+  //   refetch();
+  //   setComment('');
+  // };
 
-  const rejectHandler = (application: DemandeDeplacement) => {
-    mutate({
-      collection: Collections.Application,
-      id: application.id,
-      newData: {
-        ...application,
-        isApproved: false,
-        isProcessed: true,
-        comment,
-      },
-    });
-    refetch();
-    setComment('');
-  };
+  // const rejectHandler = (application: DemandeDeplacement) => {
+  //   mutate({
+  //     collection: Collections.Application,
+  //     id: application.id,
+  //     newData: {
+  //       ...application,
+  //       isApproved: false,
+  //       isProcessed: true,
+  //       comment,
+  //     },
+  //   });
+  //   refetch();
+  //   setComment('');
+  // };
 
   return (
     <Stack>
@@ -132,7 +138,7 @@ export const AdminDeplacementList = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {deplacementApplications.map((row, index) => (
+                  {/* {deplacementApplications.map((row, index) => (
                     <ExpandableTableRow
                       key={index}
                       row={row}
@@ -164,7 +170,7 @@ export const AdminDeplacementList = () => {
                       <TableCell align="center">{row.motif}</TableCell>
                       <TableCell align="center">{row.destination}</TableCell>
                     </ExpandableTableRow>
-                  ))}
+                  ))} */}
                 </TableBody>
               </Table>
             )}
