@@ -57,12 +57,10 @@ export const useGetNavItems = () => {
   const adminListItems = (
     <List component="nav">
       <SingleListItem navItem={DASHBOARD} />
-      <NestedLisItem navItem={DEMANDES} isDisabled={true} />
       <NestedLisItem navItem={LOCAL_SALES} />
-
+      <NestedLisItem navItem={DEMANDES} isDisabled={true} />
       <SingleListItem navItem={CAISSE} isDisabled={true} />
       <SingleListItem navItem={MATERIAUX} isDisabled={true} />
-
       <Divider sx={{ my: 1 }} />
       <SingleListItem navItem={CREATE_USER} />
       <SingleListItem navItem={ADMIN_APPLICATION_PORTAL} />

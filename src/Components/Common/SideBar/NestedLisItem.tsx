@@ -19,7 +19,7 @@ export const NestedLisItem = (props: { navItem: NestedNavItem; isDisabled?: bool
   };
   return (
     <List>
-      <ListItemButton onClick={clickHandler}>
+      <ListItemButton onClick={clickHandler} disabled={isDisabled}>
         <ListItemIcon>{navItem.icon}</ListItemIcon>
         <ListItemText primary={navItem.navTitle} />
         {open ? <ExpandLess /> : <ExpandMore />}
