@@ -22,7 +22,18 @@ export const LocalSalesCustomerPersonalInfoControllers = () => {
             rules={{ required: true }}
             render={({ field: { onChange, value } }) => (
               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
-                <DatePicker sx={{ width: '100%' }} label="Date de naissance" value={value} onChange={onChange} />
+                <DatePicker
+                  sx={{ width: '100%' }}
+                  slotProps={{
+                    textField: {
+                      required: true,
+                      error: !!errors.birthday,
+                    },
+                  }}
+                  label="Date de naissance"
+                  value={value}
+                  onChange={onChange}
+                />
               </LocalizationProvider>
             )}
           />

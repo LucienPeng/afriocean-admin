@@ -4,7 +4,7 @@ export interface LocalSalesCustomer {
   firstName: string;
   lastName: string;
   address: string;
-  birthday: Date;
+  birthday: Date | undefined;
   phone1: string;
   phone2?: string;
   email?: string;
