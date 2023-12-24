@@ -8,9 +8,12 @@ import { LocalSalesCustomerPersonalInfoControllers } from './LocalSalesCustomerP
 import { LocalSalesCustomerActionButtons } from './LocalSalesCustomerActionButtons';
 import { useNavigate } from 'react-router-dom';
 import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
+import { useFirebaseFUnctions } from '../../../Utils/Firebase/useFirebaseFunctions';
+import { useEffect } from 'react';
 
 export const LocalSalesCustomerForm = () => {
   const navigate = useNavigate();
+  const { getData } = useFirebaseFUnctions();
 
   const LocalSalesCustomerForm = useForm<LocalSalesCustomer>({
     mode: 'onSubmit',
@@ -29,6 +32,12 @@ export const LocalSalesCustomerForm = () => {
   const handleCreateCustomer = () => {
     setFirebaseData(Collections.LocalSalesCustomer, '000001', getValues());
   };
+
+  useEffect(() => {
+    getData()
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  }, [getData]);
 
   return (
     <FormProvider {...LocalSalesCustomerForm}>
