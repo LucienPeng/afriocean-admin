@@ -1,9 +1,9 @@
 import { Controller, useFormContext } from 'react-hook-form';
-import { LocalSalesCustomer } from '../../../model/localSales.model';
+import { LocalSalesCustomer } from '../../../../model/localSales.model';
 import { Grid } from '@mui/material';
-import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
+import { StyledTextField } from '../../../Common/StyledUI/StyledTextField';
 
-export const LocalSalesCustomerAddressController = () => {
+export const LocalSalesCustomerPhoneControllers = () => {
   const {
     control,
     formState: { errors },
@@ -14,20 +14,20 @@ export const LocalSalesCustomerAddressController = () => {
       <Grid container spacing={1}>
         <Grid item xs={6}>
           <Controller
-            name="address"
+            name="phone1"
             control={control}
             rules={{ required: true }}
             render={({ field: { onChange, value } }) => (
               <StyledTextField
                 fullWidth
-                error={!!errors.address}
+                error={!!errors.phone1}
                 //disabled={disabled}
                 onChange={onChange}
-                variant="standard"
+                variant="outlined"
                 margin="normal"
                 required
-                id="address"
-                label="Adress"
+                id="phone1"
+                label="Numéro téléphone (1)"
                 value={value}
               />
             )}
@@ -35,19 +35,19 @@ export const LocalSalesCustomerAddressController = () => {
         </Grid>
         <Grid item xs={6}>
           <Controller
-            name="email"
+            name="phone2"
             control={control}
             rules={{ required: false }}
             render={({ field: { onChange, value } }) => (
               <StyledTextField
                 fullWidth
-                error={!!errors.email}
+                error={!!errors.phone2}
                 //disabled={disabled}
                 onChange={onChange}
-                variant="standard"
+                variant="outlined"
                 margin="normal"
-                id="email"
-                label="Email"
+                id="phone2"
+                label="Numéro téléphone (2)"
                 value={value}
               />
             )}

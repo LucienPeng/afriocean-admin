@@ -7,7 +7,6 @@ const logger = require('firebase-functions/logger');
 initializeApp();
 
 exports.getCustomerIncrementalId = onCall(async () => {
-
   const db = getFirestore();
 
   const generateIncrementalId = (currentCount, length = 6) => {

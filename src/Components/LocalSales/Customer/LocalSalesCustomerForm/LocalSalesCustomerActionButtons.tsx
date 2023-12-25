@@ -1,17 +1,12 @@
-import { Controller, useFormContext } from 'react-hook-form';
-import { LocalSalesCustomer } from '../../../model/localSales.model';
+import { LocalSalesCustomerFormMode } from '../../../../model/localSales.model';
 import { Button, Grid, Stack } from '@mui/material';
-import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
 
 export const LocalSalesCustomerActionButtons = (props: {
   handleReset: () => void;
   handleCreateCustomer: () => void;
+  formMode: LocalSalesCustomerFormMode;
 }) => {
-  const { handleReset, handleCreateCustomer } = props;
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext<LocalSalesCustomer>();
+  const { handleReset, handleCreateCustomer, formMode } = props;
 
   return (
     <Grid item xs={12} display="flex" justifyContent="center">
@@ -20,7 +15,7 @@ export const LocalSalesCustomerActionButtons = (props: {
           Anuler
         </Button>
         <Button variant="contained" color="primary" onClick={handleCreateCustomer}>
-          Créer
+          {formMode === LocalSalesCustomerFormMode.CREATE ? 'Créer' : 'Editer'}
         </Button>
       </Stack>
     </Grid>

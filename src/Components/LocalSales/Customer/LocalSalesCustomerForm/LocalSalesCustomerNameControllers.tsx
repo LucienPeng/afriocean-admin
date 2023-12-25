@@ -1,7 +1,7 @@
 import { Controller, useFormContext } from 'react-hook-form';
-import { LocalSalesCustomer } from '../../../model/localSales.model';
+import { LocalSalesCustomer } from '../../../../model/localSales.model';
 import { Grid } from '@mui/material';
-import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
+import { StyledTextField } from '../../../Common/StyledUI/StyledTextField';
 
 export const LocalSalesCustomerNameControllers = () => {
   const {

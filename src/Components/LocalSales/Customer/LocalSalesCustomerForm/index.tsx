@@ -1,15 +1,15 @@
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
-import { LocalSalesCustomer } from '../../../model/localSales.model';
-import { Alert, CircularProgress, Grid, Snackbar } from '@mui/material';
+import { LocalSalesCustomer, LocalSalesCustomerFormMode } from '../../../../model/localSales.model';
+import { Alert, Button, CircularProgress, Grid, Snackbar, Stack } from '@mui/material';
 import { LocalSalesCustomerNameControllers } from './LocalSalesCustomerNameControllers';
 import { LocalSalesCustomerAddressController } from './LocalSalesCustomerAddressController';
 import { LocalSalesCustomerPhoneControllers } from './LocalSalesCustomerPhoneControllers';
 import { LocalSalesCustomerPersonalInfoControllers } from './LocalSalesCustomerPersonalInfoControllers';
 import { LocalSalesCustomerActionButtons } from './LocalSalesCustomerActionButtons';
 import { useNavigate } from 'react-router-dom';
-import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
+import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFirebaseDB';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
@@ -19,7 +19,7 @@ const DEFAULT_VALUES: LocalSalesCustomer = {
   firstName: '',
   lastName: '',
   address: '',
-  birthday: undefined,
+  birthday: null,
   phone1: '',
   phone2: '',
   email: '',
@@ -34,7 +34,12 @@ const schema = yup.object().shape({
   phone1: yup.string().required(),
 });
 
-export const LocalSalesCustomerForm = (props: { serialId: string }) => {
+export const LocalSalesCustomerForm = (props: {
+  serialId: string;
+  formMode: LocalSalesCustomerFormMode;
+  editModeData?: LocalSalesCustomer;
+}) => {
+  const { serialId, editModeData, formMode } = props;
   const [open, setOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -42,6 +47,7 @@ export const LocalSalesCustomerForm = (props: { serialId: string }) => {
   const LocalSalesCustomerForm = useForm<LocalSalesCustomer>({
     mode: 'onSubmit',
     defaultValues: DEFAULT_VALUES,
+    values: editModeData,
     resolver: yupResolver(schema),
   });
 
@@ -52,10 +58,9 @@ export const LocalSalesCustomerForm = (props: { serialId: string }) => {
     isPending,
   } = useMutation({
     mutationKey: ['createNewCustomer'],
-    mutationFn: () => setFirebaseData(Collections.LocalSalesCustomers, serialId, getValues()),
+    mutationFn: () => setFirebaseData(Collections.LocalSalesCustomers, serialId, { ...getValues(), uuid: serialId }),
   });
 
-  const { serialId } = props;
   const { reset, getValues, handleSubmit } = LocalSalesCustomerForm;
   const { setFirebaseData } = useFirebaseDB();
 
@@ -68,7 +73,7 @@ export const LocalSalesCustomerForm = (props: { serialId: string }) => {
 
   const handleOpen = () => setOpen(true);
 
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+  const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -87,6 +92,7 @@ export const LocalSalesCustomerForm = (props: { serialId: string }) => {
         <LocalSalesCustomerPhoneControllers />
         <LocalSalesCustomerAddressController />
         <LocalSalesCustomerActionButtons
+          formMode={formMode}
           handleReset={handleReset}
           handleCreateCustomer={handleSubmit(handleCreateCustomer)}
         />
@@ -96,12 +102,36 @@ export const LocalSalesCustomerForm = (props: { serialId: string }) => {
       </Grid>
       <Snackbar
         open={open && isSuccess}
-        autoHideDuration={5000}
+        autoHideDuration={8000}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         onClose={handleClose}
       >
-        <Alert severity="success" sx={{ width: '100%' }} variant="filled" onClose={handleClose}>
-          Très bien, le nouveau client a été bien ajouté !
+        <Alert
+          severity="success"
+          sx={{ width: '100%' }}
+          variant="filled"
+          onClose={handleClose}
+          action={
+            formMode === LocalSalesCustomerFormMode.CREATE && (
+              <Stack direction="row" spacing={1}>
+                <Button variant="contained" color="inherit" size="small" onClick={() => reset(DEFAULT_VALUES)}>
+                  Ajouter un autre
+                </Button>
+                <Button
+                  variant="contained"
+                  color="inherit"
+                  size="small"
+                  onClick={() => navigate(`/local-sales/customers/edit/${serialId}`)}
+                >
+                  Voir
+                </Button>
+              </Stack>
+            )
+          }
+        >
+          {formMode === LocalSalesCustomerFormMode.CREATE
+            ? 'Très bien, le nouveau client a été bien ajouté !'
+            : 'Très bien, info a a été bien mofifié'}
         </Alert>
       </Snackbar>
       <Snackbar
