@@ -2,14 +2,22 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Stack } from '@mui/material';
+import {
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Stack,
+} from '@mui/material';
 import { StyledTextField } from '../../../Common/StyledUI/StyledTextField';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { StyledAccordion } from '../../../Common/StyledUI/StyledAccordion';
-import { FatayaSpec, ItemCategory, ItemVariant, LocalSalesOrder, Product } from '../../../../model/localSales.model';
-import { useFieldArray, useFormContext } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { FatayaSpec, ItemCategory, LocalSalesOrder, Product } from '../../../../model/localSales.model';
+import { useFormContext } from 'react-hook-form';
+import { ChangeEvent, useState } from 'react';
 
 const fatayaSpec: string[] = Object.values(FatayaSpec);
 
@@ -24,18 +32,30 @@ export const LocalSalesOrderFatayaAccordion = () => {
   const { getValues, setValue } = useFormContext<LocalSalesOrder>();
   const [fataya, setFataya] = useState<Product>(DEFAULT_FATAYA);
 
-  const handleChange = (event: SelectChangeEvent) => {
+  const handleSpecChange = (event: SelectChangeEvent) => {
     setFataya((prev) => {
       const updatedFataya = { ...prev, spec: event.target.value as FatayaSpec };
       return updatedFataya;
     });
   };
 
-  useEffect(() => {
-    setValue('product', [fataya]);
-  }, [fataya, setValue]);
+  const handleQuantityChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setFataya((prev) => {
+      const updatedFataya = { ...prev, quantity: parseInt(event.target.value) };
+      return updatedFataya;
+    });
+  };
 
-  console.log(fataya);
+  const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setFataya((prev) => {
+      const updatedFataya = { ...prev, price: parseInt(event.target.value) };
+      return updatedFataya;
+    });
+  };
+
+  const handleAddProductToChecklist = () => {
+    setValue('product', [...getValues('product'), fataya]);
+  };
 
   return (
     <StyledAccordion>
@@ -51,9 +71,9 @@ export const LocalSalesOrderFatayaAccordion = () => {
             <Select
               labelId="fataya-spec"
               id="fataya-spec"
-              //value={age}
+              value={fataya.spec}
               label="Spécification"
-              onChange={handleChange}
+              onChange={handleSpecChange}
             >
               {fatayaSpec.map((spec) => (
                 <MenuItem key={spec} value={spec}>
@@ -69,7 +89,10 @@ export const LocalSalesOrderFatayaAccordion = () => {
             required
             id="quantity"
             label="Quantité"
-            //value={value}
+            onChange={handleQuantityChange}
+            value={fataya.quantity}
+            type="number"
+            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
           />
           <StyledTextField
             fullWidth
@@ -78,17 +101,19 @@ export const LocalSalesOrderFatayaAccordion = () => {
             required
             id="price"
             label="Prix"
-            //value={value}
+            onChange={handlePriceChange}
+            value={fataya.price}
+            type="number"
+            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">{'CFA'}</InputAdornment>,
+            }}
           />
         </Stack>
-        <Stack direction="row" ml={5}>
-          <IconButton aria-label="">
-            <AddCircleIcon />
-          </IconButton>
-          <IconButton aria-label="">
-            <RemoveCircleIcon />
-          </IconButton>
-        </Stack>
+
+        <IconButton sx={{ ml: 3 }} color="success" aria-label="add-fataya" onClick={handleAddProductToChecklist}>
+          <AddCircleIcon />
+        </IconButton>
       </AccordionDetails>
     </StyledAccordion>
   );

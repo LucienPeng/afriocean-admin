@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFirebaseDB';
 import { useParams } from 'react-router-dom';
 import { LocalSalesOrderProductsAccordionWrapper } from './LocalSalesOrderProductsAccordionWrapper';
+import { Preview } from './Preview';
 
 export const LocalSalesOrderFormWrapper = () => {
   const { getFirebaseDocumentData } = useFirebaseDB();
@@ -24,7 +25,10 @@ export const LocalSalesOrderFormWrapper = () => {
 
   const LocalSalesOrderForm = useForm<LocalSalesOrder>({
     mode: 'onSubmit',
-    //defaultValues: DEFAULT_VALUES,
+    defaultValues: {
+      product: [], // 這裡給 product 一個初始空陣列值
+      // 其他表單字段的初始化值...
+    },
     // values: editModeData,
     // resolver: yupResolver(schema),
   });
@@ -35,6 +39,7 @@ export const LocalSalesOrderFormWrapper = () => {
         <Grid container rowSpacing={5} columnSpacing={12}>
           <LocalSalesOrderClientInfo customer={data} />
           <LocalSalesOrderProductsAccordionWrapper />
+          <Preview />
         </Grid>
       ) : (
         <CircularProgress size={30} />
