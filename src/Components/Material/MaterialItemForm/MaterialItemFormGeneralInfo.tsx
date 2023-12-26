@@ -1,9 +1,8 @@
-import { Button, CircularProgress, Grid, Stack, Typography } from '@mui/material';
-import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
+import { CircularProgress, Grid, Stack, Typography } from '@mui/material';
+//import { useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { DATE_TIME_FORMAT } from '../../../model/application.model';
 import { MaterialItemFormMode, MaterialModel } from '../../../model/material.model';
-import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+//import { useNavigate } from 'react-router-dom';
 import { useFormContext } from 'react-hook-form';
 import moment from 'moment';
 
@@ -15,7 +14,7 @@ interface MaterialItemFormGeneralInfoProps {
 
 export const MaterialItemFormGeneralInfo = (props: MaterialItemFormGeneralInfoProps) => {
   const { serialId, formMode, isLoading } = props;
-  const { setFirebaseData, getFirebaseDocumentData, deletFirebaseDocument } = useFirebaseDB();
+  // const { setFirebaseData, getFirebaseDocumentData, deletFirebaseDocument } = useFirebaseDB();
   const { getValues } = useFormContext<MaterialModel>();
 
   const isEditMode = formMode === MaterialItemFormMode.EDIT;
@@ -24,7 +23,7 @@ export const MaterialItemFormGeneralInfo = (props: MaterialItemFormGeneralInfoPr
     ? moment(getValues('createDate')).format(DATE_TIME_FORMAT)
     : moment().format(DATE_TIME_FORMAT);
 
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   // const deleteMaterialItemRequest = async () => {
   //   return await deletFirebaseDocument(Collections.Material, String(serialId));

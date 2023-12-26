@@ -48,7 +48,7 @@ export const UserDeplacementList = () => {
     if (status === 'success') {
       setDeplacementRecord(data as DemandeDeplacement[]);
     }
-  }, []);
+  }, [data, status]);
 
   return (
     <PageWrapper icon={<DriveEtaIcon />} componentName="Histoire des demandes de deplacement" containerMaxWidth="lg">

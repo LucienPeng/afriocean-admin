@@ -1,26 +1,15 @@
-import {
-  Button,
-  CircularProgress,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, FormControl, Grid, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import moment, { Moment } from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Controller, useForm } from 'react-hook-form';
-import { useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
+// import { useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { useHandleActionResultAlert } from '../../../Utils/useHandleActionResultAlert';
-import { useUserRedux } from '../../../useUserRedux';
+// import { useUserRedux } from '../../../useUserRedux';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
 import { ApplicationModel, Applications, DATE_TIME_FORMAT } from '../../../model/application.model';
-import { useMutation } from '@tanstack/react-query';
-import { EmailTemplate, useEmailNotification } from '../../../Utils/useEmailNotification';
+// import { EmailTemplate, useEmailNotification } from '../../../Utils/useEmailNotification';
 import { PageWrapper } from '../../Common/PageWrapper';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { PageSection } from '../../Common/PageSection';
@@ -45,20 +34,19 @@ const DEFAULT_FORM_VALUES: DeplacementFormModel = {
 };
 
 export const DeplacementForm = () => {
-  const { profile } = useUserRedux();
-  const { control, watch, reset, getValues, handleSubmit } = useForm<DeplacementFormModel>({
+  // const { profile } = useUserRedux();
+  const { control, watch, reset, handleSubmit } = useForm<DeplacementFormModel>({
     mode: 'onSubmit',
     defaultValues: DEFAULT_FORM_VALUES,
   });
-  const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, ErrorMessageAlert, ActionSuccessAlert } =
-    useHandleActionResultAlert();
-  const { createFirebaseData } = useFirebaseDB();
-  const { sendEmailNotification } = useEmailNotification();
+  const { setErrorMessage, setSuccessMessage } = useHandleActionResultAlert();
+  // const { createFirebaseData } = useFirebaseDB();
+  // const { sendEmailNotification } = useEmailNotification();
 
-  const sendEmail: (data: EmailTemplate) => Promise<void> = async (params: EmailTemplate) =>
-    sendEmailNotification(params);
+  // const sendEmail: (data: EmailTemplate) => Promise<void> = async (params: EmailTemplate) =>
+  //   sendEmailNotification(params);
 
-  const createNewUser = (newData: unknown) => createFirebaseData('Application', newData);
+  // const createNewUser = (newData: unknown) => createFirebaseData('Application', newData);
 
   // const { mutate, isLoading: isSending } = useMutation(sendEmail);
   // const { mutateAsync, isLoading } = useMutation(createNewUser);
@@ -66,7 +54,7 @@ export const DeplacementForm = () => {
   const cancelHandler = () => reset(DEFAULT_FORM_VALUES);
 
   const createUserHandler = async () => {
-    const { requestDate, absenceEndTime, absenceStartTime, motif, destination, applicationType } = getValues();
+    // const { requestDate, absenceEndTime, absenceStartTime, motif, destination, applicationType } = getValues();
     try {
       // await mutateAsync({
       //   uid: profile?.uid,

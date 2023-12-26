@@ -1,71 +1,52 @@
-import { DATE_TIME_FORMAT } from '../../../model/application.model';
-import { ChangeEvent, ReactNode, useEffect, useState } from 'react';
-import {
-  Button,
-  CircularProgress,
-  Container,
-  IconButton,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Toolbar,
-  Typography,
-} from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import { MutationFunction, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
-import { StyledTextField } from '../../Common/StyledUI/StyledTextField';
-import { DeplacementFormModel } from '../../Application/Form/DeplacementForm';
+//import { DATE_TIME_FORMAT } from '../../../model/application.model';
+import { Container, Stack, Table, TableBody, TableCell, TableHead, TableRow, Toolbar, Typography } from '@mui/material';
+// import { useQuery } from '@tanstack/react-query';
+// import { useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
+//import { DeplacementFormModel } from '../../Application/Form/DeplacementForm';
 import { StyledPaper } from '../../Common/StyledUI/StyledPaper';
 import { StyledAppBar } from '../../Common/StyledUI/StyledAppBar';
-import { StyledTableRow } from '../../Common/StyledUI/StyledTable';
-import moment, { Moment } from 'moment';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 // import CancelIcon from '@mui/icons-material/Cancel';
 // import PendingActionsIcon from '@mui/icons-material/PendingActions';
 
-interface DemandeDeplacement extends DeplacementFormModel {
-  readonly id: string;
-  readonly isProcessed: boolean;
-  readonly isApproved: boolean | null;
-  readonly firstName: string;
-  readonly email: string;
-  readonly department: string;
-  readonly requestDate: string;
-  readonly absenceStartTime: string;
-  readonly absenceEndTime: string;
-}
+// interface DemandeDeplacement extends DeplacementFormModel {
+//   readonly id: string;
+//   readonly isProcessed: boolean;
+//   readonly isApproved: boolean | null;
+//   readonly firstName: string;
+//   readonly email: string;
+//   readonly department: string;
+//   readonly requestDate: string;
+//   readonly absenceStartTime: string;
+//   readonly absenceEndTime: string;
+// }
 
 export const AdminDeplacementList = () => {
-  const [deplacementApplications, setDeplacementApplications] = useState<DemandeDeplacement[]>([]);
-  const [comment, setComment] = useState('');
-  const { getFirebaseCollectionData, updateFirebaseData } = useFirebaseDB();
+  //const [deplacementApplications, setDeplacementApplications] = useState<DemandeDeplacement[]>([]);
+  //const [comment, setComment] = useState('');
+  //  const { getFirebaseCollectionData, updateFirebaseData } = useFirebaseDB();
 
-  const setApplicationResult: MutationFunction = async ({ collection, id, newData }) => {
-    await updateFirebaseData(collection, id, newData);
-  };
+  // const setApplicationResult: MutationFunction = async ({ collection, id, newData }) => {
+  //   await updateFirebaseData(collection, id, newData);
+  // };
 
   // const { mutate, isLoading: isUpdating } = useMutation(setApplicationResult);
 
-  const { data, refetch, isLoading, status } = useQuery({
-    queryKey: ['deplacementList'],
-    queryFn: () => getFirebaseCollectionData('Application'),
-    //onSuccess: (fetchedData:any) => setDeplacementApplications(fetchedData as DemandeDeplacement[]),
-  });
+  // const { data, isLoading, status } = useQuery({
+  //   queryKey: ['deplacementList'],
+  //   queryFn: () => getFirebaseCollectionData('Application'),
+  //   //onSuccess: (fetchedData:any) => setDeplacementApplications(fetchedData as DemandeDeplacement[]),
+  // });
 
-  useEffect(() => {
-    if (status === 'success') {
-      setDeplacementApplications(data as DemandeDeplacement[]);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (status === 'success') {
+  //     setDeplacementApplications(data as DemandeDeplacement[]);
+  //   }
+  // }, [data, status]);
 
-  const getDuration = (endDateTime: Moment, startDateTime: Moment) => moment.duration(endDateTime.diff(startDateTime));
+  // const getDuration = (endDateTime: Moment, startDateTime: Moment) => moment.duration(endDateTime.diff(startDateTime));
 
-  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => setComment(event.target.value);
+  //  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => setComment(event.target.value);
 
   // const approveHander = async (application: DemandeDeplacement) => {
   //   mutate({
@@ -119,26 +100,23 @@ export const AdminDeplacementList = () => {
           }}
         >
           <Stack justifyContent="center" alignItems="center">
-            {isLoading ? (
-              <CircularProgress color="secondary" sx={{ my: 5 }} />
-            ) : (
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell padding="checkbox" />
-                    <TableCell align="center">Etat</TableCell>
-                    <TableCell align="center">Date</TableCell>
-                    <TableCell align="center">Nom</TableCell>
-                    <TableCell align="center">Service</TableCell>
-                    <TableCell align="center">A partir de</TableCell>
-                    <TableCell align="center">Terminé au</TableCell>
-                    <TableCell align="center">Temps absence</TableCell>
-                    <TableCell align="center">Motif</TableCell>
-                    <TableCell align="center">Destination</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {/* {deplacementApplications.map((row, index) => (
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell padding="checkbox" />
+                  <TableCell align="center">Etat</TableCell>
+                  <TableCell align="center">Date</TableCell>
+                  <TableCell align="center">Nom</TableCell>
+                  <TableCell align="center">Service</TableCell>
+                  <TableCell align="center">A partir de</TableCell>
+                  <TableCell align="center">Terminé au</TableCell>
+                  <TableCell align="center">Temps absence</TableCell>
+                  <TableCell align="center">Motif</TableCell>
+                  <TableCell align="center">Destination</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {/* {deplacementApplications.map((row, index) => (
                     <ExpandableTableRow
                       key={index}
                       row={row}
@@ -171,9 +149,8 @@ export const AdminDeplacementList = () => {
                       <TableCell align="center">{row.destination}</TableCell>
                     </ExpandableTableRow>
                   ))} */}
-                </TableBody>
-              </Table>
-            )}
+              </TableBody>
+            </Table>
           </Stack>
         </StyledPaper>
       </Container>
@@ -181,65 +158,65 @@ export const AdminDeplacementList = () => {
   );
 };
 
-interface ExpandableTableRowtProps {
-  readonly children: ReactNode;
-  readonly row: DemandeDeplacement;
-  readonly isUpdating: boolean;
-  readonly comment: string;
-  readonly rejectHandler: (row: DemandeDeplacement) => void;
-  readonly approveHander: (row: DemandeDeplacement) => void;
-  readonly onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
-}
+// interface ExpandableTableRowtProps {
+//   readonly children: ReactNode;
+//   readonly row: DemandeDeplacement;
+//   readonly isUpdating: boolean;
+//   readonly comment: string;
+//   readonly rejectHandler: (row: DemandeDeplacement) => void;
+//   readonly approveHander: (row: DemandeDeplacement) => void;
+//   readonly onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
+// }
 
-const ExpandableTableRow = ({
-  children,
-  row,
-  isUpdating,
-  comment,
-  rejectHandler,
-  approveHander,
-  onChangeHandler,
-}: ExpandableTableRowtProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  return (
-    <>
-      <StyledTableRow>
-        <TableCell>
-          <IconButton onClick={() => setIsExpanded(!isExpanded)}>
-            {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </IconButton>
-        </TableCell>
-        {children}
-      </StyledTableRow>
-      {isExpanded && (
-        <StyledTableRow>
-          <TableCell />
-          <TableCell />
-          <TableCell />
-          <TableCell />
-          <TableCell />
-          <TableCell align="right">{isUpdating && <CircularProgress color="secondary" size="20px" />}</TableCell>
-          <TableCell colSpan={3}>
-            <StyledTextField
-              value={comment || row.comment}
-              size="small"
-              placeholder="comment"
-              fullWidth
-              onChange={onChangeHandler}
-            />
-          </TableCell>
-          <TableCell>
-            <Stack direction="row" spacing={1}>
-              <Button variant="contained" color="error" onClick={() => rejectHandler(row)}>
-                Reject
-              </Button>
-              <Button variant="contained" onClick={() => approveHander(row)}>
-                Approve
-              </Button>
-            </Stack>
-          </TableCell>
-        </StyledTableRow>
-      )}
-    </>
-  );
-};
+// const ExpandableTableRow = ({
+//   children,
+//   row,
+//   isUpdating,
+//   comment,
+//   rejectHandler,
+//   approveHander,
+//   onChangeHandler,
+// }: ExpandableTableRowtProps) => {
+//   const [isExpanded, setIsExpanded] = useState(false);
+//   return (
+//     <>
+//       <StyledTableRow>
+//         <TableCell>
+//           <IconButton onClick={() => setIsExpanded(!isExpanded)}>
+//             {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+//           </IconButton>
+//         </TableCell>
+//         {children}
+//       </StyledTableRow>
+//       {isExpanded && (
+//         <StyledTableRow>
+//           <TableCell />
+//           <TableCell />
+//           <TableCell />
+//           <TableCell />
+//           <TableCell />
+//           <TableCell align="right">{isUpdating && <CircularProgress color="secondary" size="20px" />}</TableCell>
+//           <TableCell colSpan={3}>
+//             <StyledTextField
+//               value={comment || row.comment}
+//               size="small"
+//               placeholder="comment"
+//               fullWidth
+//               onChange={onChangeHandler}
+//             />
+//           </TableCell>
+//           <TableCell>
+//             <Stack direction="row" spacing={1}>
+//               <Button variant="contained" color="error" onClick={() => rejectHandler(row)}>
+//                 Reject
+//               </Button>
+//               <Button variant="contained" onClick={() => approveHander(row)}>
+//                 Approve
+//               </Button>
+//             </Stack>
+//           </TableCell>
+//         </StyledTableRow>
+//       )}
+//     </>
+//   );
+// };

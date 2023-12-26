@@ -49,7 +49,7 @@ export const MaterialItemForm = (props: MaterialItemFormProps) => {
   const { getFirebaseDocumentData } = useFirebaseDB();
   const [file, setFile] = useState<File | null>(null);
   const [previewURL, setPreviewURL] = useState(fetcheItemDetail?.photo ? fetcheItemDetail.photo : '');
-  const [serialId, setSerialId] = useState<string | number>(fetcheItemDetail?.id ? fetcheItemDetail.id : 'Loading...');
+  const [serialId] = useState<string | number>(fetcheItemDetail?.id ? fetcheItemDetail.id : 'Loading...');
   const isEditMode = formMode === MaterialItemFormMode.EDIT;
   const disabled = isEditMode ? (role === Roles.ADMIN ? false : true) : false;
   const editModeValues = fetcheItemDetail;

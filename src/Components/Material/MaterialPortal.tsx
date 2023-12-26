@@ -6,7 +6,7 @@ import { useFirebaseDB } from '../../Utils/Firebase/useFirebaseDB';
 import { PageWrapper } from '../Common/PageWrapper';
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';
 import { materialActions } from '../../Store/Material/material-slice';
-import { MaterialModel, MaterialTableRow } from '../../model/material.model';
+import { MaterialTableRow } from '../../model/material.model';
 import { Button, CircularProgress, Stack, Typography } from '@mui/material';
 import { DataGridComponent } from '../Common/StyledUI/StyledDataGrid';
 import { PageSection } from '../Common/PageSection';
@@ -26,25 +26,25 @@ const materialItemColumns: GridColDef[] = [
   { field: 'totalQuantity', headerName: 'Stock Total', flex: 1 },
 ];
 
-const mapMaterialItemRows = (data: MaterialModel[]): MaterialTableRow[] => {
-  return data.map((d) => {
-    return {
-      id: d.id ?? '',
-      itemId: d.itemId,
-      erpId: d.erpId,
-      materialName: d.materialName,
-      materialZhName: d.materialZhName,
-      initiateur: d.initiateur,
-      spec: d.spec,
-      totalQuantity: d.totalQuantity,
-    };
-  });
-};
+// const mapMaterialItemRows = (data: MaterialModel[]): MaterialTableRow[] => {
+//   return data.map((d) => {
+//     return {
+//       id: d.id ?? '',
+//       itemId: d.itemId,
+//       erpId: d.erpId,
+//       materialName: d.materialName,
+//       materialZhName: d.materialZhName,
+//       initiateur: d.initiateur,
+//       spec: d.spec,
+//       totalQuantity: d.totalQuantity,
+//     };
+//   });
+// };
 
 export const MaterialPortal = () => {
   const rawData = useRef<MaterialTableRow[]>([]);
   const [rows, setRows] = useState<MaterialTableRow[]>(rawData.current);
-  const { isLoading: isFiltering, setIsLoading: setIsFiltering } = useHandleLoading();
+  const { setIsLoading: setIsFiltering } = useHandleLoading();
   const { dispatch } = useMaterialRedux();
   const { getFirebaseCollectionData } = useFirebaseDB();
   const { keywords, setKeywords } = useSearchKeywords();
