@@ -3,6 +3,7 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 export const useFirebaseFunctions = () => {
   const functions = getFunctions();
   const getCustomerIncrementalId = httpsCallable(functions, 'getCustomerIncrementalId');
+  const createNewCustomer = httpsCallable(functions, 'createNewCustomer');
 
-  return { getCustomerIncrementalId };
+  return { createNewCustomer, getCustomerIncrementalId };
 };

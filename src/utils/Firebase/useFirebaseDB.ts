@@ -17,6 +17,7 @@ export enum Collections {
   Application = 'Application',
   Material = 'Material',
   IncrementalIndex = 'IncrementalIndex',
+  IncrementalCounter = 'IncrementalCounter',
   LocalSalesCustomers = 'LocalSalesCustomers',
 }
 

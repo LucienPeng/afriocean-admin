@@ -9,7 +9,7 @@ export interface LocalSalesCustomer {
   firstName: string;
   lastName: string;
   address: string;
-  birthday: Date | null;
+  birthday: null | Date;
   phone1: string;
   phone2?: string;
   email?: string;

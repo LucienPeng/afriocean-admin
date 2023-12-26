@@ -21,7 +21,6 @@ export const LocalSalesCustomerPhoneControllers = () => {
               <StyledTextField
                 fullWidth
                 error={!!errors.phone1}
-                //disabled={disabled}
                 onChange={onChange}
                 variant="outlined"
                 margin="normal"

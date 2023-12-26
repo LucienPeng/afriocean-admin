@@ -12,7 +12,7 @@ export const PageSection = ({ children }: { children: ReactNode }) => {
         justifyContent: 'flex-start',
         alignItems: 'center',
         height: '100%',
-        //minHeight: 750,
+        //minHeight: 350,
       }}
     >
       {children}
