@@ -123,7 +123,7 @@ export const LocalSalesPortal = () => {
     <PageWrapper componentName="Poudre de poisson" icon={<PointOfSaleIcon />} containerMaxWidth="lg">
       <PageSection>
         <Stack width="100%" direction="column" spacing={5}>
-          123
+          PORTAL
           {/* <StyledSearchTextField
             id="material-search-bar"
             keywords={keywords}

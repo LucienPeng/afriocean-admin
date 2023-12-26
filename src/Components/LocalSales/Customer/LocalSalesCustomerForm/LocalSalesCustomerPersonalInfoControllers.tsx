@@ -1,12 +1,12 @@
 import { Controller, useFormContext } from 'react-hook-form';
-import { LocalSalesCustomer, LocalSalesCustomerFormMode } from '../../../../model/localSales.model';
+import { LocalSalesCustomer, LocalSalesFormMode } from '../../../../model/localSales.model';
 import { Grid } from '@mui/material';
 import { StyledTextField } from '../../../Common/StyledUI/StyledTextField';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import fr from 'date-fns/locale/fr';
 
-export const LocalSalesCustomerPersonalInfoControllers = (props: { formMode: LocalSalesCustomerFormMode }) => {
+export const LocalSalesCustomerPersonalInfoControllers = (props: { formMode: LocalSalesFormMode }) => {
   const {
     control,
     formState: { errors },
@@ -48,7 +48,7 @@ export const LocalSalesCustomerPersonalInfoControllers = (props: { formMode: Loc
                 fullWidth
                 required
                 error={!!errors.id}
-                disabled={props.formMode === LocalSalesCustomerFormMode.EDIT}
+                disabled={props.formMode === LocalSalesFormMode.EDIT}
                 onChange={onChange}
                 variant="outlined"
                 margin="normal"

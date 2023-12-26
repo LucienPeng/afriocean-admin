@@ -1,177 +1,75 @@
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { FormProvider, useForm } from 'react-hook-form';
-import { LocalSalesCustomer, LocalSalesCustomerFormMode } from '../../../../model/localSales.model';
-import { Alert, CircularProgress, Grid, Snackbar, Typography } from '@mui/material';
-import { LocalSalesCustomerNameControllers } from './LocalSalesCustomerNameControllers';
-import { LocalSalesCustomerAddressController } from './LocalSalesCustomerAddressController';
-import { LocalSalesCustomerPhoneControllers } from './LocalSalesCustomerPhoneControllers';
-import { LocalSalesCustomerPersonalInfoControllers } from './LocalSalesCustomerPersonalInfoControllers';
-import { LocalSalesCustomerActionButtons } from './LocalSalesCustomerActionButtons';
-import { useNavigate } from 'react-router-dom';
-import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFirebaseDB';
-import { useMutation } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { useFirebaseFunctions } from '../../../../Utils/Firebase/useFirebaseFunctions';
+import { PageSection } from '../../../Common/PageSection';
+import { PageWrapper } from '../../../Common/PageWrapper';
+import { CircularProgress, Stack } from '@mui/material';
+import { LocalSalesCustomer, LocalSalesFormMode } from '../../../../model/localSales.model';
+import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFirebaseDB';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+import Typography from '@mui/material/Typography';
+import { LocalSalesCustomerFormLogic } from './LocalSalesCustomerFormLogic';
 
-const DEFAULT_VALUES: LocalSalesCustomer = {
-  uuid: '',
-  id: '',
-  firstName: '',
-  lastName: '',
-  address: '',
-  birthday: null,
-  phone1: '',
-  phone2: '',
-  email: '',
-};
+export const LocalSalesCustomerForm = (props: { formMode: LocalSalesFormMode }) => {
+  const { formMode } = props;
+  const { id } = useParams();
+  const { getFirebaseDocumentData } = useFirebaseDB();
 
-const schema = yup.object().shape({
-  firstName: yup.string().required(),
-  lastName: yup.string().required(),
-  id: yup.string().required(),
-  address: yup.string().required(),
-  birthday: yup.date().required(),
-  phone1: yup.string().required(),
-});
-
-export const LocalSalesCustomerForm = (props: {
-  serialId: string;
-  formMode: LocalSalesCustomerFormMode;
-  editModeData?: LocalSalesCustomer;
-  refetchSerialId: () => void;
-}) => {
-  const { serialId, editModeData, formMode, refetchSerialId } = props;
-  const [open, setOpen] = useState(false);
-
-  const navigate = useNavigate();
-
-  const LocalSalesCustomerForm = useForm<LocalSalesCustomer>({
-    mode: 'onSubmit',
-    defaultValues: DEFAULT_VALUES,
-    values: editModeData,
-    resolver: yupResolver(schema),
+  const { data: createModeData, refetch } = useQuery({
+    queryKey: ['getSerialId'],
+    queryFn: () => getFirebaseDocumentData(Collections.IncrementalCounter, 'LocalSalesCustomers').then((res) => res),
+    enabled: formMode === LocalSalesFormMode.CREATE,
   });
 
-  const {
-    mutate: callCreateNewCustomer,
-    isSuccess: isCreateSuccess,
-    isError: isCreateError,
-    isPending: isCreatePending,
-    error,
-  } = useMutation({
-    mutationKey: ['createNewCustomer'],
-    mutationFn: () => createNewCustomer({ ...getValues(), uuid: serialId }),
-  });
-
-  const {
-    mutate: callUpdateNewCustomer,
-    isSuccess: isEditSuccess,
-    isError: isEditError,
-    isPending: isEditPending,
-  } = useMutation({
-    mutationKey: ['updateNewCustomer'],
-    mutationFn: () =>
-      setFirebaseData(Collections.LocalSalesCustomers, serialId, {
-        ...getValues(),
-        birthday: getValues('birthday')?.toISOString(),
+  const { data: editModeData, isLoading: isEditModeLoading } = useQuery({
+    queryKey: ['customerInfo', id],
+    queryFn: () =>
+      getFirebaseDocumentData(Collections.LocalSalesCustomers, id as string).then((res) => {
+        if (!res) throw Error('This customer is not exist');
+        return { ...res, birthday: new Date(res?.birthday) } as LocalSalesCustomer;
       }),
+    enabled: formMode === LocalSalesFormMode.EDIT && !!id,
+    retry: false,
   });
 
-  const { reset, getValues, handleSubmit } = LocalSalesCustomerForm;
-  const { setFirebaseData } = useFirebaseDB();
-  const { createNewCustomer } = useFirebaseFunctions();
-
-  const handleReset = () => {
-    reset(DEFAULT_VALUES);
-    navigate('/local-sales/customers');
-  };
-
-  const handleCreateCustomerInfo = () => callCreateNewCustomer();
-  const handleUpdateCustomerInfo = () => callUpdateNewCustomer();
-
-  const handleOpen = () => setOpen(true);
-
-  const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpen(false);
-  };
+  const [serialId, setSerialId] = useState('');
 
   useEffect(() => {
-    if (isCreateSuccess || isCreateError || isEditSuccess || isEditError) handleOpen();
-  }, [isCreateError, isCreateSuccess, isEditError, isEditSuccess]);
+    function generateIncrementalId(currentId: string) {
+      const paddedId = currentId.padStart(6, '0');
+      return paddedId;
+    }
+    if (formMode === LocalSalesFormMode.CREATE && createModeData) {
+      setSerialId(generateIncrementalId(createModeData.index.toString()));
+    }
+  }, [createModeData, formMode]);
 
   useEffect(() => {
-    if (isCreateSuccess) {
-      reset(DEFAULT_VALUES);
-      refetchSerialId();
-    }
-  }, [isCreateSuccess, refetchSerialId, reset]);
-
-  useEffect(() => {
-    if (isEditSuccess) {
-      reset(getValues(), { keepDirty: false });
-    }
-  }, [getValues, isEditSuccess, reset]);
+    if (formMode === LocalSalesFormMode.EDIT && editModeData) setSerialId(editModeData.uuid);
+  }, [editModeData, formMode]);
 
   return (
-    <FormProvider {...LocalSalesCustomerForm}>
-      <Typography
-        color="text.primary"
-        mb={2}
-        fontWeight={700}
-        textAlign="left"
-        width="100%"
-        display="flex"
-        alignItems="center"
-        gap={2}
-      >
-        Client Id: {!serialId ? <CircularProgress size={20} /> : serialId}
-      </Typography>
-      <Grid container rowSpacing={3} columnSpacing={12}>
-        <LocalSalesCustomerNameControllers />
-        <LocalSalesCustomerPersonalInfoControllers formMode={formMode} />
-        <LocalSalesCustomerPhoneControllers />
-        <LocalSalesCustomerAddressController />
-        <LocalSalesCustomerActionButtons
-          formMode={formMode}
-          handleReset={handleReset}
-          handleCreateCustomer={
-            formMode === LocalSalesCustomerFormMode.CREATE
-              ? handleSubmit(handleCreateCustomerInfo)
-              : handleSubmit(handleUpdateCustomerInfo)
-          }
-        />
-        <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-          {isCreatePending || (isEditPending && <CircularProgress size={30} />)}
-        </Grid>
-      </Grid>
-      <Snackbar
-        open={(open && isCreateSuccess) || (open && isEditSuccess)}
-        autoHideDuration={8000}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        onClose={handleClose}
-      >
-        <Alert severity="success" sx={{ width: '100%' }} variant="filled" onClose={handleClose}>
-          {formMode === LocalSalesCustomerFormMode.CREATE
-            ? 'Très bien, le nouveau client a été bien ajouté !'
-            : "Très bien, l'info du client a été bien modifié !"}
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={(open && isCreateError) || (open && isEditError)}
-        autoHideDuration={5000}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        onClose={handleClose}
-      >
-        <Alert severity="error" sx={{ width: '100%' }} variant="filled" onClose={handleClose}>
-          {error?.message.includes('Dublicated customer')
-            ? 'Le client est déjà enregistré dans le base donné'
-            : 'Mais non, quelque chose ne va pas !'}
-        </Alert>
-      </Snackbar>
-    </FormProvider>
+    <PageWrapper icon={<PointOfSaleIcon />} componentName="Ajouter un nouveau client" containerMaxWidth="lg">
+      <PageSection>
+        <Stack width="100%" height="100%" justifyContent="center" alignItems="center">
+          {formMode === LocalSalesFormMode.CREATE || (formMode === LocalSalesFormMode.EDIT && editModeData) ? (
+            <LocalSalesCustomerFormLogic
+              serialId={serialId}
+              editModeData={editModeData}
+              formMode={formMode}
+              refetchSerialId={refetch}
+            />
+          ) : (
+            <Stack width="100%" height="100%" justifyContent="center" alignItems="center">
+              {isEditModeLoading ? (
+                <CircularProgress size={30} />
+              ) : (
+                <Typography> Désole, ce client n&apos;exsist pas.</Typography>
+              )}
+            </Stack>
+          )}
+        </Stack>
+      </PageSection>
+    </PageWrapper>
   );
 };

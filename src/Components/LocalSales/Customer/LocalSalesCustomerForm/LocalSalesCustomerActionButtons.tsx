@@ -1,11 +1,11 @@
 import { useFormContext } from 'react-hook-form';
-import { LocalSalesCustomer, LocalSalesCustomerFormMode } from '../../../../model/localSales.model';
+import { LocalSalesCustomer, LocalSalesFormMode } from '../../../../model/localSales.model';
 import { Button, Grid, Stack } from '@mui/material';
 
 export const LocalSalesCustomerActionButtons = (props: {
   handleReset: () => void;
   handleCreateCustomer: () => void;
-  formMode: LocalSalesCustomerFormMode;
+  formMode: LocalSalesFormMode;
 }) => {
   const {
     formState: { isDirty },
@@ -18,7 +18,7 @@ export const LocalSalesCustomerActionButtons = (props: {
           Anuler
         </Button>
         <Button variant="contained" color="primary" onClick={handleCreateCustomer} disabled={!isDirty}>
-          {formMode === LocalSalesCustomerFormMode.CREATE ? 'Créer' : 'Editer'}
+          {formMode === LocalSalesFormMode.CREATE ? 'Créer' : 'Editer'}
         </Button>
       </Stack>
     </Grid>
