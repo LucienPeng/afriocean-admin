@@ -11,13 +11,13 @@ import { DeviceMetadataProvider } from './Components/Common/DeviceMetadataProvid
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCJ60NHH41ezonKasX_lTaF2Otfj1NTons',
-  authDomain: 'afriocean-admin.firebaseapp.com',
-  projectId: 'afriocean-admin',
-  storageBucket: 'afriocean-admin.appspot.com',
-  messagingSenderId: '671851195009',
-  appId: '1:671851195009:web:fab56e45c697910b6c7b80',
-  measurementId: 'G-8EQFST1F45',
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
 export const firebase = initializeApp(firebaseConfig);
