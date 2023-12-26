@@ -9,8 +9,19 @@ export enum ItemCategory {
 }
 
 export enum ItemVariant {
-  Fataya = 'Fataya',
-  PoudreDePoisson = 'Poudre de poisson',
+  Thon = 'Thon',
+  Mullet = 'Mullet',
+  Sardinelle = 'Sardinelle',
+}
+
+export type ItemSpec = PoudreDePoissonSpec | FatayaSpec;
+
+export enum PoudreDePoissonSpec {
+  BagFor100 = 'Paquet - 100g',
+}
+
+export enum FatayaSpec {
+  BoxFor10 = 'Boîte - 10 pièces',
 }
 
 export interface LocalSalesCustomer {
@@ -27,13 +38,16 @@ export interface LocalSalesCustomer {
 
 export interface LocalSalesOrder {
   readonly orderId: string;
-  readonly customer: string;
-  readonly product: Product;
+  readonly date: null | Date;
+  readonly customer: LocalSalesCustomer;
+  readonly product: Product[];
+  readonly totalePrice: string;
 }
 
-interface Product {
+export interface Product {
   readonly category: ItemCategory;
-  readonly variant: ItemVariant;
+  readonly variant?: ItemVariant;
+  readonly spec: ItemSpec;
   readonly price: number;
   readonly quantity: number;
 }

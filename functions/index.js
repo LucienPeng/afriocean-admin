@@ -5,6 +5,7 @@ const { initializeApp } = require('firebase-admin/app');
 const logger = require('firebase-functions/logger');
 
 initializeApp();
+
 exports.createNewCustomer = onCall(async (request) => {
   const db = getFirestore();
 
@@ -35,6 +36,6 @@ exports.createNewCustomer = onCall(async (request) => {
 
     return 'Customer created';
   } catch (error) {
-    throw new HttpsError('internal', error.message || 'An error occurred');
+    throw new HttpsError('internal', error);
   }
 });

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { GridColDef } from '@mui/x-data-grid';
 import { LocalSalesCustomer } from '../../../model/localSales.model';
 
-interface fff {
+interface LocalSalesCustomerTableProps {
   rows: LocalSalesCustomer[] | undefined;
   columns: GridColDef[];
   isSuccess: boolean;
@@ -11,7 +11,7 @@ interface fff {
   isFetching: boolean;
 }
 
-export const useLocalSalesCustomerTable = (): fff => {
+export const useLocalSalesCustomerTable = (): LocalSalesCustomerTableProps => {
   const { getFirebaseCollectionData } = useFirebaseDB();
   const {
     data: rows,

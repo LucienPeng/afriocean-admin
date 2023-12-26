@@ -8,7 +8,7 @@ import { LocalSalesCustomer, LocalSalesFormMode } from '../../../../model/localS
 import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFirebaseDB';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import Typography from '@mui/material/Typography';
-import { LocalSalesCustomerFormLogic } from './LocalSalesCustomerFormLogic';
+import { LocalSalesCustomerFormWrapper } from './LocalSalesCustomerFormWrapper';
 
 export const LocalSalesCustomerForm = (props: { formMode: LocalSalesFormMode }) => {
   const { formMode } = props;
@@ -49,11 +49,15 @@ export const LocalSalesCustomerForm = (props: { formMode: LocalSalesFormMode }) 
   }, [editModeData, formMode]);
 
   return (
-    <PageWrapper icon={<PointOfSaleIcon />} componentName="Ajouter un nouveau client" containerMaxWidth="lg">
+    <PageWrapper
+      icon={<PointOfSaleIcon />}
+      componentName={formMode === LocalSalesFormMode.EDIT ? 'Détails clientels' : 'Ajouter un nouveau client'}
+      containerMaxWidth="lg"
+    >
       <PageSection>
         <Stack width="100%" height="100%" justifyContent="center" alignItems="center">
           {formMode === LocalSalesFormMode.CREATE || (formMode === LocalSalesFormMode.EDIT && editModeData) ? (
-            <LocalSalesCustomerFormLogic
+            <LocalSalesCustomerFormWrapper
               serialId={serialId}
               editModeData={editModeData}
               formMode={formMode}
@@ -70,6 +74,7 @@ export const LocalSalesCustomerForm = (props: { formMode: LocalSalesFormMode }) 
           )}
         </Stack>
       </PageSection>
+      <PageSection>Client Order Table</PageSection>
     </PageWrapper>
   );
 };

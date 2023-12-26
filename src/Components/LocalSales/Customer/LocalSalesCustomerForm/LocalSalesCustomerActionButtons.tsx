@@ -1,7 +1,6 @@
 import { useFormContext } from 'react-hook-form';
 import { LocalSalesCustomer, LocalSalesFormMode } from '../../../../model/localSales.model';
 import { Button, Grid, Stack } from '@mui/material';
-
 export const LocalSalesCustomerActionButtons = (props: {
   handleReset: () => void;
   handleCreateCustomer: () => void;

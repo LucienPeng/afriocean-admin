@@ -2,7 +2,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import { LocalSalesCustomer, LocalSalesFormMode } from '../../../../model/localSales.model';
-import { Alert, CircularProgress, Grid, Snackbar, Typography } from '@mui/material';
+import { Alert, Button, CircularProgress, Grid, Snackbar, Stack, Typography } from '@mui/material';
 import { LocalSalesCustomerNameControllers } from './LocalSalesCustomerNameControllers';
 import { LocalSalesCustomerAddressController } from './LocalSalesCustomerAddressController';
 import { LocalSalesCustomerPhoneControllers } from './LocalSalesCustomerPhoneControllers';
@@ -13,6 +13,7 @@ import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFireba
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useFirebaseFunctions } from '../../../../Utils/Firebase/useFirebaseFunctions';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const DEFAULT_VALUES: LocalSalesCustomer = {
   uuid: '',
@@ -35,7 +36,7 @@ const schema = yup.object().shape({
   phone1: yup.string().required(),
 });
 
-export const LocalSalesCustomerFormLogic = (props: {
+export const LocalSalesCustomerFormWrapper = (props: {
   serialId: string;
   formMode: LocalSalesFormMode;
   editModeData?: LocalSalesCustomer;
@@ -118,19 +119,31 @@ export const LocalSalesCustomerFormLogic = (props: {
 
   return (
     <FormProvider {...LocalSalesCustomerForm}>
-      <Typography
-        color="text.primary"
-        mb={2}
-        fontWeight={700}
-        textAlign="left"
-        width="100%"
-        display="flex"
-        alignItems="center"
-        gap={2}
-      >
-        Client Id: {!serialId ? <CircularProgress size={20} /> : serialId}
-      </Typography>
       <Grid container rowSpacing={3} columnSpacing={12}>
+        <Grid item xs={12}>
+          <Stack width="100%" direction="row" justifyContent="space-between" alignItems="center">
+            <Typography
+              color="text.primary"
+              mb={2}
+              fontWeight={700}
+              textAlign="left"
+              display="flex"
+              alignItems="center"
+              gap={2}
+            >
+              Client Id: {!serialId ? <CircularProgress size={20} /> : serialId}
+            </Typography>
+            <Button
+              variant="contained"
+              color="info"
+              onClick={() => navigate(`/local-sales/orders/create/${serialId}`)}
+              startIcon={<AddCircleIcon />}
+              sx={{ alignSelf: 'flex-end', flex: 'none' }}
+            >
+              Passer commande
+            </Button>
+          </Stack>
+        </Grid>
         <LocalSalesCustomerNameControllers />
         <LocalSalesCustomerPersonalInfoControllers formMode={formMode} />
         <LocalSalesCustomerPhoneControllers />

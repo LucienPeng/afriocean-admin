@@ -29,14 +29,14 @@ export const LocalSalesOrder = () => {
               id="material-search-bar"
               keywords={keywords}
               setKeywords={setKeywords}
-              placeholder="Veuillez saisir le numéro de téléphone ou l'identité du client."
+              placeholder="Veuillez saisir le numéro de la commande."
             />
             <Button
               variant="contained"
               startIcon={<PersonAddIcon />}
               onClick={() => navigate('/local-sales/orders/create')}
             >
-              Ajouter
+              Créer
             </Button>
           </Stack>
           {/* <DataGridComponent

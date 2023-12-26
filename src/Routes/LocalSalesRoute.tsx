@@ -29,7 +29,10 @@ export const LocalSalesRoute = () => {
       />
       {/* ORDERS */}
       <Route path="/local-sales/orders" element={<LocalSalesOrder />} />
-      <Route path="/local-sales/orders/create" element={<LocalSalesOrderForm formMode={LocalSalesFormMode.CREATE} />} />
+      <Route
+        path="/local-sales/orders/create/:id"
+        element={<LocalSalesOrderForm formMode={LocalSalesFormMode.CREATE} />}
+      />
       <Route
         path="/local-sales/orders//edit/:id"
         element={<LocalSalesOrderForm formMode={LocalSalesFormMode.EDIT} />}
