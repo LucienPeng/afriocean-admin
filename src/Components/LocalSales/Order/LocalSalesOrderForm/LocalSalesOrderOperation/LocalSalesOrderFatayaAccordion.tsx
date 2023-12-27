@@ -1,64 +1,21 @@
-import {
-  AccordionDetails,
-  AccordionSummary,
-  IconButton,
-  InputAdornment,
-  SelectChangeEvent,
-  Stack,
-  Typography,
-} from '@mui/material';
-import { StyledTextField } from '../../../Common/StyledUI/StyledTextField';
-import { StyledAccordion } from '../../../Common/StyledUI/StyledAccordion';
-import {
-  DEFALUT_FATAYA_BOX_10_LIST,
-  FATAYA,
-  FatayaSpec,
-  ItemCategory,
-  LocalSalesOrder,
-  Product,
-} from '../../../../model/localSales.model';
-import { ChangeEvent, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { AccordionDetails, AccordionSummary, IconButton, InputAdornment, Stack, Typography } from '@mui/material';
+import { StyledTextField } from '../../../../Common/StyledUI/StyledTextField';
+import { StyledAccordion } from '../../../../Common/StyledUI/StyledAccordion';
+import { DEFALUT_FATAYA_BOX_10_LIST, FATAYA } from '../../../../../model/localSales.model';
+import { useHandleOrderOperation } from './useHandleOrderOperation';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export const LocalSalesOrderFatayaAccordion = () => {
-  const { getValues, setValue, watch } = useFormContext<LocalSalesOrder>();
-  const [fataya, setFataya] = useState<Product>(FATAYA);
-  const isFatayaAdded = watch('product').find((f) => f.id === fataya.id);
-
-  const handleQuantityChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFataya((prev) => {
-      const updatedFataya = { ...prev, quantity: parseInt(event.target.value) };
-      return updatedFataya;
-    });
-  };
-
-  const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFataya((prev) => {
-      const updatedFataya = { ...prev, price: parseInt(event.target.value) };
-      return updatedFataya;
-    });
-  };
-
-  const handleAddProductToChecklist = () => {
-    setValue('product', [...getValues('product'), fataya]);
-  };
-
-  const handleEditProductToChecklist = () => {
-    const updatedProducts = getValues('product').map((item) => {
-      if (item.id === '6046000084187') {
-        return {
-          ...item,
-          quantity: fataya.quantity,
-          price: fataya.price,
-        };
-      }
-      return item;
-    });
-    setValue('product', updatedProducts);
-  };
+  const {
+    item,
+    isItemAdded,
+    handleQuantityChange,
+    handlePriceChange,
+    handleAddProductToChecklist,
+    handleEditProductToChecklist,
+  } = useHandleOrderOperation(FATAYA);
 
   return (
     <StyledAccordion>
@@ -94,7 +51,7 @@ export const LocalSalesOrderFatayaAccordion = () => {
                 id="quantity"
                 label="Quantité"
                 onChange={handleQuantityChange}
-                value={fataya.quantity}
+                value={item.quantity}
                 type="number"
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               />
@@ -106,7 +63,7 @@ export const LocalSalesOrderFatayaAccordion = () => {
                 id="price"
                 label="Prix"
                 onChange={handlePriceChange}
-                value={fataya.price}
+                value={item.price}
                 type="number"
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                 InputProps={{
@@ -119,7 +76,7 @@ export const LocalSalesOrderFatayaAccordion = () => {
                 color="success"
                 aria-label="add-fataya"
                 onClick={handleAddProductToChecklist}
-                disabled={!!isFatayaAdded}
+                disabled={!!isItemAdded}
               >
                 <AddCircleIcon />
               </IconButton>
@@ -127,7 +84,7 @@ export const LocalSalesOrderFatayaAccordion = () => {
                 color="info"
                 aria-label="edit-fataya"
                 onClick={handleEditProductToChecklist}
-                disabled={!isFatayaAdded}
+                disabled={!isItemAdded}
               >
                 <EditIcon />
               </IconButton>

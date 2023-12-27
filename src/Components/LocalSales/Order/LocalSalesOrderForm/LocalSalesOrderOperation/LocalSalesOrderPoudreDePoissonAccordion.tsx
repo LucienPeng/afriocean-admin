@@ -1,6 +1,6 @@
 import { AccordionSummary, Typography } from '@mui/material';
-import { StyledAccordion } from '../../../Common/StyledUI/StyledAccordion';
-import { DEFALUT_POUDRE_POISSON_BAG_100_LIST } from '../../../../model/localSales.model';
+import { StyledAccordion } from '../../../../Common/StyledUI/StyledAccordion';
+import { DEFALUT_POUDRE_POISSON_BAG_100_LIST } from '../../../../../model/localSales.model';
 import { LocalSalesOrderPoudreDePoissonFields } from './LocalSalesOrderPoudreDePoissonFields';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 

@@ -5,7 +5,7 @@ import { LocalSalesOrderClientInfo } from './LocalSalesOrderClientInfo';
 import { useQuery } from '@tanstack/react-query';
 import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFirebaseDB';
 import { useParams } from 'react-router-dom';
-import { LocalSalesOrderProductsAccordionWrapper } from './LocalSalesOrderProductsAccordionWrapper';
+import { LocalSalesOrderProductsAccordionWrapper } from './LocalSalesOrderOperation/LocalSalesOrderProductsAccordionWrapper';
 import { LocalSalesOrderPreview } from './LocalSalesOrderPreview';
 
 export const LocalSalesOrderFormWrapper = () => {

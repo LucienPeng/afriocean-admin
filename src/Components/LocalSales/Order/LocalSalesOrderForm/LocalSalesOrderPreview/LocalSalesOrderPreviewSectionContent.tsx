@@ -1,9 +1,9 @@
 import { IconButton, Stack, Typography } from '@mui/material';
-import { LocalSalesOrder, Product } from '../../../../model/localSales.model';
+import { LocalSalesOrder, Product } from '../../../../../model/localSales.model';
 import { useFormContext } from 'react-hook-form';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
-export const LocalSalesOrderPreviewSection = (props: { product: Product }) => {
+export const LocalSalesOrderPreviewSectionContent = (props: { product: Product }) => {
   const { product } = props;
   const { setValue, watch } = useFormContext<LocalSalesOrder>();
 

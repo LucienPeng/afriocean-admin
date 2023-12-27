@@ -1,48 +1,20 @@
 import { AccordionDetails, IconButton, InputAdornment, Stack, Typography } from '@mui/material';
-import { StyledTextField } from '../../../Common/StyledUI/StyledTextField';
-import { LocalSalesOrder, Product } from '../../../../model/localSales.model';
+import { StyledTextField } from '../../../../Common/StyledUI/StyledTextField';
+import { Product } from '../../../../../model/localSales.model';
+import { useHandleOrderOperation } from './useHandleOrderOperation';
 import EditIcon from '@mui/icons-material/Edit';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { useFormContext } from 'react-hook-form';
-import { ChangeEvent, useState } from 'react';
 
 export const LocalSalesOrderPoudreDePoissonFields = (props: { variant: Product }) => {
   const { variant } = props;
-  const { getValues, setValue, watch } = useFormContext<LocalSalesOrder>();
-  const [pouderPoisson, setPouderPoisson] = useState<Product>(variant);
-  const isItemAdded = watch('product').find((f) => f.id === pouderPoisson.id);
-
-  const handleQuantityChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPouderPoisson((prev) => {
-      const updatedFataya = { ...prev, quantity: parseInt(event.target.value) };
-      return updatedFataya;
-    });
-  };
-
-  const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPouderPoisson((prev) => {
-      const updatedFataya = { ...prev, price: parseInt(event.target.value) };
-      return updatedFataya;
-    });
-  };
-
-  const handleAddProductToChecklist = () => {
-    setValue('product', [...getValues('product'), pouderPoisson]);
-  };
-
-  const handleEditProductToChecklist = () => {
-    const updatedProducts = getValues('product').map((item) => {
-      if (item.id === variant.id) {
-        return {
-          ...item,
-          quantity: pouderPoisson.quantity,
-          price: pouderPoisson.price,
-        };
-      }
-      return item;
-    });
-    setValue('product', updatedProducts);
-  };
+  const {
+    item,
+    isItemAdded,
+    handleQuantityChange,
+    handlePriceChange,
+    handleAddProductToChecklist,
+    handleEditProductToChecklist,
+  } = useHandleOrderOperation(variant);
 
   return (
     <AccordionDetails
@@ -67,7 +39,7 @@ export const LocalSalesOrderPoudreDePoissonFields = (props: { variant: Product }
             id="quantity"
             label="Quantité"
             onChange={handleQuantityChange}
-            value={pouderPoisson.quantity}
+            value={item.quantity}
             type="number"
             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
           />
@@ -79,7 +51,7 @@ export const LocalSalesOrderPoudreDePoissonFields = (props: { variant: Product }
             id="price"
             label="Prix"
             onChange={handlePriceChange}
-            value={pouderPoisson.price}
+            value={item.price}
             type="number"
             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
             InputProps={{
