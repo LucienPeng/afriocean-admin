@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFirebaseDB';
 import { useParams } from 'react-router-dom';
 import { LocalSalesOrderProductsAccordionWrapper } from './LocalSalesOrderProductsAccordionWrapper';
-import { Preview } from './Preview';
+import { LocalSalesOrderPreview } from './LocalSalesOrderPreview';
 
 export const LocalSalesOrderFormWrapper = () => {
   const { getFirebaseDocumentData } = useFirebaseDB();
@@ -39,7 +39,7 @@ export const LocalSalesOrderFormWrapper = () => {
         <Grid container rowSpacing={5} columnSpacing={12}>
           <LocalSalesOrderClientInfo customer={data} />
           <LocalSalesOrderProductsAccordionWrapper />
-          <Preview />
+          <LocalSalesOrderPreview />
         </Grid>
       ) : (
         <CircularProgress size={30} />
