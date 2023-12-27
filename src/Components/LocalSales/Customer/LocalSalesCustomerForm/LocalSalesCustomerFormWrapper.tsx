@@ -151,7 +151,7 @@ export const LocalSalesCustomerFormWrapper = (props: {
         <LocalSalesCustomerActionButtons
           formMode={formMode}
           handleReset={handleReset}
-          handleCreateCustomer={
+          handleCustomerAction={
             formMode === LocalSalesFormMode.CREATE
               ? handleSubmit(handleCreateCustomerInfo)
               : handleSubmit(handleUpdateCustomerInfo)

@@ -3,12 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { PageSection } from '../../../Common/PageSection';
 import { PageWrapper } from '../../../Common/PageWrapper';
-import { CircularProgress, Stack } from '@mui/material';
+import { CircularProgress, Stack, Typography } from '@mui/material';
 import { LocalSalesCustomer, LocalSalesFormMode } from '../../../../model/localSales.model';
 import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFirebaseDB';
-import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
-import Typography from '@mui/material/Typography';
 import { LocalSalesCustomerFormWrapper } from './LocalSalesCustomerFormWrapper';
+import { generateIncrementalId } from '../../../../Utils/incrementalId';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 
 export const LocalSalesCustomerForm = (props: { formMode: LocalSalesFormMode }) => {
   const { formMode } = props;
@@ -35,12 +35,8 @@ export const LocalSalesCustomerForm = (props: { formMode: LocalSalesFormMode }) 
   const [serialId, setSerialId] = useState('');
 
   useEffect(() => {
-    function generateIncrementalId(currentId: string) {
-      const paddedId = currentId.padStart(6, '0');
-      return paddedId;
-    }
     if (formMode === LocalSalesFormMode.CREATE && createModeData) {
-      setSerialId(generateIncrementalId(createModeData.index.toString()));
+      setSerialId(generateIncrementalId(createModeData.index.toString(), 6));
     }
   }, [createModeData, formMode]);
 

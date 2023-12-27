@@ -40,9 +40,9 @@ export interface LocalSalesCustomer {
 export interface LocalSalesOrder {
   readonly orderId: string;
   readonly date: null | Date;
-  readonly customer: LocalSalesCustomer;
+  readonly customer?: LocalSalesCustomer;
   readonly product: Product[];
-  readonly totalePrice: string;
+  readonly totalePrice: number;
 }
 
 export interface Product {

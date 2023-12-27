@@ -4,6 +4,6 @@ export const useFirebaseFunctions = () => {
   const functions = getFunctions();
   const getCustomerIncrementalId = httpsCallable(functions, 'getCustomerIncrementalId');
   const createNewCustomer = httpsCallable(functions, 'createNewCustomer');
-
-  return { createNewCustomer, getCustomerIncrementalId };
+  const createNewOrder = httpsCallable(functions, 'createNewOrder');
+  return { createNewCustomer, createNewOrder, getCustomerIncrementalId };
 };

@@ -2,6 +2,11 @@ import { LocalSalesOrder, Product } from '../../../../../model/localSales.model'
 import { ChangeEvent, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
+export const getTotalAmount = (arr: Product[]): number =>
+  arr.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue.price * currentValue.quantity;
+  }, 0);
+
 export const useHandleOrderOperation = (defaultProduct: Product) => {
   const { getValues, setValue, watch } = useFormContext<LocalSalesOrder>();
   const [item, setItem] = useState<Product>(defaultProduct);

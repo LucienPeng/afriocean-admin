@@ -19,6 +19,7 @@ export enum Collections {
   IncrementalIndex = 'IncrementalIndex',
   IncrementalCounter = 'IncrementalCounter',
   LocalSalesCustomers = 'LocalSalesCustomers',
+  LocalSalesOrders = 'LocalSalesOrders',
 }
 
 export type MutationFunction = (data: MutationData) => Promise<void>;

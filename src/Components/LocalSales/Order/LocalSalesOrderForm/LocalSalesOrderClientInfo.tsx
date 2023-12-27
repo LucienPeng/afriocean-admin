@@ -1,11 +1,16 @@
-import { LocalSalesCustomer } from '../../../../model/localSales.model';
+import { LocalSalesCustomer, LocalSalesOrder } from '../../../../model/localSales.model';
 import { Grid, Typography } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Controller, useFormContext } from 'react-hook-form';
 import fr from 'date-fns/locale/fr';
 
-export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer }) => {
-  const { customer } = props;
+export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer; orderId: string }) => {
+  const { customer, orderId } = props;
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext<LocalSalesOrder>();
 
   return (
     <Grid item xs={12}>
@@ -17,7 +22,7 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer 
                 Nº commande :
                 <Typography color="text.primary" fontWeight={700} component="span">
                   {' '}
-                  {`${customer?.uuid}-0001`}
+                  {orderId}
                 </Typography>
               </Typography>
             </Grid>
@@ -25,20 +30,27 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer 
               <Typography color="text.primary" fontWeight={700}>
                 Date de commande :
               </Typography>
-              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
-                <DatePicker
-                  sx={{ width: '100%' }}
-                  slotProps={{
-                    textField: {
-                      required: true,
-                      // error: !!errors.birthday,
-                    },
-                  }}
-                  label="Date de naissance"
-                  //value={value}
-                  // onChange={onChange}
-                />
-              </LocalizationProvider>
+              <Controller
+                name="date"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
+                    <DatePicker
+                      sx={{ width: '100%' }}
+                      slotProps={{
+                        textField: {
+                          required: true,
+                          error: !!errors.date,
+                        },
+                      }}
+                      label="Date de naissance"
+                      value={value}
+                      onChange={onChange}
+                    />
+                  </LocalizationProvider>
+                )}
+              />
             </Grid>
           </Grid>
         </Grid>

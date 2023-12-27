@@ -10,11 +10,9 @@ exports.createNewCustomer = onCall(async (request) => {
   const db = getFirestore();
 
   try {
-    // Fetch LocalSalesCustomers collection data
     const localSaleCustomerlistSnapshot = await db.collection('LocalSalesCustomers').get();
     const localSaleCustomerlistData = localSaleCustomerlistSnapshot.docs.map((doc) => doc.data());
 
-    // Check for duplicate customer
     const isDuplicated = localSaleCustomerlistData.find((customer) => customer.id === request.data.id);
     if (isDuplicated) {
       throw new HttpsError('already-exists', 'Duplicate customer');
@@ -37,5 +35,29 @@ exports.createNewCustomer = onCall(async (request) => {
     return 'Customer created';
   } catch (error) {
     throw new HttpsError('internal', error);
+  }
+});
+
+exports.createNewOrder = onCall(async (request) => {
+  const db = getFirestore();
+
+  try {
+    // Create new customer document
+    await db.collection('LocalSalesOrders').doc(request.data.orderId).set(request.data);
+
+    // Increment index in IncrementalCounter
+    const incrementalCounterDoc = await db.collection('IncrementalCounter').doc('LocalSalesOrders').get();
+    if (!incrementalCounterDoc.exists) {
+      throw new HttpsError('internal', 'Counter issue');
+    }
+    const localSaleCustomerlistIndex = incrementalCounterDoc.data();
+    await db
+      .collection('IncrementalCounter')
+      .doc('LocalSalesOrders')
+      .set({ index: localSaleCustomerlistIndex.index + 1 });
+
+    return 'Order created';
+  } catch (error) {
+    throw new HttpsError('internal', 'Order created failed');
   }
 });

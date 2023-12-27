@@ -1,8 +1,8 @@
 import { Divider, Grid, Stack, Typography } from '@mui/material';
-import { useFormContext } from 'react-hook-form';
 import { ItemCategory, LocalSalesOrder } from '../../../../../model/localSales.model';
-import { LocalSalesOrderPreviewSectionContent } from './LocalSalesOrderPreviewSectionContent';
 import { LocalSalesOrderPreviewSection } from './LocalSalesOrderPrewviewSection';
+import { useFormContext } from 'react-hook-form';
+import { getTotalAmount } from '../LocalSalesOrderAccordion/useHandleOrderOperation';
 
 export const LocalSalesOrderPreview = () => {
   const { watch } = useFormContext<LocalSalesOrder>();
@@ -10,13 +10,8 @@ export const LocalSalesOrderPreview = () => {
   const fataya = productList?.filter((p) => p.category === ItemCategory.Fataya);
   const poudrePoisson = productList?.filter((f) => f.category === ItemCategory.PoudreDePoisson);
 
-  const fatayaSubtotal: number = fataya.reduce((accumulator, currentValue) => {
-    return accumulator + currentValue.price;
-  }, 0);
-
-  const poudrePoissonSubtotal: number = poudrePoisson.reduce((accumulator, currentValue) => {
-    return accumulator + currentValue.price;
-  }, 0);
+  const fatayaSubtotal = getTotalAmount(fataya);
+  const poudrePoissonSubtotal = getTotalAmount(poudrePoisson);
 
   return (
     <Grid item xs={12} display="flex" flexDirection="column" gap={1}>
