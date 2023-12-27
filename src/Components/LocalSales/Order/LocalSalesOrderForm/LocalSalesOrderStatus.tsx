@@ -1,18 +1,21 @@
 import { Checkbox, FormControlLabel, Grid, Stack, Typography } from '@mui/material';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent } from 'react';
 import { LocalSalesOrder, OrderStatus } from '../../../../model/localSales.model';
 import { useFormContext } from 'react-hook-form';
-import { LocalSalesOrders } from '..';
 
 export const LocalSalesOrderStatus = () => {
   const { setValue, getValues, watch } = useFormContext<LocalSalesOrder>();
   const statusValue = watch('status');
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue('status', {
-      ...getValues('status'),
-      [event.target.name]: event.target.checked,
-    });
+    setValue(
+      'status',
+      {
+        ...getValues('status'),
+        [event.target.name]: event.target.checked,
+      },
+      { shouldDirty: true },
+    );
   };
 
   return (

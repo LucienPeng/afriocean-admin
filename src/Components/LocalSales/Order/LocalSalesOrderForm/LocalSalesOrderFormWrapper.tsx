@@ -31,7 +31,7 @@ export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode
   const { createNewOrder } = useFirebaseFunctions();
 
   const { data: customerDetail } = useQuery({
-    queryKey: ['customerInfo', id],
+    queryKey: ['customerDetail', id],
     queryFn: () =>
       getFirebaseDocumentData(Collections.LocalSalesCustomers, id as string).then((res) => {
         if (!res) throw Error('This customer is not exist');
@@ -42,7 +42,7 @@ export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode
   });
 
   const { data: orderDetail } = useQuery({
-    queryKey: ['customerInfo2', id],
+    queryKey: ['orderDetail', id],
     queryFn: () =>
       getFirebaseDocumentData(Collections.LocalSalesOrders, id as string).then((res) => {
         return { ...res, date: new Date(res?.date) } as LocalSalesOrder;

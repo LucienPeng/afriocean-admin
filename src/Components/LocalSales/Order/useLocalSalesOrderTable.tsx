@@ -1,7 +1,8 @@
 import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
 import { useQuery } from '@tanstack/react-query';
 import { GridColDef } from '@mui/x-data-grid';
-import { LocalSalesOrder, OperationStatus, OrderStatus } from '../../../model/localSales.model';
+import { LocalSalesOrder } from '../../../model/localSales.model';
+import { mapStatus } from '../../../Utils/mapStatus';
 
 interface LocalSalesCustomerTableProps {
   rows: LocalSalesOrder[] | undefined;
@@ -10,20 +11,6 @@ interface LocalSalesCustomerTableProps {
   isLoading: boolean;
   isFetching: boolean;
 }
-
-const mapStatus = (status: OperationStatus) => {
-  if (status?.delivered && status?.paid) {
-    return OrderStatus.Terminé;
-  } else if (status?.delivered && !status?.paid) {
-    return OrderStatus.UnPaid;
-  } else if (!status?.delivered && status?.paid) {
-    return OrderStatus.UnDelievered;
-  } else if (!status?.delivered && !status?.paid) {
-    return OrderStatus.Start;
-  } else {
-    return 'Unknown';
-  }
-};
 
 export const useLocalSalesorderTable = (): LocalSalesCustomerTableProps => {
   const { getFirebaseCollectionData } = useFirebaseDB();
@@ -65,7 +52,6 @@ export const useLocalSalesorderTable = (): LocalSalesCustomerTableProps => {
       field: 'status',
       headerName: 'État',
       valueGetter: (params) => mapStatus(params.row.status),
-
       headerAlign: 'center',
       align: 'center',
       flex: 1,
