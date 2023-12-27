@@ -1,24 +1,90 @@
-import { Button, Stack } from '@mui/material';
+import { Box, Stack, Tab, Tabs } from '@mui/material';
 import { PageSection } from '../../Common/PageSection';
 import { PageWrapper } from '../../Common/PageWrapper';
-import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import { StyledSearchTextField } from '../../Common/StyledUI/StyledSearchTextField';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchKeywords } from '../../../Utils/useSearchKeywords';
-import { useLocalSalesCustomerTable } from '../Customer/useLocalSalesCustomerTable';
-import { LocalSalesCustomer } from '../../../model/localSales.model';
+import { LocalSalesOrder, OrderStatus } from '../../../model/localSales.model';
 import { useNavigate } from 'react-router-dom';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import { DataGridComponent } from '../../Common/StyledUI/StyledDataGrid';
+import { GridCellParams } from '@mui/x-data-grid';
+import { LoadingOverlay, NoRowsOverlay } from '../../Common/StyledUI/TableOverlayComponents';
+import { useLocalSalesorderTable } from './useLocalSalesOrderTable';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 
-export const LocalSalesOrder = () => {
+function a11yProps(index: number) {
+  return {
+    id: `order-tab-${index}`,
+    'aria-controls': `order-${index}`,
+  };
+}
+
+export const LocalSalesOrders = () => {
   const { throttledValue, keywords, setKeywords } = useSearchKeywords();
-  const { rows, columns, isFetching, isLoading, isSuccess } = useLocalSalesCustomerTable();
+  const { rows, columns, isFetching, isLoading, isSuccess } = useLocalSalesorderTable();
   const [isFiltering, setIsFiltering] = useState(false);
-  const [filteredRows, setFilteredRows] = useState<LocalSalesCustomer[]>([]);
+  const [filteredRows, setFilteredRows] = useState<LocalSalesOrder[]>([]);
+  const [value, setValue] = useState(0);
 
   const navigate = useNavigate();
-  const handleRedirect = (id: string) => navigate(`/local-sales/customers/edit/${id}`);
+  const handleRedirect = (id: string) => navigate(`/local-sales/orders/edit/${id}`);
   const isProcessing = isLoading || isFetching || isFiltering;
+
+  useEffect(() => {
+    if (rows) {
+      let filteredData;
+      switch (value) {
+        case 0:
+          setFilteredRows(rows);
+          break;
+        case 1:
+          filteredData = rows?.filter((row) => {
+            return !row.status?.delivered && !row.status?.paid;
+          });
+          setFilteredRows(filteredData);
+          break;
+        case 2:
+          filteredData = rows?.filter((row) => {
+            return row.status?.delivered && !row.status?.paid;
+          });
+          setFilteredRows(filteredData);
+          break;
+        case 3:
+          filteredData = rows?.filter((row) => {
+            return row.status?.delivered && row.status?.paid;
+          });
+          setFilteredRows(filteredData);
+          break;
+        default:
+          setFilteredRows(rows);
+      }
+    }
+  }, [rows, value]);
+
+  useEffect(() => {
+    if (throttledValue !== '' && rows) {
+      setIsFiltering(true);
+      const filteredData = rows.filter((row) => {
+        return (
+          row.orderId?.toLowerCase().includes(throttledValue.toLowerCase()) ||
+          row.customer?.firstName?.toLowerCase().includes(throttledValue.toLowerCase()) ||
+          row.customer?.lastName?.toLowerCase().includes(throttledValue.toLowerCase())
+        );
+      });
+      setFilteredRows(filteredData);
+      setIsFiltering(false);
+    } else if (throttledValue === '' && rows) {
+      setFilteredRows(rows);
+    }
+  }, [rows, throttledValue]);
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
+  useEffect(() => {
+    if (isSuccess && rows) setFilteredRows(rows);
+  }, [isSuccess, rows]);
 
   return (
     <PageWrapper icon={<PointOfSaleIcon />} componentName="Orders" containerMaxWidth="lg">
@@ -29,24 +95,25 @@ export const LocalSalesOrder = () => {
               id="material-search-bar"
               keywords={keywords}
               setKeywords={setKeywords}
-              placeholder="Veuillez saisir le numéro de la commande."
+              placeholder="Veuillez saisir le numéro de la commande ou le nom du client."
             />
-            <Button
-              variant="contained"
-              startIcon={<PersonAddIcon />}
-              onClick={() => navigate('/local-sales/orders/create')}
-            >
-              Créer
-            </Button>
           </Stack>
-          {/* <DataGridComponent
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={value} onChange={handleTabChange} aria-label="order table switcher">
+              <Tab label="Tous" {...a11yProps(0)} disabled={isProcessing} />
+              <Tab label={OrderStatus.Start} disabled={isProcessing} {...a11yProps(1)} />
+              <Tab label={OrderStatus.UnPaid} disabled={isProcessing} {...a11yProps(2)} />
+              <Tab label={OrderStatus.Terminé} disabled={isProcessing} {...a11yProps(3)} />
+            </Tabs>
+          </Box>
+          <DataGridComponent
             isLoading={isProcessing}
             rows={!filteredRows || isProcessing ? [] : filteredRows}
             columns={columns}
-            onCellClickHandler={(params: GridCellParams) => handleRedirect(params.row.uuid)}
+            onCellClickHandler={(params: GridCellParams) => handleRedirect(params.row.orderId)}
             LoadingOverlay={LoadingOverlay}
             NoRowsOverlay={NoRowsOverlay}
-          /> */}
+          />
         </Stack>
       </PageSection>
     </PageWrapper>

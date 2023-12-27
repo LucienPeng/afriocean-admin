@@ -2,11 +2,11 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import { LocalSalesCustomer, LocalSalesFormMode, LocalSalesOrder } from '../../../../model/localSales.model';
-import { Alert, Button, CircularProgress, Grid, Snackbar } from '@mui/material';
+import { Alert, CircularProgress, Grid, Snackbar } from '@mui/material';
 import { LocalSalesOrderClientInfo } from './LocalSalesOrderClientInfo';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFirebaseDB';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { LocalSalesOrderProductsAccordionWrapper } from './LocalSalesOrderAccordion';
 import { LocalSalesOrderPreview } from './LocalSalesOrderPreview';
 import { getTotalAmount } from './LocalSalesOrderAccordion/useHandleOrderOperation';
@@ -14,6 +14,7 @@ import { useFirebaseFunctions } from '../../../../Utils/Firebase/useFirebaseFunc
 import { useEffect, useMemo, useState } from 'react';
 import { generateIncrementalId } from '../../../../Utils/incrementalId';
 import { LocalSalesOrderActionButtons } from './LocalSalesOrderActionButtons';
+import { LocalSalesOrderStatus } from './LocalSalesOrderStatus';
 
 const schema = yup.object().shape({
   date: yup.string().required(),
@@ -21,7 +22,6 @@ const schema = yup.object().shape({
 });
 
 export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode }) => {
-  const navigate = useNavigate();
   const [orderId, setOrderId] = useState('');
   const [customerInfo, setCustomerInfo] = useState<LocalSalesCustomer>();
   const [open, setOpen] = useState(false);
@@ -80,6 +80,10 @@ export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode
       orderId: '',
       customer: customerInfo,
       totalePrice: 0,
+      status: {
+        delivered: false,
+        paid: false,
+      },
     };
   }, [customerInfo]);
 
@@ -165,6 +169,8 @@ export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode
           <LocalSalesOrderClientInfo customer={customerInfo} orderId={orderId} />
           <LocalSalesOrderProductsAccordionWrapper />
           <LocalSalesOrderPreview />
+          <LocalSalesOrderStatus />
+
           <LocalSalesOrderActionButtons
             isCreatePending={isCreatePending || isEditPending}
             handleAction={

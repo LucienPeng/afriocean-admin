@@ -2,7 +2,7 @@ import { Route } from 'react-router-dom';
 import { LocalSalesPortal } from '../Components/LocalSales/LocalSalesPortal';
 import { Roles } from '../model/company.model';
 import { LocalSalesCustomers } from '../Components/LocalSales/Customer';
-import { LocalSalesOrder } from '../Components/LocalSales/Order';
+import { LocalSalesOrders } from '../Components/LocalSales/Order';
 import { LocalSalesCustomerForm } from '../Components/LocalSales/Customer/LocalSalesCustomerForm';
 import ProtectedRoute from '../ProtectedRoute';
 import LocalSalesPage from '../Pages/LocalSalesPage';
@@ -28,7 +28,7 @@ export const LocalSalesRoute = () => {
         element={<LocalSalesCustomerForm formMode={LocalSalesFormMode.EDIT} />}
       />
       {/* ORDERS */}
-      <Route path="/local-sales/orders" element={<LocalSalesOrder />} />
+      <Route path="/local-sales/orders" element={<LocalSalesOrders />} />
       <Route
         path="/local-sales/orders/create/:id"
         element={<LocalSalesOrderForm formMode={LocalSalesFormMode.CREATE} />}

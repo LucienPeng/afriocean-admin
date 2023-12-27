@@ -12,17 +12,7 @@ export const LocalSalesOrderForm = (props: { formMode: LocalSalesFormMode }) => 
     <PageWrapper icon={<PointOfSaleIcon />} componentName="Créer une nouvelle commande" containerMaxWidth="lg">
       <PageSection>
         <Stack width="100%" height="100%" justifyContent="center" alignItems="center">
-          {formMode === LocalSalesFormMode.CREATE || formMode === LocalSalesFormMode.EDIT ? (
-            <LocalSalesOrderFormWrapper formMode={formMode} />
-          ) : (
-            <Stack width="100%" height="100%" justifyContent="center" alignItems="center">
-              {/* {true ? (
-                <CircularProgress size={30} />
-              ) : (
-                <Typography> Désole, ce client n&apos;exsist pas.</Typography>
-              )} */}
-            </Stack>
-          )}
+          <LocalSalesOrderFormWrapper formMode={formMode} />
         </Stack>
       </PageSection>
     </PageWrapper>

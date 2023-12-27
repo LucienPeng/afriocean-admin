@@ -25,6 +25,22 @@ export enum FatayaSpec {
   BoxFor10 = 'Boîte - 10 pièces',
 }
 
+export enum OrderStatus {
+  Start = 'À Demarrer',
+  UnPaid = 'À Regler',
+  UnDelievered = 'À Livrer',
+  PrePaid = 'Dépôt collecté',
+  Paid = 'Reglé',
+  Delivered = 'Livré',
+  Cancelled = 'Annulé',
+  Terminé = 'Terminé',
+}
+
+export interface OperationStatus {
+  readonly paid: boolean;
+  readonly delivered: boolean;
+}
+
 export interface LocalSalesCustomer {
   readonly uuid: string;
   readonly id: string;
@@ -43,6 +59,7 @@ export interface LocalSalesOrder {
   readonly customer?: LocalSalesCustomer;
   readonly product: Product[];
   readonly totalePrice: number;
+  readonly status: OperationStatus;
 }
 
 export interface Product {

@@ -21,7 +21,7 @@ export const LocalSalesOrderActionButtons = (props: ActionButtonProps) => {
         <Button variant="contained" color="error">
           Annuler
         </Button>
-        <Button variant="contained" onClick={handleAction} disabled={disabled || !isDirty}>
+        <Button variant="contained" onClick={handleAction} disabled={disabled || isDirty}>
           Confirmer
         </Button>
       </Stack>

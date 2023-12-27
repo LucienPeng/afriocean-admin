@@ -9,6 +9,7 @@ import { Collections, useFirebaseDB } from '../../../../Utils/Firebase/useFireba
 import { LocalSalesCustomerFormWrapper } from './LocalSalesCustomerFormWrapper';
 import { generateIncrementalId } from '../../../../Utils/incrementalId';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+import { LocalSalesCustomerOrderRecord } from './LocalSalesCustomerOrderRecord';
 
 export const LocalSalesCustomerForm = (props: { formMode: LocalSalesFormMode }) => {
   const { formMode } = props;
@@ -70,7 +71,7 @@ export const LocalSalesCustomerForm = (props: { formMode: LocalSalesFormMode }) 
           )}
         </Stack>
       </PageSection>
-      <PageSection>Client Order Table</PageSection>
+      <LocalSalesCustomerOrderRecord />
     </PageWrapper>
   );
 };

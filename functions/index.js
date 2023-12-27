@@ -61,3 +61,17 @@ exports.createNewOrder = onCall(async (request) => {
     throw new HttpsError('internal', 'Order created failed');
   }
 });
+
+exports.getCustomerOrder = onCall(async (request) => {
+  const db = getFirestore();
+
+  try {
+    const allOrderSnapshot = await db.collection('LocalSalesOrders').get();
+    const allOrderData = allOrderSnapshot.docs.map((doc) => doc.data());
+    const customerOrders = allOrderData.filter((order) => order.customer.id === request.data.id);
+
+    return customerOrders;
+  } catch (error) {
+    throw new HttpsError('internal', 'Get customer order failed');
+  }
+});
