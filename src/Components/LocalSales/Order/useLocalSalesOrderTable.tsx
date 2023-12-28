@@ -3,6 +3,8 @@ import { GridColDef } from '@mui/x-data-grid';
 import { LocalSalesOrder } from '../../../model/localSales.model';
 import { mapStatus } from '../../../Utils/mapStatus';
 import { useQuery } from '@tanstack/react-query';
+import moment from 'moment';
+import { DATE_FORMAT } from '../../../model/application.model';
 
 interface LocalSalesCustomerTableProps {
   rows: LocalSalesOrder[] | undefined;
@@ -44,6 +46,7 @@ export const useLocalSalesorderTable = (): LocalSalesCustomerTableProps => {
     {
       field: 'date',
       headerName: 'Date de commande',
+      valueGetter: (params) => moment(params.row.date).format(DATE_FORMAT),
       headerAlign: 'center',
       align: 'center',
       flex: 1,

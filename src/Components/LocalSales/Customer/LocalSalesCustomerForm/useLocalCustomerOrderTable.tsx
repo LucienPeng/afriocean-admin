@@ -3,6 +3,8 @@ import { GridColDef } from '@mui/x-data-grid';
 import { LocalSalesOrder } from '../../../../model/localSales.model';
 import { useFirebaseFunctions } from '../../../../Utils/Firebase/useFirebaseFunctions';
 import { mapStatus } from '../../../../Utils/mapStatus';
+import { DATE_FORMAT } from '../../../../model/application.model';
+import moment from 'moment';
 
 interface LocalSalesCustomerTableProps {
   rows: LocalSalesOrder[] | undefined;
@@ -47,6 +49,7 @@ export const useLocalCustomerOrderTable = (customerId: string | undefined): Loca
     {
       field: 'date',
       headerName: 'Date de commande',
+      valueGetter: (params) => moment(params.row.date).format(DATE_FORMAT),
       headerAlign: 'center',
       align: 'center',
       flex: 1,

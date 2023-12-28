@@ -91,7 +91,6 @@ export const LocalSalesCustomerFormWrapper = (props: {
   const handleUpdateCustomerInfo = () => callUpdateNewCustomer();
 
   const handleOpen = () => setOpen(true);
-
   const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -132,15 +131,17 @@ export const LocalSalesCustomerFormWrapper = (props: {
             >
               Client Id: {!serialId ? <CircularProgress size={20} /> : serialId}
             </Typography>
-            <Button
-              variant="contained"
-              color="info"
-              onClick={() => navigate(`/local-sales/orders/create/${serialId}`)}
-              startIcon={<AddCircleIcon />}
-              sx={{ alignSelf: 'flex-end', flex: 'none' }}
-            >
-              Passer commande
-            </Button>
+            {formMode === LocalSalesFormMode.EDIT && (
+              <Button
+                variant="contained"
+                color="info"
+                onClick={() => navigate(`/local-sales/orders/create/${serialId}`)}
+                startIcon={<AddCircleIcon />}
+                sx={{ alignSelf: 'flex-end', flex: 'none' }}
+              >
+                Passer commande
+              </Button>
+            )}
           </Stack>
         </Grid>
         <LocalSalesCustomerNameControllers />
@@ -157,7 +158,7 @@ export const LocalSalesCustomerFormWrapper = (props: {
           }
         />
         <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-          {isCreatePending || (isEditPending && <CircularProgress size={30} />)}
+          {(isCreatePending || isEditPending) && <CircularProgress size={30} />}
         </Grid>
       </Grid>
       <Snackbar

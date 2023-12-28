@@ -71,7 +71,7 @@ export const LocalSalesCustomerForm = (props: { formMode: LocalSalesFormMode }) 
           )}
         </Stack>
       </PageSection>
-      <LocalSalesCustomerOrderRecord customerId={editModeData?.id} />
+      {formMode === LocalSalesFormMode.EDIT && <LocalSalesCustomerOrderRecord customerId={editModeData?.id} />}
     </PageWrapper>
   );
 };

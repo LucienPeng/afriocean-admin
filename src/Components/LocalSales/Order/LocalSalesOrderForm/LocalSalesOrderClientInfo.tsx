@@ -4,15 +4,23 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useDeviceMetadata } from '../../../Common/DeviceMetadataProvider';
+import { parseISO } from 'date-fns';
 import fr from 'date-fns/locale/fr';
 
 export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer; orderId: string }) => {
   const { customer, orderId } = props;
   const { isMobileView } = useDeviceMetadata();
   const {
+    setValue,
     control,
     formState: { errors },
   } = useFormContext<LocalSalesOrder>();
+
+  const handleCustomChange = (value: Date | null) => {
+    if (value) {
+      setValue('date', value.toISOString());
+    }
+  };
 
   return (
     <Grid item xs={12}>
@@ -36,7 +44,7 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer;
                 name="date"
                 control={control}
                 rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
+                render={({ field: { value } }) => (
                   <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
                     <DatePicker
                       sx={{ width: '100%' }}
@@ -47,8 +55,8 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer;
                         },
                       }}
                       label="Date de naissance"
-                      value={value}
-                      onChange={onChange}
+                      value={parseISO(value)}
+                      onChange={(newValue) => handleCustomChange(newValue)}
                     />
                   </LocalizationProvider>
                 )}

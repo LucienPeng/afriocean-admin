@@ -47,7 +47,7 @@ export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode
     queryKey: ['orderDetail', id],
     queryFn: () =>
       getFirebaseDocumentData(Collections.LocalSalesOrders, id as string).then((res) => {
-        return { ...res, date: new Date(res?.date) } as LocalSalesOrder;
+        return res as LocalSalesOrder;
       }),
     enabled: !!id && formMode === LocalSalesFormMode.EDIT,
     retry: false,
@@ -78,7 +78,7 @@ export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode
   const DEFAULT_VALUES: LocalSalesOrder = useMemo(() => {
     return {
       product: [],
-      date: new Date(),
+      date: new Date().toISOString(),
       orderId: '',
       customer: customerInfo,
       totalePrice: 0,

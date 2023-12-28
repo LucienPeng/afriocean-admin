@@ -42,6 +42,5 @@ export const useEmailNotification = () => {
     emailJs.send(SERVICE_ID, TEMPLATE_ID, mapEmailRequest(data), PUBLIC_KEY);
   };
 
-
   return { sendEmailNotification, sendDeliveryNotification };
 };

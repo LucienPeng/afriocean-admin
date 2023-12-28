@@ -27,7 +27,7 @@ export const useHandleOrderOperation = (defaultProduct: Product) => {
   };
 
   const handleAddProductToChecklist = () => {
-    setValue('product', [...getValues('product'), item]);
+    setValue('product', [...getValues('product'), item], { shouldDirty: true });
   };
 
   const handleEditProductToChecklist = () => {
