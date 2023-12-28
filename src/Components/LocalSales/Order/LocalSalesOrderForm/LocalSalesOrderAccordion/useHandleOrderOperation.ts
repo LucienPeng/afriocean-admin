@@ -41,7 +41,7 @@ export const useHandleOrderOperation = (defaultProduct: Product) => {
       }
       return i;
     });
-    setValue('product', updatedProducts);
+    setValue('product', updatedProducts, { shouldDirty: true });
   };
 
   return {

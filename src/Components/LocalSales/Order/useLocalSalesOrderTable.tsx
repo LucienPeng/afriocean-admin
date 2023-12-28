@@ -1,8 +1,8 @@
 import { Collections, useFirebaseDB } from '../../../Utils/Firebase/useFirebaseDB';
-import { useQuery } from '@tanstack/react-query';
 import { GridColDef } from '@mui/x-data-grid';
 import { LocalSalesOrder } from '../../../model/localSales.model';
 import { mapStatus } from '../../../Utils/mapStatus';
+import { useQuery } from '@tanstack/react-query';
 
 interface LocalSalesCustomerTableProps {
   rows: LocalSalesOrder[] | undefined;
@@ -57,5 +57,6 @@ export const useLocalSalesorderTable = (): LocalSalesCustomerTableProps => {
       flex: 1,
     },
   ];
+
   return { columns, rows, isLoading, isFetching, isSuccess };
 };

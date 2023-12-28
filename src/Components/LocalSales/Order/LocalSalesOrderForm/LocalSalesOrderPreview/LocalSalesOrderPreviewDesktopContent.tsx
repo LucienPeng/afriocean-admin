@@ -3,7 +3,7 @@ import { LocalSalesOrder, Product } from '../../../../../model/localSales.model'
 import { useFormContext } from 'react-hook-form';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
-export const LocalSalesOrderPreviewSectionContent = (props: { product: Product }) => {
+export const LocalSalesOrderPreviewDesktopContent = (props: { product: Product }) => {
   const { product } = props;
   const { setValue, watch } = useFormContext<LocalSalesOrder>();
 

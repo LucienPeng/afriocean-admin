@@ -25,10 +25,12 @@ const DEMANDES_SUB_NAV_ITEMS: SingleNavItem[] = [
   { navTitle: 'Heures supplémentaires', path: '/application/heures-supplémentaires' },
 ];
 
-const LOCAL_SALES_SUB_NAV_ITEMS = [
+const ADMIN_LOCAL_SALES_SUB_NAV_ITEMS = [
   { navTitle: 'Clients', path: '/local-sales/customers' },
   { navTitle: 'Commandes', path: '/local-sales/orders' },
 ];
+
+const USER_LOCAL_SALES_SUB_NAV_ITEMS = [{ navTitle: 'Commandes', path: '/local-sales/orders' }];
 
 const ADMIN_APPLICATION_PORTAL = {
   navTitle: 'Demande Contrôl',
@@ -36,11 +38,18 @@ const ADMIN_APPLICATION_PORTAL = {
   icon: <RemoveRedEyeIcon />,
 };
 
-const LOCAL_SALES = {
+const ADMIN_LOCAL_SALES = {
   navTitle: 'Ventes locales',
   path: '#',
   icon: <PointOfSaleIcon />,
-  subNavItem: LOCAL_SALES_SUB_NAV_ITEMS,
+  subNavItem: ADMIN_LOCAL_SALES_SUB_NAV_ITEMS,
+};
+
+const USER_LOCAL_SALES = {
+  navTitle: 'Ventes locales',
+  path: '#',
+  icon: <PointOfSaleIcon />,
+  subNavItem: USER_LOCAL_SALES_SUB_NAV_ITEMS,
 };
 
 const DEMANDES = { navTitle: 'Demandes', path: '#', icon: <AssignmentIcon />, subNavItem: DEMANDES_SUB_NAV_ITEMS };
@@ -54,7 +63,7 @@ export const useGetNavItems = () => {
   const adminListItems = (
     <List component="nav">
       <SingleListItem navItem={DASHBOARD} />
-      <NestedLisItem navItem={LOCAL_SALES} />
+      <NestedLisItem navItem={ADMIN_LOCAL_SALES} />
       <NestedLisItem navItem={DEMANDES} isDisabled={true} />
       <SingleListItem navItem={CAISSE} isDisabled={true} />
       <SingleListItem navItem={MATERIAUX} isDisabled={true} />
@@ -67,9 +76,10 @@ export const useGetNavItems = () => {
   const userListItems = (
     <List component="nav">
       <SingleListItem navItem={DASHBOARD} />
-      <NestedLisItem navItem={DEMANDES} />
+      <NestedLisItem navItem={USER_LOCAL_SALES} />
+      <NestedLisItem navItem={DEMANDES} isDisabled={true} />
       <SingleListItem navItem={CAISSE} isDisabled={true} />
-      <SingleListItem navItem={MATERIAUX} />
+      <SingleListItem navItem={MATERIAUX} isDisabled={true} />
       <Divider sx={{ my: 1 }} />
       <SingleListItem navItem={USER_APPLICATION_PORTAL} />
     </List>

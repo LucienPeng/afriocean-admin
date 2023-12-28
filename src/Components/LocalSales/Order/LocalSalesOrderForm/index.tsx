@@ -9,7 +9,11 @@ export const LocalSalesOrderForm = (props: { formMode: LocalSalesFormMode }) => 
   const { formMode } = props;
 
   return (
-    <PageWrapper icon={<PointOfSaleIcon />} componentName="Créer une nouvelle commande" containerMaxWidth="lg">
+    <PageWrapper
+      icon={<PointOfSaleIcon />}
+      componentName={formMode === LocalSalesFormMode.CREATE ? 'Créer une nouvelle commande' : 'Édit commande'}
+      containerMaxWidth="lg"
+    >
       <PageSection>
         <Stack width="100%" height="100%" justifyContent="center" alignItems="center">
           <LocalSalesOrderFormWrapper formMode={formMode} />

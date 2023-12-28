@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { generateIncrementalId } from '../../../../Utils/incrementalId';
 import { LocalSalesOrderActionButtons } from './LocalSalesOrderActionButtons';
 import { LocalSalesOrderStatus } from './LocalSalesOrderStatus';
+import { useDeviceMetadata } from '../../../Common/DeviceMetadataProvider';
 
 const schema = yup.object().shape({
   date: yup.string().required(),
@@ -29,6 +30,7 @@ export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode
   const { id } = useParams();
   const { getFirebaseDocumentData, setFirebaseData } = useFirebaseDB();
   const { createNewOrder } = useFirebaseFunctions();
+  const { isMobileView } = useDeviceMetadata();
 
   const { data: customerDetail } = useQuery({
     queryKey: ['customerDetail', id],
@@ -167,7 +169,7 @@ export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode
       {customerInfo && orderId ? (
         <Grid container rowSpacing={5} columnSpacing={12}>
           <LocalSalesOrderClientInfo customer={customerInfo} orderId={orderId} />
-          <LocalSalesOrderProductsAccordionWrapper />
+          {!isMobileView && <LocalSalesOrderProductsAccordionWrapper />}
           <LocalSalesOrderPreview />
           <LocalSalesOrderStatus />
 

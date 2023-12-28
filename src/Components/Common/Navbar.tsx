@@ -24,9 +24,14 @@ export const Navbar = (props: { setIsOpen: (isOpen: boolean) => void }) => {
     <AppBar position="fixed">
       <Toolbar>
         {isMobileView ? (
-          <IconButton onClick={() => setIsOpen(true)}>
-            <MenuIcon sx={{ color: 'common.white' }} />
-          </IconButton>
+          <Stack direction="row" justifyContent="space-between" width="100%">
+            <IconButton onClick={() => setIsOpen(true)}>
+              <MenuIcon sx={{ color: 'common.white' }} />
+            </IconButton>
+            <IconButton color="inherit" onClick={signOutHandler}>
+              <LogoutIcon />
+            </IconButton>
+          </Stack>
         ) : (
           <Stack width="100%" direction="row" justifyContent="space-between" alignItems="center">
             <Box

@@ -1,4 +1,4 @@
-import { Box, Stack, Tab, Tabs } from '@mui/material';
+import { Box, CircularProgress, Stack, Tab, Tabs } from '@mui/material';
 import { PageSection } from '../../Common/PageSection';
 import { PageWrapper } from '../../Common/PageWrapper';
 import { StyledSearchTextField } from '../../Common/StyledUI/StyledSearchTextField';
@@ -11,6 +11,8 @@ import { GridCellParams } from '@mui/x-data-grid';
 import { LoadingOverlay, NoRowsOverlay } from '../../Common/StyledUI/TableOverlayComponents';
 import { useLocalSalesorderTable } from './useLocalSalesOrderTable';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+import { LocalSalesOrderMobileCard } from './LocalSalesOrderMobileCard';
+import { useDeviceMetadata } from '../../Common/DeviceMetadataProvider';
 
 function a11yProps(index: number) {
   return {
@@ -22,6 +24,7 @@ function a11yProps(index: number) {
 export const LocalSalesOrders = () => {
   const { throttledValue, keywords, setKeywords } = useSearchKeywords();
   const { rows, columns, isFetching, isLoading, isSuccess } = useLocalSalesorderTable();
+  const { isMobileView } = useDeviceMetadata();
   const [isFiltering, setIsFiltering] = useState(false);
   const [filteredRows, setFilteredRows] = useState<LocalSalesOrder[]>([]);
   const [value, setValue] = useState(0);
@@ -99,23 +102,40 @@ export const LocalSalesOrders = () => {
             />
           </Stack>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={value} onChange={handleTabChange} aria-label="order table switcher">
+            <Tabs
+              variant="scrollable"
+              scrollButtons="auto"
+              value={value}
+              onChange={handleTabChange}
+              aria-label="order table switcher"
+            >
               <Tab label="Tous" {...a11yProps(0)} disabled={isProcessing} />
               <Tab label={OrderStatus.Start} disabled={isProcessing} {...a11yProps(1)} />
               <Tab label={OrderStatus.UnPaid} disabled={isProcessing} {...a11yProps(2)} />
               <Tab label={OrderStatus.Terminé} disabled={isProcessing} {...a11yProps(3)} />
             </Tabs>
           </Box>
-          <DataGridComponent
-            isLoading={isProcessing}
-            rows={!filteredRows || isProcessing ? [] : filteredRows}
-            columns={columns}
-            onCellClickHandler={(params: GridCellParams) => handleRedirect(params.row.orderId)}
-            LoadingOverlay={LoadingOverlay}
-            NoRowsOverlay={NoRowsOverlay}
-          />
+          {!isMobileView && (
+            <DataGridComponent
+              isLoading={isProcessing}
+              rows={!filteredRows || isProcessing ? [] : filteredRows}
+              columns={columns}
+              onCellClickHandler={(params: GridCellParams) => handleRedirect(params.row.orderId)}
+              LoadingOverlay={LoadingOverlay}
+              NoRowsOverlay={NoRowsOverlay}
+            />
+          )}
         </Stack>
       </PageSection>
+      {isMobileView ? (
+        isProcessing ? (
+          <Stack justifyContent="center" alignItems="center" my={5}>
+            <CircularProgress size={30} />
+          </Stack>
+        ) : (
+          <LocalSalesOrderMobileCard orders={filteredRows} />
+        )
+      ) : null}
     </PageWrapper>
   );
 };

@@ -3,10 +3,12 @@ import { Grid, Typography } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useDeviceMetadata } from '../../../Common/DeviceMetadataProvider';
 import fr from 'date-fns/locale/fr';
 
 export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer; orderId: string }) => {
   const { customer, orderId } = props;
+  const { isMobileView } = useDeviceMetadata();
   const {
     control,
     formState: { errors },
@@ -14,10 +16,10 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer;
 
   return (
     <Grid item xs={12}>
-      <Grid container spacing={4}>
+      <Grid container spacing={isMobileView ? 2 : 4}>
         <Grid item xs={12}>
-          <Grid container spacing={1}>
-            <Grid item xs={6}>
+          <Grid container spacing={isMobileView ? 2 : 1}>
+            <Grid item xs={12} sm={6}>
               <Typography color="text.primary" fontWeight={700}>
                 Nº commande :
                 <Typography color="text.primary" fontWeight={700} component="span">
@@ -26,7 +28,7 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer;
                 </Typography>
               </Typography>
             </Grid>
-            <Grid item xs={6} display="flex" flexDirection="row" justifyContent="center" alignItems="center">
+            <Grid item xs={12} sm={6} display="flex" flexDirection="row" justifyContent="center" alignItems="center">
               <Typography color="text.primary" fontWeight={700}>
                 Date de commande :
               </Typography>
@@ -57,7 +59,7 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer;
 
         <Grid item xs={12}>
           <Grid item container spacing={1}>
-            <Grid item xs={3}>
+            <Grid item xs={12} sm={3}>
               <Typography color="text.primary" fontWeight={700}>
                 Client :
                 <Typography color="text.primary" component="span">
@@ -67,7 +69,7 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer;
               </Typography>
             </Grid>
 
-            <Grid item xs={3}>
+            <Grid item xs={12} sm={3}>
               <Typography color="text.primary" fontWeight={700}>
                 Nº identité :
                 <Typography color="text.primary" component="span">
@@ -77,7 +79,7 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer;
               </Typography>
             </Grid>
 
-            <Grid item xs={3}>
+            <Grid item xs={12} sm={3}>
               <Typography color="text.primary" fontWeight={700}>
                 Tel (1) :
                 <Typography color="text.primary" component="span">
@@ -86,7 +88,7 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer;
                 </Typography>
               </Typography>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={12} sm={3}>
               <Typography color="text.primary" fontWeight={700}>
                 Tel (2) :
                 <Typography color="text.primary" component="span">
@@ -100,7 +102,7 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer;
 
         <Grid item xs={12}>
           <Grid item container spacing={1}>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <Typography color="text.primary" fontWeight={700}>
                 Email :
                 <Typography color="text.primary" component="span">
@@ -110,7 +112,7 @@ export const LocalSalesOrderClientInfo = (props: { customer: LocalSalesCustomer;
               </Typography>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <Typography color="text.primary" fontWeight={700}>
                 Adress :
                 <Typography color="text.primary" component="span">
