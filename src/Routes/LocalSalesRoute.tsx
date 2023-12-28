@@ -4,7 +4,7 @@ import { Roles } from '../model/company.model';
 import { LocalSalesCustomers } from '../Components/LocalSales/Customer';
 import { LocalSalesOrders } from '../Components/LocalSales/Order';
 import { LocalSalesCustomerForm } from '../Components/LocalSales/Customer/LocalSalesCustomerForm';
-import ProtectedRoute from '../ProtectedRoute';
+import ProtectedRoute from './ProtectedRoute';
 import LocalSalesPage from '../Pages/LocalSalesPage';
 import { LocalSalesFormMode } from '../model/localSales.model';
 import { LocalSalesOrderForm } from '../Components/LocalSales/Order/LocalSalesOrderForm';

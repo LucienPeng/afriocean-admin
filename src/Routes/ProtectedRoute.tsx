@@ -1,6 +1,6 @@
-import { useUserRedux } from './useUserRedux'; // 請替換為你的 useUserRedux hook
+import { useUserRedux } from '../useUserRedux'; // 請替換為你的 useUserRedux hook
 import { Navigate, RouteProps } from 'react-router-dom';
-import { Roles } from './model/company.model';
+import { Roles } from '../model/company.model';
 
 type ProtectedRouteProps = {
   component: React.ComponentType<RouteProps>;

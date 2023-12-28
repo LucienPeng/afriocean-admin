@@ -37,7 +37,7 @@ export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode
     queryFn: () =>
       getFirebaseDocumentData(Collections.LocalSalesCustomers, id as string).then((res) => {
         if (!res) throw Error('This customer is not exist');
-        return { ...res, birthday: new Date(res?.birthday) } as LocalSalesCustomer;
+        return res as LocalSalesCustomer;
       }),
     enabled: !!id && formMode === LocalSalesFormMode.CREATE,
     retry: false,

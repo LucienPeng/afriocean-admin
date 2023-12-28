@@ -5,7 +5,7 @@ import { getExpDate, parseJwt } from './Utils/jwt';
 import { defaultTheme } from './Styles/themeOptions';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
-import ProtectedRoute from './ProtectedRoute';
+import ProtectedRoute from './Routes/ProtectedRoute';
 import DashboardPage from './Pages/DashboardPage';
 import UserPage from './Pages/UserPage';
 import AdminPage from './Pages/AdminPage';

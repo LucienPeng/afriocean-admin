@@ -21,7 +21,7 @@ const DEFAULT_VALUES: LocalSalesCustomer = {
   firstName: '',
   lastName: '',
   address: '',
-  birthday: null,
+  birthday: '',
   phone1: '',
   phone2: '',
   email: '',
@@ -32,7 +32,7 @@ const schema = yup.object().shape({
   lastName: yup.string().required(),
   id: yup.string().required(),
   address: yup.string().required(),
-  birthday: yup.date().required(),
+  birthday: yup.string().required(),
   phone1: yup.string().required(),
 });
 
@@ -75,7 +75,6 @@ export const LocalSalesCustomerFormWrapper = (props: {
     mutationFn: () =>
       setFirebaseData(Collections.LocalSalesCustomers, serialId, {
         ...getValues(),
-        birthday: getValues('birthday')?.toISOString(),
       }),
   });
 

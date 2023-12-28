@@ -4,7 +4,7 @@ import { ApplicationsPortal } from '../Components/Application/ApplicationsPortal
 import { DeplacementForm } from '../Components/Application/Form/DeplacementForm';
 import { Absence } from '../Components/Application/Form/Absence';
 import { HeuresSupplementaires } from '../Components/Application/Form/HeuresSupplementaires';
-import ProtectedRoute from '../ProtectedRoute';
+import ProtectedRoute from './ProtectedRoute';
 import ApplicationPage from '../Pages/ApplicationPage';
 
 export const ApplicationRoute = () => {

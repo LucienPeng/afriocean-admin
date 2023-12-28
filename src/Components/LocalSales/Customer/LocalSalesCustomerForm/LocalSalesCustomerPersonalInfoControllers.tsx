@@ -4,13 +4,21 @@ import { Grid } from '@mui/material';
 import { StyledTextField } from '../../../Common/StyledUI/StyledTextField';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { parseISO } from 'date-fns';
 import fr from 'date-fns/locale/fr';
 
 export const LocalSalesCustomerPersonalInfoControllers = (props: { formMode: LocalSalesFormMode }) => {
   const {
+    setValue,
     control,
     formState: { errors },
   } = useFormContext<LocalSalesCustomer>();
+
+  const handleCustomChange = (value: Date | null) => {
+    if (value) {
+      setValue('birthday', value.toISOString());
+    }
+  };
 
   return (
     <Grid item xs={12}>
@@ -20,7 +28,7 @@ export const LocalSalesCustomerPersonalInfoControllers = (props: { formMode: Loc
             name="birthday"
             control={control}
             rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { value } }) => (
               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
                 <DatePicker
                   sx={{ width: '100%' }}
@@ -31,8 +39,8 @@ export const LocalSalesCustomerPersonalInfoControllers = (props: { formMode: Loc
                     },
                   }}
                   label="Date de naissance"
-                  value={value}
-                  onChange={onChange}
+                  value={parseISO(value)}
+                  onChange={(newValue) => handleCustomChange(newValue)}
                 />
               </LocalizationProvider>
             )}

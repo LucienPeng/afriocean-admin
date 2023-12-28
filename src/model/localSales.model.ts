@@ -47,7 +47,7 @@ export interface LocalSalesCustomer {
   readonly firstName: string;
   readonly lastName: string;
   readonly address: string;
-  readonly birthday: null | Date;
+  readonly birthday: string;
   readonly phone1: string;
   readonly phone2?: string;
   readonly email?: string;
