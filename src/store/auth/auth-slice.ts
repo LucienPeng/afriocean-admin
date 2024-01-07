@@ -10,15 +10,18 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    loginSucceed(state, actions) {
+    stillLoggedIn (state, actions) {
+      state.isLoggedIn = actions.payload.isLoggedIn;
+    },
+    loginSucceed (state, actions) {
       state.isLoggedIn = true;
       state.user = actions.payload.user;
     },
-    loginFaild(state) {
+    loginFaild (state) {
       state.isLoggedIn = false;
       state.user = null;
     },
-    logOut(state) {
+    logOut (state) {
       state.isLoggedIn = false;
       state.user = null;
     },

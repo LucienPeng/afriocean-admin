@@ -196,14 +196,15 @@ export const CreateUserComponent = () => {
               )}
             />
           </Grid>
-
-          {isLoading ? (
-            <LoadingSpinner />
-          ) : successMessage.length !== 0 ? (
-            <ActionSuccessAlert />
-          ) : errorMessage.length !== 0 ? (
-            <ErrorMessageAlert />
-          ) : null}
+          <Stack width="100%" justifyContent="center" alignItems='center' my={2}>
+            {isLoading ? (
+              <LoadingSpinner />
+            ) : successMessage.length !== 0 ? (
+              <ActionSuccessAlert />
+            ) : errorMessage.length !== 0 ? (
+              <ErrorMessageAlert />
+            ) : null}
+          </Stack>
           <Grid item xs={12}>
             <Stack width="100%" direction="row" justifyContent="center" spacing={1}>
               <Button variant="contained" onClick={handleCancel} color="error">
