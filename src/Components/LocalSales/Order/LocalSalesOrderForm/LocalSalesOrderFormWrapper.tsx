@@ -150,7 +150,7 @@ export const LocalSalesOrderFormWrapper = (props: { formMode: LocalSalesFormMode
 
   useEffect(() => {
     if (customerInfo && orderSerialId) {
-      setOrderId(`${customerInfo.uuid}-${generateIncrementalId(orderSerialId.index.toString(), 4)}`);
+      setOrderId(generateIncrementalId(orderSerialId.index.toString(), 4));
     }
   }, [customerInfo, orderSerialId]);
 
